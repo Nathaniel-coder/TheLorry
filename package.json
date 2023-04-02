@@ -30,9 +30,11 @@
         "chart.js": "^4.2.1",
         "flag-icons": "^6.6.6",
         "laravel-vue-pagination": "^4.1.0",
+        "laravel-vue-semantic-ui-pagination": "^1.0.3",
         "moment": "^2.29.4",
         "sweetalert2": "^11.7.3",
         "vform": "^2.1.2",
-        "vue-progressbar": "^0.7.5"
+        "vue-progressbar": "^0.7.5",
+        "vue-router": "^3.6.5"
     }
 }
