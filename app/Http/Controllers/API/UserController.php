@@ -16,7 +16,7 @@ class UserController extends Controller
      */
     public function index()
     {
-        return User::where('type' ,'!=', 'Customer')->orderByRaw('created_at', 'Desc')->paginate(5);;
+        return User::where('type' ,'!=', 'Customer')->orderByRaw('created_at', 'Desc')->paginate(5);
     }
 
     /**

@@ -99,13 +99,13 @@
 
                         <li class="nav-item">
                             <router-link to="/dashboard" class="nav-link">
-                                <i class="fa-solid fa-gauge-high nav-icon blue"></i>
+                                <i class="fa-solid fa-gauge-high nav-icon"></i>
                                 <p>Dashboard</p>
                             </router-link>
                         </li>
                         <li class="nav-item">
                             <a href="#" class="nav-link">
-                                <i class="nav-icon fas fa-users-gear yellow"></i>
+                                <i class="nav-icon fas fa-users-gear"></i>
                                 <p>
                                     Management
                                     <i class="right fas fa-angle-left"></i>
@@ -114,28 +114,34 @@
                             <ul class="nav nav-treeview">
                                 <li class="nav-item">
                                     <router-link to="/staff" class="nav-link">
-                                        <i class="fa-solid fa-id-card nav-icon cyan"></i>
+                                        <i class="fa-solid fa-id-card nav-icon"></i>
                                         <p>Staff</p>
                                     </router-link>
                                 </li>
                                 <li class="nav-item">
                                     <a href="#" class="nav-link">
-                                        <i class="fa-solid fa-van-shuttle nav-icon teal"></i>
+                                        <i class="fa-solid fa-van-shuttle nav-icon"></i>
                                         <p>Vehicle</p>
                                     </a>
+                                </li>
+                                <li class="nav-item">
+                                    <router-link to="/branches" class="nav-link">
+                                        <i class="fa-solid fa-city nav-icon"></i>
+                                        <p>Branches</p>
+                                    </router-link>
                                 </li>
                             </ul>
                         </li>
                         <li class="nav-item">
                             <router-link to="/profile" class="nav-link">
-                                <i class="fa-solid fa-user nav-icon orange"></i>
+                                <i class="fa-solid fa-user nav-icon"></i>
                                 <p>Profile</p>
                             </router-link>
                         </li>
 
                         <li class="nav-item">
                             <a href="#" class="nav-link">
-                                <i class="nav-icon fas fa-th pink"></i>
+                                <i class="nav-icon fas fa-th"></i>
                                 <p>
                                     Simple Link
                                 </p>

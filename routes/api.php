@@ -19,11 +19,12 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 });
 
 Route::apiResources(['user' => 'API\UserController']);
+Route::apiResources(['branch' => 'API\BranchController']);
+Route::get('findBranch', 'API\UserController@search');
 Route::get('profile', 'API\UserController@Profile');
 Route::put('profile', 'API\UserController@updateProfile');
 Route::get('findUser', 'API\UserController@search');
 Route::get('dashboard', 'API\DashBoardController@index');
-Route::get('Branches', 'API\DropOffController@branches');
 Route::get('invoice/{date}', 'API\DropOffController@invoice');
 Route::apiResources(['dropOff' => 'API\DropOffController']);
 Route::apiResources(['pickUp' => 'API\PickUpController']);

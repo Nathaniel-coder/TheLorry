@@ -4,7 +4,7 @@
             <div class="container-fluid">
                 <div class="row mb-2">
                     <div class="col-sm-6">
-                        <h1>Staff Management</h1>
+                        <h1>Branches</h1>
                     </div>
                 </div>
             </div>
@@ -12,55 +12,46 @@
         <div class="container">
             <div class="justify-content-center">
                 <div class="row">
-                    <div class="col-md-12">
+                    <div class="col-12">
                         <div class="card">
                             <div class="card-header">
-                                <h3 class="card-title">Staff</h3>
+                                <h3 class="card-title">Branches</h3>
                                 <div class="card-tools">
-                                    <button class="btn bg-blue" type="button" data-toggle="modal"
-                                        data-target="#CreateEdit" @click="newModal()" toggle="tooltip" title="Create Staff">
+                                    <button class="btn bg-blue" type="button" data-toggle="modal" data-target="#CreateEdit"
+                                        @click="newModal()" toggle="tooltip" title="Create Staff">
                                         <i class="fa-solid fa-plus icon-btn-sm"></i>
                                     </button>
                                 </div>
                             </div>
 
                             <div class="card-body table-responsive p-0">
-                                <table class="table table-hover text-wrap">
+                                <table class="table table-hover text-nowrap">
                                     <thead>
                                         <tr>
-                                            <th>Staff ID</th>
-                                            <th>Name</th>
-                                            <th>Email</th>
-                                            <th>Date Joined</th>
-                                            <th>Status</th>
                                             <th>Branch</th>
+                                            <th>Type</th>
+                                            <th>Address</th>
+                                            <th>Postcode</th>
+                                            <th>City</th>
+                                            <th>Province</th>
+                                            <th>Country</th>
                                             <th>Action</th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <tr data-widget="table-hover" aria-expanded="false" v-for="user in users.data"
-                                            :key="user.id">
-                                            <td class="text-capitalize">
-                                                {{ user.type.charAt(0) }}{{
-                                                    user.type.charAt(6) == "C"
-                                                        || user.type.charAt(6) == "F" || user.type.charAt(6) == "R"
-                                                        || user.type.charAt(6) == "O" || user.type.charAt(6) == "E" ?
-                                                        user.type.charAt(6) : ""
-                                                }}
-                                                {{ user.type.charAt(5) == "T" ? user.type.charAt(5) : "" }}-{{
-                                                    user.id
-                                                }}
-                                            </td>
-                                            <td>{{ user.name }}</td>
-                                            <td>{{ user.email }}</td>
-                                            <td>{{ user.created_at | myDate }}</td>
-                                            <td>{{ user.type | upText }}</td>
-                                            <td>{{ user.branch }}</td>
+                                        <tr v-for="branch in branches.data" :key="branch.id">
+                                            <td>{{ branch.branch }}</td>
+                                            <td>{{ branch.type }}</td>
+                                            <td>{{ branch.address1 }},{{ branch.address2 }}</td>
+                                            <td>{{ branch.postcode }}</td>
+                                            <td>{{ branch.city }}</td>
+                                            <td>{{ branch.province }}</td>
+                                            <td>{{ branch.country }}</td>
                                             <td>
-                                                <button class="btn bg-orange" @click="editModal(user)" toggle="tooltip" title="Edit Staff">
+                                                <button class="btn bg-orange" toggle="tooltip" title="Edit Staff" @click="editModal(branch)">
                                                     <i class="fa-solid fa-pen-to-square text-light"></i>
                                                 </button>
-                                                <button class="btn bg-red" @click="deleteUser(user.id)" toggle="tooltip" title="Delete Staff">
+                                                <button class="btn bg-red" toggle="tooltip" title="Delete Staff" @click="deleteBranch(branch.id)">
                                                     <i class="fa-solid fa-trash-can"></i>
                                                 </button>
                                             </td>
@@ -68,88 +59,86 @@
                                     </tbody>
                                 </table>
                             </div>
-                            <div class="card-footer" v-show="users">
-                                <pagination class="nav-item" :data="users" @change-page="getResults"></pagination>
+                            <div class="card-footer" v-show="branches">
+                                <pagination class="nav-item" :data="branches" @change-page="getResults"></pagination>
                             </div>
                         </div>
+
                     </div>
                 </div>
             </div>
         </div>
-
-        <!-- Create/Edit Modal -->
         <div class="modal fade" id="CreateEdit" data-backdrop="static" data-keyboard="false" tabindex="-1"
             aria-labelledby="staticBackdropLabel" aria-hidden="true">
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
                         <h5 class="modal-title" v-show="!editmode" id="staticBackdropLabel">
-                            Create New Staff
+                            Create new Branch
                         </h5>
                         <h5 class="modal-title" v-show="editmode" id="staticBackdropLabel">
-                            Update Staff
+                            Update Branch
                         </h5>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
                         </button>
                     </div>
-                    <form @submit.prevent="editmode ? UpdateUser() : createUser()">
+                    <form @submit.prevent="editmode ? updateBranches() : createBranches()">
                         <div class="modal-body">
                             <div class="form-group">
-                                <label>Name</label>
-                                <input v-model="form.name" class="form-control" type="text" name="name"
-                                    placeholder="Name" :class="{ 'is-invalid': form.errors.has('name') }" />
-                                <div v-if="form.errors.has('name')" v-html="form.errors.get('name')"></div>
-                            </div>
-                            <div class="form-group">
-                                <label>Email</label>
-                                <input v-model="form.email" class="form-control" type="email" name="email"
-                                    placeholder="Email" :class="{ 'is-invalid': form.errors.has('email') }" />
-                                <div v-if="form.errors.has('email')" v-html="form.errors.get('email')"></div>
-                            </div>
-                            <div class="form-group">
-                                <label>Password</label>
-                                <input v-model="form.password" class="form-control" type="password" name="password"
-                                    placeholder="Password" :class="{ 'is-invalid': form.errors.has('password') }" />
-                                <div v-if="form.errors.has('password')" v-html="form.errors.get('password')"></div>
+                                <label>Branch Name</label>
+                                <input v-model="form.branch" class="form-control" type="text" name="branch"
+                                    placeholder="Branch" :class="{ 'is-invalid': form.errors.has('branch') }" />
+                                <div v-if="form.errors.has('branch')" v-html="form.errors.get('branch')"></div>
                             </div>
                             <div class="form-group">
                                 <label>Type</label>
-                                <select v-model="form.type" class="form-control" aria-label="Default select example"
-                                    :class="{ 'is-invalid': form.errors.has('type') }">
-                                    <option selected>{{ form.type }}</option>
-                                    <option value="Administrator">Administrator</option>
-                                    <option value="Staff">Staff</option>
-                                    <option value="Part-Timer">Part-Timer</option>
-                                    <option value="Driver">Driver</option>
+                                <select v-model="form.btype" class="form-control" aria-label="Default select example"
+                                    :class="{ 'is-invalid': form.errors.has('btype') }">
+                                    <option selected>{{ form.btype }}</option>
+                                    <option value="Warehouse">Warehouse</option>
+                                    <option value="Office(Front-Desk)">Office(Front-Desk)</option>
+                                    <option value="Office(Development)">Office(Development)</option>
                                 </select>
-                                <div v-if="form.errors.has('type')" v-html="form.errors.get('type')"></div>
+                                <div v-if="form.errors.has('btype')" v-html="form.errors.get('btype')"></div>
+                            </div>
 
+                            <div class="form-group">
+                                <label>Address</label>
+                                <input v-model="form.address1" class="form-control" type="text" name="address1"
+                                    placeholder="Address 1" :class="{ 'is-invalid': form.errors.has('address1') }" />
+                                <div v-if="form.errors.has('address1')" v-html="form.errors.get('address1')"></div>
                             </div>
                             <div class="form-group">
-                                <label>Branch</label>
-                                <select v-model="form.branch" class="form-control" aria-label="Default select example"
-                                    :class="{ 'is-invalid': form.errors.has('branch') }" name="branch">
-                                    <option selected>{{ form.branch }}</option>
-                                    <option value="Johor">Johor</option>
-                                    <option value="Kedah">Kedah</option>
-                                    <option value="Kelantan">Kelantan</option>
-                                    <option value="Melaka">Melaka</option>
-                                    <option value="Negeri Sembilan">Negeri Sembilan</option>
-                                    <option value="Pahang">Pahang</option>
-                                    <option value="Perak">Perak</option>
-                                    <option value="Perlis">Perlis</option>
-                                    <option value="Selangor">Selangor</option>
-                                    <option value="Terengganu">Terengganu</option>
-                                </select>
-                                <div v-if="form.errors.has('branch')" v-html="form.errors.get('branch')"></div>
-
+                                <input v-model="form.address2" class="form-control" type="text" name="address2"
+                                    placeholder="Address 2" :class="{ 'is-invalid': form.errors.has('address2') }" />
+                                <div v-if="form.errors.has('address2')" v-html="form.errors.get('address2')"></div>
+                            </div>
+                            <div class="form-group">
+                                <input v-model="form.postcode" class="form-control" type="number" name="postcode"
+                                    placeholder="Postcode" :class="{ 'is-invalid': form.errors.has('postcode') }" />
+                                <div v-if="form.errors.has('postcode')" v-html="form.errors.get('postcode')"></div>
+                            </div>
+                            <div class="form-group">
+                                <input v-model="form.city" class="form-control" type="text" name="city"
+                                    placeholder="City" :class="{ 'is-invalid': form.errors.has('city') }" />
+                                <div v-if="form.errors.has('city')" v-html="form.errors.get('city')"></div>
+                            </div>
+                            <div class="form-group">
+                                <input v-model="form.province" class="form-control" type="text" name="province"
+                                    placeholder="province" :class="{ 'is-invalid': form.errors.has('province') }" />
+                                <div v-if="form.errors.has('province')" v-html="form.errors.get('province')"></div>
+                            </div>
+                            <div class="form-group">
+                                <input v-model="form.country" class="form-control" type="text" name="country"
+                                    placeholder="country" :class="{ 'is-invalid': form.errors.has('country') }" />
+                                <div v-if="form.errors.has('country')" v-html="form.errors.get('country')"></div>
                             </div>
                             <!-- <div class="form-group">
-                            <label for="name">Name</label>
-                            <input v-model="form.photo" class="form-control-file" type="file" name="name" placeholder="Name" :class="{ 'is-invalid' : form.errors.has('photo')}">
-                            <div v-if="form.errors.has('photo')" v-html="form.errors.get('photo')"></div>
-                        </div> -->
+                        <label for="name">Name</label>
+                        <input v-model="form.photo" class="form-control-file" type="file" name="name" placeholder="Name" :class="{ 'is-invalid' : form.errors.has('photo')}">
+                        <div v-if="form.errors.has('photo')" v-html="form.errors.get('photo')"></div>
+                    </div> -->
                             <div class="d-flex justify-content-end">
                                 <button type="button" class="btn btn-secondary mx-2" data-dismiss="modal">
                                     Close
@@ -179,39 +168,41 @@ export default {
     data() {
         return {
             editmode: false,
-            users: {},
+            branches: {},
             form: new Form({
                 id: "",
-                name: "",
-                email: "",
-                password: "",
-                type: "",
-                branch: "",
-                photo: "",
+                branches: "",
+                btype: "",
+                address1: "",
+                address2: "",
+                postcode: "",
+                city: "",
+                province: "",
+                country: "",
             }),
         };
     },
     methods: {
         getResults(page) {
-            axios.get('api/user?page=' + page).then(response => {
-                this.users = response.data;
+            axios.get('api/branch?page=' + page).then(response => {
+                this.branches = response.data;
             })
         },
-        editModal(user) {
+        editModal(branch) {
             this.editmode = true;
             this.form.reset();
             $("#CreateEdit").modal("show");
-            this.form.fill(user);
+            this.form.fill(branch);
         },
         newModal() {
             this.editmode = false;
             this.form.reset();
             $("#CreateEdit").modal("show");
         },
-        UpdateUser() {
+        updateBranches() {
             this.$Progress.start();
             this.form
-                .put("api/user/" + this.form.id)
+                .put("api/branch/" + this.form.id)
                 .then(() => {
                     Swal.fire({
                         position: "center",
@@ -234,16 +225,16 @@ export default {
                     this.$Progress.fail();
                 });
         },
-        createUser() {
+        createBranches() {
             this.$Progress.start();
 
             this.form
-                .post("api/user")
+                .post("api/branch")
                 .then(() => {
                     Swal.fire({
                         position: "center",
                         icon: "success",
-                        title: this.form.name + " is now " + this.form.type,
+                        title: this.form.branch + " is now " + this.form.btype,
                         showConfirmButton: true,
                         timer: 1500,
                     });
@@ -259,22 +250,21 @@ export default {
                 });
             $("#CreateEdit").modal("hide");
         },
-        loadusers() {
-            axios.get("api/user").then(({ data }) => (this.users = data));
+        loadBranches() {
+            axios.get("api/branch").then(({ data }) => (this.branches = data));
         },
-        deleteUser(id) {
+        deleteBranch(id) {
             Swal.fire({
                 title: "Are you sure?",
                 text: "You won't be able to revert this!",
                 icon: "warning",
                 showCancelButton: true,
-                confirmButtonColor: "#0d6efd",
                 cancelButtonColor: "#d33",
                 confirmButtonText: "Yes, delete it!",
             }).then((result) => {
                 if (result.isConfirmed) {
                     this.$Progress.start();
-                    this.form.delete("api/user/" + id).then(() => {
+                    this.form.delete("api/branch/" + id).then(() => {
                         Swal.fire("Deleted!", "Your file has been deleted.", "success");
                     });
                     this.$Progress.finish();
@@ -287,24 +277,24 @@ export default {
         Fire.$on('searching', () => {
             let query = this.$parent.search;
             this.$Progress.start();
-            axios.get('api/findUser?q=' + query).then((data) => {
-                this.users = data.data;
+            axios.get('api/findBranch?q=' + query).then((data) => {
+                this.branches = data.data;
                 this.$progress.finish();
                 Swal.fire({
                     icon: "success",
                     title: "Users found"
                 });
             }).catch(() => {
-                    Swal.fire({
+                Swal.fire({
                     icon: "Error",
                     title: "Users not found"
                 });
-                })
+            })
         })
         Fire.$on("AfterCreated", () => {
-            this.loadusers();
+            this.loadBranches();
         });;
-        this.loadusers();
+        this.loadBranches();
         getResults(page);
     },
 };
