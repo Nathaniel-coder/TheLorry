@@ -19,7 +19,7 @@ let routes = [
     { path: '/profile', component: require('./components/Profile.vue').default },
     { path: '/staff', component: require('./components/Staff.vue').default },
     { path: '/branches', component: require('./components/Branches.vue').default },
-    { path: '/dashboard', component: require('./components/Dashboard.vue').default },
+    { path: '/vehicles', component: require('./components/Vehicles.vue').default },
     { path: '/dashboard', component: require('./components/Dashboard.vue').default },
     { path: '/dashboard', component: require('./components/Dashboard.vue').default },
     { path: '/dashboard', component: require('./components/Dashboard.vue').default },
