@@ -6,9 +6,16 @@ use App\User;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Http\File;
+use Illuminate\Support\Facades\Storage;
+use Image;
 
 class UserController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('auth:api');
+    }
     /**
      * Display a listing of the resource.
      *
@@ -72,6 +79,64 @@ class UserController extends Controller
         //
     }
 
+    public function Profile()
+    {
+        return auth('api')->user();
+    }
+
+    public function updateProfile(Request $request)
+    {
+
+        $user = auth('api')->user();
+
+        $this->validate($request, [
+            'name' => 'required',
+            'email' => 'required|string|email|max:191|unique:users,email,' . $user->id,
+            'password' => 'required|string|min:8',
+            'phone' => 'required|string|max:15',
+            'photo' => 'required',
+            'address1' => 'required|string|max:191',
+            'address2' => 'required|string|max:191',
+            'postcode' => 'required|string',
+            'city' => 'required|string|max:191',
+            'province' => 'required|string|max:191',
+            'country' => 'required|string|max:191',
+        ]);
+
+        $currentPhoto = $user->photo;
+        if ($request->photo != $currentPhoto) {
+
+
+            $name = time() . '.' . explode('/', explode(':', substr($request->photo, 0, strpos($request->photo, ';')))[1])[1];
+
+            Image::make($request->photo)->save(public_path('img/profile/') . $name);
+
+            $userPhoto = public_path('img/profile/').$currentPhoto;
+
+            if (file_exists($userPhoto)) {
+                if ($userPhoto != public_path('img/profile/profile.png')) {
+                    @unlink($userPhoto);
+                }
+            }
+        }
+
+        $user->update([
+            'name' => $request['name'],
+            'email' => $request['email'],
+            'phone' => $request['phone'],
+            'password' => Hash::make($request['password']),
+            'bio' => $request['bio'],
+            'photo' => $name,
+            'address1' => $request['address1'],
+            'address2' => $request['address2'],
+            'postcode' => $request['postcode'],
+            'city' => $request['city'],
+            'province' => $request['province'],
+            'country' => $request['country'],
+        ]);
+        return ['message' => 'success'];
+        // return['message' => 'Successful'];
+    }
     /**
      * Update the specified resource in storage.
      *

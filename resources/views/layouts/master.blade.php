@@ -37,8 +37,8 @@
                     <div class="navbar-search-block">
                         <form class="form-inline">
                             <div class="input-group input-group-sm">
-                                <input class="form-control form-control-navbar" keyup.enter="searchit" v-model="search" type="search" placeholder="Search"
-                                    aria-label="Search">
+                                <input class="form-control form-control-navbar" keyup.enter="searchit" v-model="search"
+                                    type="search" placeholder="Search" aria-label="Search">
                                 <div class="input-group-append">
                                     <button class="btn btn-navbar" type="submit">
                                         <i class="fas fa-search"></i>
@@ -74,10 +74,11 @@
 
                 <div class="user-panel mt-3 pb-3 mb-3 d-flex">
                     <div class="image">
-                        <img src="dist/img/user2-160x160.jpg" class="img-circle elevation-2" alt="User Image">
+                        <img src="/img/profile/{{ Auth::user()->photo }}" class="img-circle elevation-2"
+                            alt="User Image">
                     </div>
                     <div class="info">
-                        <a href="#" class="d-block">Alexander Pierce</a>
+                        <router-link to="/profile" class="d-block">{{ Auth::user()->name }}</router-link>
                     </div>
                 </div>
 
@@ -97,41 +98,51 @@
                     <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu"
                         data-accordion="false">
 
+                        @cannot('isCustomer')
+                            <li class="nav-item">
+                                <router-link to="/dashboard" class="nav-link">
+                                    <i class="fa-solid fa-gauge-high nav-icon"></i>
+                                    <p>Dashboard</p>
+                                </router-link>
+                            </li>
+                        @endcannot
                         <li class="nav-item">
-                            <router-link to="/dashboard" class="nav-link">
-                                <i class="fa-solid fa-gauge-high nav-icon"></i>
-                                <p>Dashboard</p>
+                            <router-link to="/delivery" class="nav-link">
+                                <i class="fa-solid fa-truck-fast nav-icon"></i>
+                                <p>Delivery</p>
                             </router-link>
                         </li>
-                        <li class="nav-item">
-                            <a href="#" class="nav-link">
-                                <i class="nav-icon fas fa-users-gear"></i>
-                                <p>
-                                    Management
-                                    <i class="right fas fa-angle-left"></i>
-                                </p>
-                            </a>
-                            <ul class="nav nav-treeview">
-                                <li class="nav-item">
-                                    <router-link to="/staff" class="nav-link">
-                                        <i class="fa-solid fa-id-card nav-icon"></i>
-                                        <p>Staff</p>
-                                    </router-link>
-                                </li>
-                                <li class="nav-item">
-                                    <router-link to="/vehicles" class="nav-link">
-                                        <i class="fa-solid fa-van-shuttle nav-icon"></i>
-                                        <p>Vehicle</p>
-                                    </router-link>
-                                </li>
-                                <li class="nav-item">
-                                    <router-link to="/branches" class="nav-link">
-                                        <i class="fa-solid fa-city nav-icon"></i>
-                                        <p>Branches</p>
-                                    </router-link>
-                                </li>
-                            </ul>
-                        </li>
+                        @cannot('isCustomer')
+                            <li class="nav-item">
+                                <a href="#" class="nav-link">
+                                    <i class="nav-icon fas fa-users-gear"></i>
+                                    <p>
+                                        Management
+                                        <i class="right fas fa-angle-left"></i>
+                                    </p>
+                                </a>
+                                <ul class="nav nav-treeview">
+                                    <li class="nav-item">
+                                        <router-link to="/staff" class="nav-link">
+                                            <i class="fa-solid fa-id-card nav-icon"></i>
+                                            <p>Staff</p>
+                                        </router-link>
+                                    </li>
+                                    <li class="nav-item">
+                                        <router-link to="/vehicles" class="nav-link">
+                                            <i class="fa-solid fa-van-shuttle nav-icon"></i>
+                                            <p>Vehicle</p>
+                                        </router-link>
+                                    </li>
+                                    <li class="nav-item">
+                                        <router-link to="/branches" class="nav-link">
+                                            <i class="fa-solid fa-city nav-icon"></i>
+                                            <p>Branches</p>
+                                        </router-link>
+                                    </li>
+                                </ul>
+                            </li>
+                        @endcannot
                         <li class="nav-item">
                             <router-link to="/profile" class="nav-link">
                                 <i class="fa-solid fa-user nav-icon"></i>
@@ -139,14 +150,16 @@
                             </router-link>
                         </li>
 
+                        @cannot('isCustomer')
                         <li class="nav-item">
-                            <a href="#" class="nav-link">
-                                <i class="nav-icon fas fa-th"></i>
+                            <router-link to="/warehouse" class="nav-link">
+                                <i class="nav-icon fa-solid fa-warehouse"></i>
                                 <p>
-                                    Simple Link
+                                    Warehouse
                                 </p>
-                            </a>
+                            </router-li>
                         </li>
+                        @endcannot
                         <li class="nav-item">
                             <a class="nav-link" href="{{ route('logout') }}"
                                 onclick="event.preventDefault();

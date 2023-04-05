@@ -53059,6 +53059,10 @@ a.text-muted:hover {
   color: #adb5bd;
 }
 
+.bg-grey {
+  background-color: #adb5bd;
+}
+
 .pink {
   color: #d63384;
 }
@@ -53091,6 +53095,17 @@ a.text-muted:hover {
   color: white;
   border-radius: 5px;
   font-weight: 500;
+}
+
+.icon-size {
+  width: 30px;
+  height: 30px;
+  font-size: 50px;
+  padding-bottom: 0.5em;
+}
+
+.pointer {
+  cursor: pointer;
 }
 
 /*!
@@ -72742,10 +72757,5 @@ readers do not read off random characters that represent icons */
   100% {
     transform: rotate(360deg);
   }
-}
-
-.router-link-exact-active {
-  background: #adb5bd;
-  color: #fff;
 }
 

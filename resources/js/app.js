@@ -20,10 +20,10 @@ let routes = [
     { path: '/staff', component: require('./components/Staff.vue').default },
     { path: '/branches', component: require('./components/Branches.vue').default },
     { path: '/vehicles', component: require('./components/Vehicles.vue').default },
-    { path: '/dashboard', component: require('./components/Dashboard.vue').default },
-    { path: '/dashboard', component: require('./components/Dashboard.vue').default },
-    { path: '/dashboard', component: require('./components/Dashboard.vue').default },
-    { path: '/dashboard', component: require('./components/Dashboard.vue').default },
+    { path: '/delivery', component: require('./components/NewDelivery.vue').default },
+    { path: '/invoiceD', component: require('./components/Dashboard.vue').default },
+    { path: '/invoiceP', component: require('./components/Dashboard.vue').default },
+    { path: '/warehouse', component: require('./components/Warehouse.vue').default },
     { path: '/dashboard', component: require('./components/Dashboard.vue').default },
     { path: '/dashboard', component: require('./components/Dashboard.vue').default },
     { path: '/dashboard', component: require('./components/Dashboard.vue').default },
@@ -108,7 +108,20 @@ Vue.component('pagination', require('laravel-vue-semantic-ui-pagination'));
 // files.keys().map(key => Vue.component(key.split('/').pop().split('.')[0], files(key).default))
 
 Vue.component('example-component', require('./components/ExampleComponent.vue').default);
+Vue.component(
+    'passport-clients',
+    require('./components/passport/Clients.vue').default
+);
 
+Vue.component(
+    'passport-authorized-clients',
+    require('./components/passport/AuthorizedClients.vue').default
+);
+
+Vue.component(
+    'passport-personal-access-tokens',
+    require('./components/passport/PersonalAccessTokens.vue').default
+);
 /**
  * Next, we will create a fresh Vue application instance and attach it to
  * the page. Then, you may begin adding components to this application

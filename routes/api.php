@@ -21,14 +21,27 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 Route::apiResources(['user' => 'API\UserController']);
 Route::apiResources(['branch' => 'API\BranchController']);
 Route::apiResources(['vehicle' => 'API\VehicleController']);
+Route::apiResources(['dropOff' => 'API\DropOffController']);
+Route::apiResources(['pickUp' => 'API\PickUpController']);
+
+
+Route::get('invoice/{date}', 'API\DropOffController@invoice');
+Route::get('dropOffCount', 'API\DropOffController@count');
+
+Route::get('pickUpCount', 'API\PickUpController@count');
+
 Route::get('branches', 'API\VehicleController@branch');
+
+Route::get('Branches', 'API\DropOffController@branches');
+
+Route::get('dashboard', 'API\DashBoardController@index');
+
+Route::get('findUser', 'API\UserController@search');
 Route::get('findBranch', 'API\UserController@search');
 Route::get('profile', 'API\UserController@Profile');
 Route::put('profile', 'API\UserController@updateProfile');
-Route::get('findUser', 'API\UserController@search');
-Route::get('dashboard', 'API\DashBoardController@index');
-Route::get('invoice/{date}', 'API\DropOffController@invoice');
-Route::apiResources(['dropOff' => 'API\DropOffController']);
-Route::apiResources(['pickUp' => 'API\PickUpController']);
+
+
+
 Route::get('dropOffCount', 'API\DropOffController@count');
 Route::get('pickUpCount', 'API\PickUpController@count');
