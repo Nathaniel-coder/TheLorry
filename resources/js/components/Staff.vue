@@ -4,7 +4,8 @@
             <div class="container-fluid">
                 <div class="row mb-2">
                     <div class="col-sm-6">
-                        <h1>Staff Management</h1>
+                        <h1 v-show="profile.type=='Staff'">User Management</h1>
+                        <h1 v-show="profile.type=='Administrator'">Staff Management</h1>
                     </div>
                 </div>
             </div>
@@ -15,10 +16,11 @@
                     <div class="col-md-12">
                         <div class="card">
                             <div class="card-header">
-                                <h3 class="card-title">Staff</h3>
+                                <h3 class="card-title" v-show="profile.type=='Staff'">Users</h3>
+                                <h3 class="card-title" v-show="profile.type=='Administrator'">Staff</h3>
                                 <div class="card-tools">
-                                    <button class="btn bg-blue" type="button" data-toggle="modal"
-                                        data-target="#CreateEdit" @click="newModal()" toggle="tooltip" title="Create Staff">
+                                    <button class="btn bg-blue" type="button" data-toggle="modal" data-target="#CreateEdit"
+                                        @click="newModal()" toggle="tooltip" title="Create Staff">
                                         <i class="fa-solid fa-plus icon-btn-sm"></i>
                                     </button>
                                 </div>
@@ -40,27 +42,30 @@
                                     <tbody>
                                         <tr data-widget="table-hover" aria-expanded="false" v-for="user in users.data"
                                             :key="user.id">
-                                            <td class="text-capitalize">
-                                                {{ user.type.charAt(0) }}{{
-                                                    user.type.charAt(6) == "C"
-                                                        || user.type.charAt(6) == "F" || user.type.charAt(6) == "R"
-                                                        || user.type.charAt(6) == "O" || user.type.charAt(6) == "E" ?
-                                                        user.type.charAt(6) : ""
+                                            <td class="text-capitalize" v-show="user.type!='Customer' && user.type!='Merchant'">
+                                                {{ user.type.charAt(0) }}{{ user.type.charAt(6) == "F" || user.type.charAt(6)
+                                                    == "R"
+                                                    || user.type.charAt(6) == "O" || user.type.charAt(6) == "E" ?
+                                                    user.type.charAt(6) : ""
                                                 }}
                                                 {{ user.type.charAt(5) == "T" ? user.type.charAt(5) : "" }}-{{
                                                     user.id
                                                 }}
                                             </td>
+                                            <td v-show="user.type=='Customer' || user.type=='Merchant'"></td>
                                             <td>{{ user.name }}</td>
                                             <td>{{ user.email }}</td>
-                                            <td>{{ user.created_at | myDate }}</td>
+                                            <td v-show="user.type!='Customer'">{{ user.created_at | myDate }}</td>
+                                            <td v-show="user.type=='Customer'"></td>
                                             <td>{{ user.type | upText }}</td>
                                             <td>{{ user.branch }}</td>
                                             <td>
-                                                <button class="btn bg-orange" @click="editModal(user)" toggle="tooltip" title="Edit Staff">
+                                                <button class="btn bg-orange" @click="editModal(user)" toggle="tooltip"
+                                                    title="Edit Staff">
                                                     <i class="fa-solid fa-pen-to-square text-light"></i>
                                                 </button>
-                                                <button class="btn bg-red" @click="deleteUser(user.id)" toggle="tooltip" title="Delete Staff">
+                                                <button class="btn bg-red" @click="deleteUser(user.id)" toggle="tooltip"
+                                                    title="Delete Staff">
                                                     <i class="fa-solid fa-trash-can"></i>
                                                 </button>
                                             </td>
@@ -97,8 +102,8 @@
                         <div class="modal-body">
                             <div class="form-group">
                                 <label>Name</label>
-                                <input v-model="form.name" class="form-control" type="text" name="name"
-                                    placeholder="Name" :class="{ 'is-invalid': form.errors.has('name') }" />
+                                <input v-model="form.name" class="form-control" type="text" name="name" placeholder="Name"
+                                    :class="{ 'is-invalid': form.errors.has('name') }" />
                                 <div v-if="form.errors.has('name')" v-html="form.errors.get('name')"></div>
                             </div>
                             <div class="form-group">
@@ -122,6 +127,7 @@
                                     <option value="Staff">Staff</option>
                                     <option value="Part-Timer">Part-Timer</option>
                                     <option value="Driver">Driver</option>
+                                    <option value="Merchant">Merchant</option>
                                 </select>
                                 <div v-if="form.errors.has('type')" v-html="form.errors.get('type')"></div>
 
@@ -176,6 +182,7 @@ import Axios from 'axios';
 import pagination from 'laravel-vue-semantic-ui-pagination';
 
 export default {
+    props:['profile'],
     data() {
         return {
             editmode: false,
@@ -295,11 +302,11 @@ export default {
                     title: "Users found"
                 });
             }).catch(() => {
-                    Swal.fire({
+                Swal.fire({
                     icon: "Error",
                     title: "Users not found"
                 });
-                })
+            })
         })
         Fire.$on("AfterCreated", () => {
             this.loadusers();

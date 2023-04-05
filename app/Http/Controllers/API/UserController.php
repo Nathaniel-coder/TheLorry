@@ -23,7 +23,13 @@ class UserController extends Controller
      */
     public function index()
     {
-        return User::where('type' ,'!=', 'Customer')->orderByRaw('created_at', 'Desc')->paginate(5);
+        $user = auth('api')->user();
+        $type=$user->type;
+        if($type!="Staff" && $type!="Driver"){
+            return User::where('type' ,'!=', 'Customer')->orderByRaw('created_at', 'Desc')->paginate(5);
+        }
+
+        return User::orderByRaw('created_at', 'Desc')->paginate(5);
     }
 
     /**
@@ -55,16 +61,15 @@ class UserController extends Controller
     public function search()
     {
         if($search = \Request::get('q')){
-            $users = User::where(function($query) use ($search){
+            return User::where(function($query) use ($search){
                 $query->where('name', 'LIKE', "%$search%")
                 ->orWhere('email', 'Like', "%$search%")
                 ->orWhere('type', 'Like', "%$search%");
             })->paginate(5);
 
         }else{
-            $users = User::where('type' ,'!=', 'Customer')->latest()->paginate(5);
+            return User::where('type' ,'!=', 'Customer')->latest()->paginate(5);
         }
-        return $users;
 
     }
 
@@ -92,7 +97,6 @@ class UserController extends Controller
         $this->validate($request, [
             'name' => 'required',
             'email' => 'required|string|email|max:191|unique:users,email,' . $user->id,
-            'password' => 'required|string|min:8',
             'phone' => 'required|string|max:15',
             'photo' => 'required',
             'address1' => 'required|string|max:191',
@@ -124,7 +128,6 @@ class UserController extends Controller
             'name' => $request['name'],
             'email' => $request['email'],
             'phone' => $request['phone'],
-            'password' => Hash::make($request['password']),
             'bio' => $request['bio'],
             'photo' => $name,
             'address1' => $request['address1'],

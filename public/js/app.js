@@ -2380,6 +2380,7 @@ __webpack_require__.r(__webpack_exports__);
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
+  props: ['profile'],
   data: function data() {
     return {
       editmode: false,
@@ -5793,7 +5794,29 @@ __webpack_require__.r(__webpack_exports__);
 var render = function render() {
   var _vm = this,
     _c = _vm._self._c;
-  return _c("div", [_vm._m(0), _vm._v(" "), _c("div", {
+  return _c("div", [_c("section", {
+    staticClass: "content-header"
+  }, [_c("div", {
+    staticClass: "container-fluid"
+  }, [_c("div", {
+    staticClass: "row mb-2"
+  }, [_c("div", {
+    staticClass: "col-sm-6"
+  }, [_c("h1", {
+    directives: [{
+      name: "show",
+      rawName: "v-show",
+      value: _vm.profile.type == "Staff",
+      expression: "profile.type=='Staff'"
+    }]
+  }, [_vm._v("User Management")]), _vm._v(" "), _c("h1", {
+    directives: [{
+      name: "show",
+      rawName: "v-show",
+      value: _vm.profile.type == "Administrator",
+      expression: "profile.type=='Administrator'"
+    }]
+  }, [_vm._v("Staff Management")])])])])]), _vm._v(" "), _c("div", {
     staticClass: "container"
   }, [_c("div", {
     staticClass: "justify-content-center"
@@ -5806,6 +5829,20 @@ var render = function render() {
   }, [_c("div", {
     staticClass: "card-header"
   }, [_c("h3", {
+    directives: [{
+      name: "show",
+      rawName: "v-show",
+      value: _vm.profile.type == "Staff",
+      expression: "profile.type=='Staff'"
+    }],
+    staticClass: "card-title"
+  }, [_vm._v("Users")]), _vm._v(" "), _c("h3", {
+    directives: [{
+      name: "show",
+      rawName: "v-show",
+      value: _vm.profile.type == "Administrator",
+      expression: "profile.type=='Administrator'"
+    }],
     staticClass: "card-title"
   }, [_vm._v("Staff")]), _vm._v(" "), _c("div", {
     staticClass: "card-tools"
@@ -5829,7 +5866,7 @@ var render = function render() {
     staticClass: "card-body table-responsive p-0"
   }, [_c("table", {
     staticClass: "table table-hover text-wrap"
-  }, [_vm._m(1), _vm._v(" "), _c("tbody", _vm._l(_vm.users.data, function (user) {
+  }, [_vm._m(0), _vm._v(" "), _c("tbody", _vm._l(_vm.users.data, function (user) {
     return _c("tr", {
       key: user.id,
       attrs: {
@@ -5837,8 +5874,35 @@ var render = function render() {
         "aria-expanded": "false"
       }
     }, [_c("td", {
+      directives: [{
+        name: "show",
+        rawName: "v-show",
+        value: user.type != "Customer" && user.type != "Merchant",
+        expression: "user.type!='Customer' && user.type!='Merchant'"
+      }],
       staticClass: "text-capitalize"
-    }, [_vm._v("\n                                            " + _vm._s(user.type.charAt(0)) + _vm._s(user.type.charAt(6) == "C" || user.type.charAt(6) == "F" || user.type.charAt(6) == "R" || user.type.charAt(6) == "O" || user.type.charAt(6) == "E" ? user.type.charAt(6) : "") + "\n                                            " + _vm._s(user.type.charAt(5) == "T" ? user.type.charAt(5) : "") + "-" + _vm._s(user.id) + "\n                                        ")]), _vm._v(" "), _c("td", [_vm._v(_vm._s(user.name))]), _vm._v(" "), _c("td", [_vm._v(_vm._s(user.email))]), _vm._v(" "), _c("td", [_vm._v(_vm._s(_vm._f("myDate")(user.created_at)))]), _vm._v(" "), _c("td", [_vm._v(_vm._s(_vm._f("upText")(user.type)))]), _vm._v(" "), _c("td", [_vm._v(_vm._s(user.branch))]), _vm._v(" "), _c("td", [_c("button", {
+    }, [_vm._v("\n                                            " + _vm._s(user.type.charAt(0)) + _vm._s(user.type.charAt(6) == "F" || user.type.charAt(6) == "R" || user.type.charAt(6) == "O" || user.type.charAt(6) == "E" ? user.type.charAt(6) : "") + "\n                                            " + _vm._s(user.type.charAt(5) == "T" ? user.type.charAt(5) : "") + "-" + _vm._s(user.id) + "\n                                        ")]), _vm._v(" "), _c("td", {
+      directives: [{
+        name: "show",
+        rawName: "v-show",
+        value: user.type == "Customer" || user.type == "Merchant",
+        expression: "user.type=='Customer' || user.type=='Merchant'"
+      }]
+    }), _vm._v(" "), _c("td", [_vm._v(_vm._s(user.name))]), _vm._v(" "), _c("td", [_vm._v(_vm._s(user.email))]), _vm._v(" "), _c("td", {
+      directives: [{
+        name: "show",
+        rawName: "v-show",
+        value: user.type != "Customer",
+        expression: "user.type!='Customer'"
+      }]
+    }, [_vm._v(_vm._s(_vm._f("myDate")(user.created_at)))]), _vm._v(" "), _c("td", {
+      directives: [{
+        name: "show",
+        rawName: "v-show",
+        value: user.type == "Customer",
+        expression: "user.type=='Customer'"
+      }]
+    }), _vm._v(" "), _c("td", [_vm._v(_vm._s(_vm._f("upText")(user.type)))]), _vm._v(" "), _c("td", [_vm._v(_vm._s(user.branch))]), _vm._v(" "), _c("td", [_c("button", {
       staticClass: "btn bg-orange",
       attrs: {
         toggle: "tooltip",
@@ -5919,7 +5983,7 @@ var render = function render() {
     attrs: {
       id: "staticBackdropLabel"
     }
-  }, [_vm._v("\n                        Update Staff\n                    ")]), _vm._v(" "), _vm._m(2)]), _vm._v(" "), _c("form", {
+  }, [_vm._v("\n                        Update Staff\n                    ")]), _vm._v(" "), _vm._m(1)]), _vm._v(" "), _c("form", {
     on: {
       submit: function submit($event) {
         $event.preventDefault();
@@ -6068,7 +6132,11 @@ var render = function render() {
     attrs: {
       value: "Driver"
     }
-  }, [_vm._v("Driver")])]), _vm._v(" "), _vm.form.errors.has("type") ? _c("div", {
+  }, [_vm._v("Driver")]), _vm._v(" "), _c("option", {
+    attrs: {
+      value: "Merchant"
+    }
+  }, [_vm._v("Merchant")])]), _vm._v(" "), _vm.form.errors.has("type") ? _c("div", {
     domProps: {
       innerHTML: _vm._s(_vm.form.errors.get("type"))
     }
@@ -6181,18 +6249,6 @@ var render = function render() {
   }, [_vm._v("\n                                Update\n                            ")])])])])])])])]);
 };
 var staticRenderFns = [function () {
-  var _vm = this,
-    _c = _vm._self._c;
-  return _c("section", {
-    staticClass: "content-header"
-  }, [_c("div", {
-    staticClass: "container-fluid"
-  }, [_c("div", {
-    staticClass: "row mb-2"
-  }, [_c("div", {
-    staticClass: "col-sm-6"
-  }, [_c("h1", [_vm._v("Staff Management")])])])])]);
-}, function () {
   var _vm = this,
     _c = _vm._self._c;
   return _c("thead", [_c("tr", [_c("th", [_vm._v("Staff ID")]), _vm._v(" "), _c("th", [_vm._v("Name")]), _vm._v(" "), _c("th", [_vm._v("Email")]), _vm._v(" "), _c("th", [_vm._v("Date Joined")]), _vm._v(" "), _c("th", [_vm._v("Status")]), _vm._v(" "), _c("th", [_vm._v("Branch")]), _vm._v(" "), _c("th", [_vm._v("Action")])])]);

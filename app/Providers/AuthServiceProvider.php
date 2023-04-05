@@ -41,6 +41,9 @@ class AuthServiceProvider extends ServiceProvider
         Gate::define('isDriver', function ($user) {
             return $user->type === 'Driver';
         });
+        Gate::define('isMerchant', function ($user) {
+            return $user->type === 'Merchant';
+        });
 
         Passport::routes();
         //

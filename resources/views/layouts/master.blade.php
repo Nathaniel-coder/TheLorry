@@ -37,10 +37,10 @@
                     <div class="navbar-search-block">
                         <form class="form-inline">
                             <div class="input-group input-group-sm">
-                                <input class="form-control form-control-navbar" keyup.enter="searchit" v-model="search"
+                                <input class="form-control form-control-navbar" @keyup.enter="searchit" v-model="search"
                                     type="search" placeholder="Search" aria-label="Search">
                                 <div class="input-group-append">
-                                    <button class="btn btn-navbar" type="submit">
+                                    <button class="btn btn-navbar" type="submit" @click="searchit">
                                         <i class="fas fa-search"></i>
                                     </button>
                                     <button class="btn btn-navbar" type="button" data-widget="navbar-search">
@@ -180,7 +180,7 @@
         </aside>
 
         <div class="content-wrapper">
-            <router-view></router-view>
+            <router-view :profile="{{ Auth::user() }}"></router-view>
         </div>
 
 
