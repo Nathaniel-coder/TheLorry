@@ -98,21 +98,21 @@
                     <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu"
                         data-accordion="false">
 
-                        @cannot('isCustomer')
+                        @can('isAdministrator')
                             <li class="nav-item">
                                 <router-link to="/dashboard" class="nav-link">
                                     <i class="fa-solid fa-gauge-high nav-icon"></i>
                                     <p>Dashboard</p>
                                 </router-link>
                             </li>
-                        @endcannot
+                        @endcan
                         <li class="nav-item">
                             <router-link to="/delivery" class="nav-link">
                                 <i class="fa-solid fa-truck-fast nav-icon"></i>
                                 <p>Delivery</p>
                             </router-link>
                         </li>
-                        @cannot('isCustomer')
+                        @can('isAdministrator')
                             <li class="nav-item">
                                 <a href="#" class="nav-link">
                                     <i class="nav-icon fas fa-users-gear"></i>
@@ -142,7 +142,7 @@
                                     </li>
                                 </ul>
                             </li>
-                        @endcannot
+                        @endcan
                         <li class="nav-item">
                             <router-link to="/profile" class="nav-link">
                                 <i class="fa-solid fa-user nav-icon"></i>
@@ -150,7 +150,6 @@
                             </router-link>
                         </li>
 
-                        @cannot('isCustomer')
                         <li class="nav-item">
                             <router-link to="/warehouse" class="nav-link">
                                 <i class="nav-icon fa-solid fa-warehouse"></i>
@@ -159,7 +158,6 @@
                                 </p>
                             </router-li>
                         </li>
-                        @endcannot
                         <li class="nav-item">
                             <a class="nav-link" href="{{ route('logout') }}"
                                 onclick="event.preventDefault();

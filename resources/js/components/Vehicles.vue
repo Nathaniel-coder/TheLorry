@@ -124,7 +124,7 @@
                                     <option selected v-show="form.situated">{{ form.situated ? form.situated : "" }}</option>
                                     <option v-for="branch in branches" :key="branch.id">{{ branch.branch }} {{ branch.city }},{{ branch.province }},{{ branch.country }}</option>
                                 </select>
-                                <div v-if="form.errors.has('type')" v-html="form.errors.get('type')"></div>
+                                <div v-if="form.errors.has('situated')" v-html="form.errors.get('situated')"></div>
 
                             </div>
                             <div class="form-group">

@@ -23,6 +23,7 @@ Route::apiResources(['branch' => 'API\BranchController']);
 Route::apiResources(['vehicle' => 'API\VehicleController']);
 Route::apiResources(['dropOff' => 'API\DropOffController']);
 Route::apiResources(['pickUp' => 'API\PickUpController']);
+Route::apiResources(['shop' => 'API\ShopController']);
 
 
 Route::get('invoice/{date}', 'API\DropOffController@invoice');
@@ -39,6 +40,7 @@ Route::get('dashboard', 'API\DashBoardController@index');
 Route::get('findUser', 'API\UserController@search');
 Route::get('findBranch', 'API\UserController@search');
 Route::get('profile', 'API\UserController@Profile');
+Route::get('shop', 'API\UserController@Shop');
 Route::put('profile', 'API\UserController@updateProfile');
 
 

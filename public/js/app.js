@@ -2266,6 +2266,7 @@ __webpack_require__.r(__webpack_exports__);
       pickUpCount: '',
       dropOffCount: '',
       user: {},
+      shop: {},
       form: new vform__WEBPACK_IMPORTED_MODULE_1__["Form"]({
         id: "",
         name: "",
@@ -2696,9 +2697,95 @@ __webpack_require__.r(__webpack_exports__);
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
+/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! axios */ "./node_modules/axios/index.js");
+/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(axios__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var sweetalert2__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! sweetalert2 */ "./node_modules/sweetalert2/dist/sweetalert2.all.js");
+/* harmony import */ var sweetalert2__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(sweetalert2__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var vform__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! vform */ "./node_modules/vform/dist/vform.es.js");
+
+
+
 /* harmony default export */ __webpack_exports__["default"] = ({
+  props: ['profile'],
+  data: function data() {
+    return {
+      user: {},
+      branches: {},
+      form: new vform__WEBPACK_IMPORTED_MODULE_2__["Form"]({
+        id: '',
+        category: '',
+        quantity: '',
+        weight: '',
+        height: '',
+        length: '',
+        width: '',
+        shopname: '',
+        niche: '',
+        companyliscence: '',
+        branchid: ''
+      })
+    };
+  },
+  methods: {
+    confirm: function confirm() {
+      if (this.profile.type == "Customer") {
+        sweetalert2__WEBPACK_IMPORTED_MODULE_1___default.a.fire({
+          title: "Wait!",
+          text: "You are not a Merchant yet!",
+          icon: "warning",
+          showCancelButton: true,
+          confirmButtonColor: "#0d6efd",
+          cancelButtonColor: "#d33",
+          confirmButtonText: "Sign me Up!"
+        }).then(function (result) {
+          if (result.isConfirmed) {
+            $("#Create").modal("show");
+          }
+        });
+      }
+    },
+    newMerchant: function newMerchant() {
+      var _this = this;
+      this.form.post("api/shop").then(function () {
+        sweetalert2__WEBPACK_IMPORTED_MODULE_1___default.a.fire({
+          position: "center",
+          icon: "success",
+          title: _this.form.name + "'s",
+          text: "Information has been updated",
+          showConfirmButton: true,
+          timer: 1500
+        });
+        _this.$Progress.finish();
+        Fire.$emit("AfterCreated");
+        $("#Create").modal("hide");
+      })["catch"](function () {
+        sweetalert2__WEBPACK_IMPORTED_MODULE_1___default.a.fire({
+          icon: "error",
+          title: "Oops...",
+          text: "Something went wrong!"
+        });
+        _this.$Progress.fail();
+      });
+    }
+  },
   mounted: function mounted() {
     console.log('Component mounted.');
+  },
+  created: function created() {
+    var _this2 = this;
+    axios.get("api/profile").then(function (_ref) {
+      var data = _ref.data;
+      return _this2.user = data;
+    });
+    axios__WEBPACK_IMPORTED_MODULE_0___default.a.get("api/profile").then(function (_ref2) {
+      var data = _ref2.data;
+      return _this2.form.fill(data);
+    });
+    axios.get("api/branches").then(function (_ref3) {
+      var data = _ref3.data;
+      return _this2.branches = data;
+    });
+    this.confirm();
   }
 });
 
@@ -6612,9 +6699,9 @@ var render = function render() {
     return _c("option", {
       key: branch.id
     }, [_vm._v(_vm._s(branch.branch) + " " + _vm._s(branch.city) + "," + _vm._s(branch.province) + "," + _vm._s(branch.country))]);
-  })], 2), _vm._v(" "), _vm.form.errors.has("type") ? _c("div", {
+  })], 2), _vm._v(" "), _vm.form.errors.has("situated") ? _c("div", {
     domProps: {
-      innerHTML: _vm._s(_vm.form.errors.get("type"))
+      innerHTML: _vm._s(_vm.form.errors.get("situated"))
     }
   }) : _vm._e()]), _vm._v(" "), _c("div", {
     staticClass: "form-group"
@@ -6726,24 +6813,291 @@ __webpack_require__.r(__webpack_exports__);
 var render = function render() {
   var _vm = this,
     _c = _vm._self._c;
-  return _vm._m(0);
+  return _c("div", [_vm._m(0), _vm._v(" "), _c("div", {
+    directives: [{
+      name: "show",
+      rawName: "v-show",
+      value: _vm.user.type == "Customer",
+      expression: "user.type == 'Customer'"
+    }],
+    staticClass: "container"
+  }, [_vm._m(1)]), _vm._v(" "), _c("div", {
+    directives: [{
+      name: "show",
+      rawName: "v-show",
+      value: _vm.user.type != "Customer",
+      expression: "user.type != 'Customer'"
+    }],
+    staticClass: "container"
+  }, [_vm._m(2)]), _vm._v(" "), _c("div", {
+    staticClass: "modal fade",
+    attrs: {
+      id: "Create",
+      "data-backdrop": "static",
+      "data-keyboard": "false",
+      tabindex: "-1",
+      "aria-labelledby": "staticBackdropLabel",
+      "aria-hidden": "true"
+    }
+  }, [_c("div", {
+    staticClass: "modal-dialog"
+  }, [_c("div", {
+    staticClass: "modal-content"
+  }, [_vm._m(3), _vm._v(" "), _c("form", {
+    on: {
+      submit: function submit($event) {
+        $event.preventDefault();
+        return _vm.newMerchant();
+      }
+    }
+  }, [_c("div", {
+    staticClass: "modal-body"
+  }, [_c("div", {
+    staticClass: "form-group"
+  }, [_c("label", [_vm._v("Shop Name")]), _vm._v(" "), _c("input", {
+    directives: [{
+      name: "model",
+      rawName: "v-model",
+      value: _vm.form.shopname,
+      expression: "form.shopname"
+    }],
+    staticClass: "form-control",
+    "class": {
+      "is-invalid": _vm.form.errors.has("shopname")
+    },
+    attrs: {
+      type: "text",
+      name: "shopname",
+      placeholder: "Shop Name"
+    },
+    domProps: {
+      value: _vm.form.shopname
+    },
+    on: {
+      input: function input($event) {
+        if ($event.target.composing) return;
+        _vm.$set(_vm.form, "shopname", $event.target.value);
+      }
+    }
+  }), _vm._v(" "), _vm.form.errors.has("shopname") ? _c("div", {
+    domProps: {
+      innerHTML: _vm._s(_vm.form.errors.get("shopname"))
+    }
+  }) : _vm._e()]), _vm._v(" "), _c("div", {
+    staticClass: "form-group"
+  }, [_c("label", [_vm._v("Niche")]), _vm._v(" "), _c("select", {
+    directives: [{
+      name: "model",
+      rawName: "v-model",
+      value: _vm.form.niche,
+      expression: "form.niche"
+    }],
+    staticClass: "form-control",
+    "class": {
+      "is-invalid": _vm.form.errors.has("niche")
+    },
+    attrs: {
+      "aria-label": "Default select example",
+      name: "niche"
+    },
+    on: {
+      change: function change($event) {
+        var $$selectedVal = Array.prototype.filter.call($event.target.options, function (o) {
+          return o.selected;
+        }).map(function (o) {
+          var val = "_value" in o ? o._value : o.value;
+          return val;
+        });
+        _vm.$set(_vm.form, "niche", $event.target.multiple ? $$selectedVal : $$selectedVal[0]);
+      }
+    }
+  }, [_c("option", {
+    attrs: {
+      selected: ""
+    }
+  }, [_vm._v(_vm._s(_vm.form.niche))]), _vm._v(" "), _c("option", {
+    attrs: {
+      value: "Acne and Skin Care"
+    }
+  }, [_vm._v("Acne and Skin Care")]), _vm._v(" "), _c("option", {
+    attrs: {
+      value: "Books and Fiction"
+    }
+  }, [_vm._v("Books and Fiction")]), _vm._v(" "), _c("option", {
+    attrs: {
+      value: "Cooking Utensils"
+    }
+  }, [_vm._v("Cooking Utensils")]), _vm._v(" "), _c("option", {
+    attrs: {
+      value: "Fashion and Accessories"
+    }
+  }, [_vm._v("Fashion and Accessories")]), _vm._v(" "), _c("option", {
+    attrs: {
+      value: "Makeup and Beauty"
+    }
+  }, [_vm._v("Makeup and Beauty")]), _vm._v(" "), _c("option", {
+    attrs: {
+      value: "Outdoors and Hiking"
+    }
+  }, [_vm._v("Outdoors and Hiking")]), _vm._v(" "), _c("option", {
+    attrs: {
+      value: "Pets and Animal Care"
+    }
+  }, [_vm._v("Pets and Animal Care")]), _vm._v(" "), _c("option", {
+    attrs: {
+      value: "Technology and Gadgets"
+    }
+  }, [_vm._v("Technology and Gadgets")])]), _vm._v(" "), _vm.form.errors.has("niche") ? _c("div", {
+    domProps: {
+      innerHTML: _vm._s(_vm.form.errors.get("niche"))
+    }
+  }) : _vm._e()]), _vm._v(" "), _c("div", {
+    staticClass: "form-group"
+  }, [_c("label", [_vm._v("Company Liscence")]), _vm._v(" "), _c("input", {
+    directives: [{
+      name: "model",
+      rawName: "v-model",
+      value: _vm.form.companyliscence,
+      expression: "form.companyliscence"
+    }],
+    staticClass: "form-control",
+    "class": {
+      "is-invalid": _vm.form.errors.has("companyliscence")
+    },
+    attrs: {
+      type: "text",
+      name: "companyliscence",
+      placeholder: "Company Liscence"
+    },
+    domProps: {
+      value: _vm.form.companyliscence
+    },
+    on: {
+      input: function input($event) {
+        if ($event.target.composing) return;
+        _vm.$set(_vm.form, "companyliscence", $event.target.value);
+      }
+    }
+  }), _vm._v(" "), _vm.form.errors.has("companyliscence") ? _c("div", {
+    domProps: {
+      innerHTML: _vm._s(_vm.form.errors.get("companyliscence"))
+    }
+  }) : _vm._e()]), _vm._v(" "), _c("div", {
+    staticClass: "form-group"
+  }, [_c("label", [_vm._v("Situated")]), _vm._v(" "), _c("select", {
+    directives: [{
+      name: "model",
+      rawName: "v-model",
+      value: _vm.form.branchid,
+      expression: "form.branchid"
+    }],
+    staticClass: "form-control",
+    "class": {
+      "is-invalid": _vm.form.errors.has("branchid")
+    },
+    attrs: {
+      "aria-label": "Default select example"
+    },
+    on: {
+      change: function change($event) {
+        var $$selectedVal = Array.prototype.filter.call($event.target.options, function (o) {
+          return o.selected;
+        }).map(function (o) {
+          var val = "_value" in o ? o._value : o.value;
+          return val;
+        });
+        _vm.$set(_vm.form, "branchid", $event.target.multiple ? $$selectedVal : $$selectedVal[0]);
+      }
+    }
+  }, [_c("option", {
+    directives: [{
+      name: "show",
+      rawName: "v-show",
+      value: _vm.form.branchid,
+      expression: "form.branchid"
+    }],
+    attrs: {
+      selected: ""
+    }
+  }, [_vm._v(_vm._s(_vm.form.branchid ? _vm.form.branchid : "") + "\n                                ")]), _vm._v(" "), _vm._l(_vm.branches, function (branch) {
+    return _c("option", {
+      key: branch.id
+    }, [_vm._v(_vm._s(branch.branch) + " " + _vm._s(branch.city) + "," + _vm._s(branch.province) + "," + _vm._s(branch.country))]);
+  })], 2), _vm._v(" "), _vm.form.errors.has("branchid") ? _c("div", {
+    domProps: {
+      innerHTML: _vm._s(_vm.form.errors.get("branchid"))
+    }
+  }) : _vm._e()]), _vm._v(" "), _vm._m(4)])])])])])]);
 };
 var staticRenderFns = [function () {
   var _vm = this,
     _c = _vm._self._c;
+  return _c("section", {
+    staticClass: "content-header"
+  }, [_c("div", {
+    staticClass: "container-fluid"
+  }, [_c("div", {
+    staticClass: "row mb-2"
+  }, [_c("div", {
+    staticClass: "col-sm-6"
+  }, [_c("h1", [_vm._v("Warehouse")])])])])]);
+}, function () {
+  var _vm = this,
+    _c = _vm._self._c;
   return _c("div", {
-    staticClass: "container"
+    staticClass: "d-flex justify-content-center align-items-center"
+  }, [_c("h3", [_vm._v("You are not a Merchant yet!")])]);
+}, function () {
+  var _vm = this,
+    _c = _vm._self._c;
+  return _c("div", {
+    staticClass: "justify-content-center"
   }, [_c("div", {
-    staticClass: "row justify-content-center"
+    staticClass: "row"
   }, [_c("div", {
-    staticClass: "col-md-8"
+    staticClass: "col-md-12"
   }, [_c("div", {
     staticClass: "card"
-  }, [_c("div", {
-    staticClass: "card-header"
-  }, [_vm._v("Example Component")]), _vm._v(" "), _c("div", {
-    staticClass: "card-body"
-  }, [_vm._v("\n                    I'm an example component.\n                ")])])])])]);
+  })])])]);
+}, function () {
+  var _vm = this,
+    _c = _vm._self._c;
+  return _c("div", {
+    staticClass: "modal-header"
+  }, [_c("h5", {
+    staticClass: "modal-title",
+    attrs: {
+      id: "staticBackdropLabel"
+    }
+  }, [_vm._v("\n                        Sign Up\n                    ")]), _vm._v(" "), _c("button", {
+    staticClass: "close",
+    attrs: {
+      type: "button",
+      "data-dismiss": "modal",
+      "aria-label": "Close"
+    }
+  }, [_c("span", {
+    attrs: {
+      "aria-hidden": "true"
+    }
+  }, [_vm._v("×")])])]);
+}, function () {
+  var _vm = this,
+    _c = _vm._self._c;
+  return _c("div", {
+    staticClass: "d-flex justify-content-end"
+  }, [_c("button", {
+    staticClass: "btn btn-secondary mx-2",
+    attrs: {
+      type: "button",
+      "data-dismiss": "modal"
+    }
+  }, [_vm._v("\n                                Close\n                            ")]), _vm._v(" "), _c("button", {
+    staticClass: "btn bg-blue",
+    attrs: {
+      type: "submit"
+    }
+  }, [_vm._v("\n                                Create\n                            ")])]);
 }];
 render._withStripped = true;
 

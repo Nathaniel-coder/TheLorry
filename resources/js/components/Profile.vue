@@ -263,6 +263,7 @@ export default {
             pickUpCount: '',
             dropOffCount: '',
             user:{},
+            shop:{},
             form: new Form({
                 id: "",
                 name: "",
@@ -336,7 +337,7 @@ export default {
         },
         RIC(){
             window.location.href = "receipt&Invoice"
-        }
+        },
     },
     created() {
         Axios.get("api/profile").then(({ data }) => this.form.fill(data));

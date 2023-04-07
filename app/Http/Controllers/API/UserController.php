@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API;
 use App\User;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Shop;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Http\File;
 use Illuminate\Support\Facades\Storage;
@@ -79,10 +80,12 @@ class UserController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
-    {
-        //
-    }
+    // public function Shop()
+    // {
+    //     $user = auth('api')->user()->id;
+    //     $shop = Shop::where('userId', '=', $user)->get();
+    //     return $shop;
+    // }
 
     public function Profile()
     {
