@@ -20,12 +20,142 @@
                 <div class="row">
                     <div class="col-md-12">
                         <div class="card">
+                            <div class="card-header">
+                                <h3 class="card-title">Vehicles</h3>
+                                <div class="card-tools">
+                                    <button class="btn bg-blue" type="button" data-toggle="modal" data-target="#CreateEdit"
+                                        @click="newModal()" toggle="tooltip" title="Create Staff">
+                                        <i class="fa-solid fa-plus icon-btn-sm"></i>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="card-body table-responsive p-0">
+                                <table class="table table-hover text-nowrap">
+                                    <thead>
+                                        <tr>
+                                            <th>Plate Number</th>
+                                            <th>Brand</th>
+                                            <th>Model</th>
+                                            <th>Category</th>
+                                            <th>Year</th>
+                                            <th>Situated</th>
+                                            <th>Availability</th>
+                                            <th>Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td>
+                                                <button class="btn bg-orange" toggle="tooltip" title="Edit Staff"
+                                                    @click="editModal()">
+                                                    <i class="fa-solid fa-pen-to-square text-light"></i>
+                                                </button>
+                                                <button class="btn bg-red" toggle="tooltip" title="Delete Staff"
+                                                    @click="deleteItem()">
+                                                    <i class="fa-solid fa-trash-can"></i>
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="card-footer" v-show="items">
+                                <pagination class="nav-item" :data="items" @change-page="getResults"></pagination>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
 
+        <div class="modal fade" id="CreateEdit" data-backdrop="static" data-keyboard="false" tabindex="-1"
+        aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" v-show="!editmode" id="staticBackdropLabel">
+                        Create new Branch
+                    </h5>
+                    <h5 class="modal-title" v-show="editmode" id="staticBackdropLabel">
+                        Update Branch
+                    </h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <form @submit.prevent="editmode ? updateItem() : createItem()">
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label>Name</label>
+                            <input v-model="form.name" class="form-control" type="text" name="name"
+                                placeholder="Name" :class="{ 'is-invalid': form.errors.has('name') }" />
+                            <div v-if="form.errors.has('name')" v-html="form.errors.get('name')"></div>
+                        </div>
+                        <div class="form-group">
+                            <label>Category</label>
+                            <input v-model="form.category" class="form-control" type="text" name="category"
+                                placeholder="Category" :class="{ 'is-invalid': form.errors.has('category') }" />
+                            <div v-if="form.errors.has('category')" v-html="form.errors.get('category')"></div>
+                        </div>
+                        <div class="form-group">
+                            <label>Quantity</label>
+                            <input v-model="form.quantity" class="form-control" type="text" name="quantity"
+                            placeholder="Quantity" :class="{ 'is-invalid': form.errors.has('quantity') }" />
+                        <div v-if="form.errors.has('quantity')" v-html="form.errors.get('quantity')"></div>
+                        </div>
+                        <div class="form-group">
+                            <label>Weight</label>
+                            <input v-model="form.weight" class="form-control" type="text" name="weight"
+                                placeholder="Weight(kg)" :class="{ 'is-invalid': form.errors.has('weight') }" />
+                            <div v-if="form.errors.has('weight')" v-html="form.errors.get('weight')"></div>
+                        </div>
+                        <div class="form-group">
+                            <label>Height</label>
+                            <input v-model="form.height" class="form-control" type="text" name="height"
+                            placeholder="Height(cm)" :class="{ 'is-invalid': form.errors.has('height') }" />
+                        <div v-if="form.errors.has('height')" v-html="form.errors.get('height')"></div>
+                        </div>
+                        <div class="form-group">
+                            <label>Length</label>
+                            <input v-model="form.length" class="form-control" type="text" name="length"
+                            placeholder="length(cm)" :class="{ 'is-invalid': form.errors.has('length') }" />
+                        <div v-if="form.errors.has('length')" v-html="form.errors.get('length')"></div>
+                        </div>
+                        <div class="form-group">
+                            <label>width</label>
+                            <input v-model="form.width" class="form-control" type="text" name="width"
+                            placeholder="width(cm)" :class="{ 'is-invalid': form.errors.has('width') }" />
+                        </div>
+                        <div class="form-group">
+                            <label>RM</label>
+                            <input v-model="form.price" class="form-control" type="text" name="price"
+                            placeholder="Price" :class="{ 'is-invalid': form.errors.has('price') }" pattern="^\d*(\.\d{0,2})?$"/>
+                        </div>
+
+                        <div class="d-flex justify-content-end">
+                            <button type="button" class="btn btn-secondary mx-2" data-dismiss="modal">
+                                Close
+                            </button>
+                            <button v-show="!editmode" type="submit" class="btn bg-blue">
+                                Create
+                            </button>
+                            <button v-show="editmode" type="submit" class="btn bg-blue">
+                                Update
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
 
         <div class="modal fade" id="Create" data-backdrop="static" data-keyboard="false" tabindex="-1"
             aria-labelledby="staticBackdropLabel" aria-hidden="true">
@@ -106,16 +236,20 @@ export default {
     props: ['profile'],
     data() {
         return {
+            editmode : false,
             user: {},
             branches: {},
+            items: {},
             form: new Form({
                 id: '',
+                name: '',
                 category: '',
                 quantity: '',
                 weight: '',
                 height: '',
                 length: '',
                 width: '',
+                price: '',
                 shopname: '',
                 niche: '',
                 companyliscence: '',

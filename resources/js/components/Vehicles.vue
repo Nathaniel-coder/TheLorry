@@ -61,8 +61,8 @@
                                     </tbody>
                                 </table>
                             </div>
-                            <div class="card-footer" v-show="branches">
-                                <pagination class="nav-item" :data="branches" @change-page="getResults"></pagination>
+                            <div class="card-footer" v-show="vehicles">
+                                <pagination class="nav-item" :data="vehicles" @change-page="getResults"></pagination>
                             </div>
                         </div>
 
@@ -294,7 +294,7 @@ export default {
         })
         Fire.$on("AfterCreated", () => {
             this.loadVehicles();
-        });;
+        });
         this.loadVehicles();
         this.loadBranches();
         getResults(page);

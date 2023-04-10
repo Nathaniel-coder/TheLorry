@@ -24,6 +24,7 @@ Route::apiResources(['vehicle' => 'API\VehicleController']);
 Route::apiResources(['dropOff' => 'API\DropOffController']);
 Route::apiResources(['pickUp' => 'API\PickUpController']);
 Route::apiResources(['shop' => 'API\ShopController']);
+Route::apiResources(['warehouse' => 'API\WarehouseController']);
 
 
 Route::get('invoice/{date}', 'API\DropOffController@invoice');

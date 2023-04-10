@@ -196,6 +196,7 @@
 
 
     <script src="/js/app.js" defer></script>
+    <script src="https://unpkg.com/ionicons@latest/dist/ionicons.js"></script>
 </body>
 
 </html>

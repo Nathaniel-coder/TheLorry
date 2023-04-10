@@ -59,7 +59,7 @@
                                             <td v-show="user.type=='Customer'"></td>
                                             <td>{{ user.type | upText }}</td>
                                             <td>{{ user.branch }}</td>
-                                            <td>
+                                            <td v-show="profile.type =='Administrator'">
                                                 <button class="btn bg-orange" @click="editModal(user)" toggle="tooltip"
                                                     title="Edit Staff">
                                                     <i class="fa-solid fa-pen-to-square text-light"></i>
@@ -133,20 +133,11 @@
 
                             </div>
                             <div class="form-group">
-                                <label>Branch</label>
+                                <label>Situated</label>
                                 <select v-model="form.branch" class="form-control" aria-label="Default select example"
-                                    :class="{ 'is-invalid': form.errors.has('branch') }" name="branch">
-                                    <option selected>{{ form.branch }}</option>
-                                    <option value="Johor">Johor</option>
-                                    <option value="Kedah">Kedah</option>
-                                    <option value="Kelantan">Kelantan</option>
-                                    <option value="Melaka">Melaka</option>
-                                    <option value="Negeri Sembilan">Negeri Sembilan</option>
-                                    <option value="Pahang">Pahang</option>
-                                    <option value="Perak">Perak</option>
-                                    <option value="Perlis">Perlis</option>
-                                    <option value="Selangor">Selangor</option>
-                                    <option value="Terengganu">Terengganu</option>
+                                    :class="{ 'is-invalid': form.errors.has('branch') }">
+                                    <option selected v-show="form.branch">{{ form.branch ? form.branch : "" }}</option>
+                                    <option v-for="branch in branches" :key="branch.id">{{ branch.branch }} {{ branch.city }},{{ branch.province }},{{ branch.country }}</option>
                                 </select>
                                 <div v-if="form.errors.has('branch')" v-html="form.errors.get('branch')"></div>
 
@@ -187,6 +178,7 @@ export default {
         return {
             editmode: false,
             users: {},
+            branches:{},
             form: new Form({
                 id: "",
                 name: "",
@@ -268,6 +260,7 @@ export default {
         },
         loadusers() {
             axios.get("api/user").then(({ data }) => (this.users = data));
+            axios.get("api/branches").then(({data}) => (this.branches = data));
         },
         deleteUser(id) {
             Swal.fire({

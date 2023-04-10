@@ -2386,6 +2386,7 @@ __webpack_require__.r(__webpack_exports__);
     return {
       editmode: false,
       users: {},
+      branches: {},
       form: new vform__WEBPACK_IMPORTED_MODULE_0__["Form"]({
         id: "",
         name: "",
@@ -2466,6 +2467,10 @@ __webpack_require__.r(__webpack_exports__);
       axios.get("api/user").then(function (_ref) {
         var data = _ref.data;
         return _this4.users = data;
+      });
+      axios.get("api/branches").then(function (_ref2) {
+        var data = _ref2.data;
+        return _this4.branches = data;
       });
     },
     deleteUser: function deleteUser(id) {
@@ -2679,7 +2684,6 @@ __webpack_require__.r(__webpack_exports__);
     Fire.$on("AfterCreated", function () {
       _this7.loadVehicles();
     });
-    ;
     this.loadVehicles();
     this.loadBranches();
     getResults(page);
@@ -2709,16 +2713,20 @@ __webpack_require__.r(__webpack_exports__);
   props: ['profile'],
   data: function data() {
     return {
+      editmode: false,
       user: {},
       branches: {},
+      items: {},
       form: new vform__WEBPACK_IMPORTED_MODULE_2__["Form"]({
         id: '',
+        name: '',
         category: '',
         quantity: '',
         weight: '',
         height: '',
         length: '',
         width: '',
+        price: '',
         shopname: '',
         niche: '',
         companyliscence: '',
@@ -5989,7 +5997,14 @@ var render = function render() {
         value: user.type == "Customer",
         expression: "user.type=='Customer'"
       }]
-    }), _vm._v(" "), _c("td", [_vm._v(_vm._s(_vm._f("upText")(user.type)))]), _vm._v(" "), _c("td", [_vm._v(_vm._s(user.branch))]), _vm._v(" "), _c("td", [_c("button", {
+    }), _vm._v(" "), _c("td", [_vm._v(_vm._s(_vm._f("upText")(user.type)))]), _vm._v(" "), _c("td", [_vm._v(_vm._s(user.branch))]), _vm._v(" "), _c("td", {
+      directives: [{
+        name: "show",
+        rawName: "v-show",
+        value: _vm.profile.type == "Administrator",
+        expression: "profile.type =='Administrator'"
+      }]
+    }, [_c("button", {
       staticClass: "btn bg-orange",
       attrs: {
         toggle: "tooltip",
@@ -6229,7 +6244,7 @@ var render = function render() {
     }
   }) : _vm._e()]), _vm._v(" "), _c("div", {
     staticClass: "form-group"
-  }, [_c("label", [_vm._v("Branch")]), _vm._v(" "), _c("select", {
+  }, [_c("label", [_vm._v("Situated")]), _vm._v(" "), _c("select", {
     directives: [{
       name: "model",
       rawName: "v-model",
@@ -6241,8 +6256,7 @@ var render = function render() {
       "is-invalid": _vm.form.errors.has("branch")
     },
     attrs: {
-      "aria-label": "Default select example",
-      name: "branch"
+      "aria-label": "Default select example"
     },
     on: {
       change: function change($event) {
@@ -6256,50 +6270,20 @@ var render = function render() {
       }
     }
   }, [_c("option", {
+    directives: [{
+      name: "show",
+      rawName: "v-show",
+      value: _vm.form.branch,
+      expression: "form.branch"
+    }],
     attrs: {
       selected: ""
     }
-  }, [_vm._v(_vm._s(_vm.form.branch))]), _vm._v(" "), _c("option", {
-    attrs: {
-      value: "Johor"
-    }
-  }, [_vm._v("Johor")]), _vm._v(" "), _c("option", {
-    attrs: {
-      value: "Kedah"
-    }
-  }, [_vm._v("Kedah")]), _vm._v(" "), _c("option", {
-    attrs: {
-      value: "Kelantan"
-    }
-  }, [_vm._v("Kelantan")]), _vm._v(" "), _c("option", {
-    attrs: {
-      value: "Melaka"
-    }
-  }, [_vm._v("Melaka")]), _vm._v(" "), _c("option", {
-    attrs: {
-      value: "Negeri Sembilan"
-    }
-  }, [_vm._v("Negeri Sembilan")]), _vm._v(" "), _c("option", {
-    attrs: {
-      value: "Pahang"
-    }
-  }, [_vm._v("Pahang")]), _vm._v(" "), _c("option", {
-    attrs: {
-      value: "Perak"
-    }
-  }, [_vm._v("Perak")]), _vm._v(" "), _c("option", {
-    attrs: {
-      value: "Perlis"
-    }
-  }, [_vm._v("Perlis")]), _vm._v(" "), _c("option", {
-    attrs: {
-      value: "Selangor"
-    }
-  }, [_vm._v("Selangor")]), _vm._v(" "), _c("option", {
-    attrs: {
-      value: "Terengganu"
-    }
-  }, [_vm._v("Terengganu")])]), _vm._v(" "), _vm.form.errors.has("branch") ? _c("div", {
+  }, [_vm._v(_vm._s(_vm.form.branch ? _vm.form.branch : ""))]), _vm._v(" "), _vm._l(_vm.branches, function (branch) {
+    return _c("option", {
+      key: branch.id
+    }, [_vm._v(_vm._s(branch.branch) + " " + _vm._s(branch.city) + "," + _vm._s(branch.province) + "," + _vm._s(branch.country))]);
+  })], 2), _vm._v(" "), _vm.form.errors.has("branch") ? _c("div", {
     domProps: {
       innerHTML: _vm._s(_vm.form.errors.get("branch"))
     }
@@ -6444,14 +6428,14 @@ var render = function render() {
     directives: [{
       name: "show",
       rawName: "v-show",
-      value: _vm.branches,
-      expression: "branches"
+      value: _vm.vehicles,
+      expression: "vehicles"
     }],
     staticClass: "card-footer"
   }, [_c("pagination", {
     staticClass: "nav-item",
     attrs: {
-      data: _vm.branches
+      data: _vm.vehicles
     },
     on: {
       "change-page": _vm.getResults
@@ -6829,7 +6813,387 @@ var render = function render() {
       expression: "user.type != 'Customer'"
     }],
     staticClass: "container"
-  }, [_vm._m(2)]), _vm._v(" "), _c("div", {
+  }, [_c("div", {
+    staticClass: "justify-content-center"
+  }, [_c("div", {
+    staticClass: "row"
+  }, [_c("div", {
+    staticClass: "col-md-12"
+  }, [_c("div", {
+    staticClass: "card"
+  }, [_c("div", {
+    staticClass: "card-header"
+  }, [_c("h3", {
+    staticClass: "card-title"
+  }, [_vm._v("Vehicles")]), _vm._v(" "), _c("div", {
+    staticClass: "card-tools"
+  }, [_c("button", {
+    staticClass: "btn bg-blue",
+    attrs: {
+      type: "button",
+      "data-toggle": "modal",
+      "data-target": "#CreateEdit",
+      toggle: "tooltip",
+      title: "Create Staff"
+    },
+    on: {
+      click: function click($event) {
+        return _vm.newModal();
+      }
+    }
+  }, [_c("i", {
+    staticClass: "fa-solid fa-plus icon-btn-sm"
+  })])])]), _vm._v(" "), _c("div", {
+    staticClass: "card-body table-responsive p-0"
+  }, [_c("table", {
+    staticClass: "table table-hover text-nowrap"
+  }, [_vm._m(2), _vm._v(" "), _c("tbody", [_c("tr", [_c("td"), _vm._v(" "), _c("td"), _vm._v(" "), _c("td"), _vm._v(" "), _c("td"), _vm._v(" "), _c("td"), _vm._v(" "), _c("td"), _vm._v(" "), _c("td"), _vm._v(" "), _c("td", [_c("button", {
+    staticClass: "btn bg-orange",
+    attrs: {
+      toggle: "tooltip",
+      title: "Edit Staff"
+    },
+    on: {
+      click: function click($event) {
+        return _vm.editModal(_vm.vehicle);
+      }
+    }
+  }, [_c("i", {
+    staticClass: "fa-solid fa-pen-to-square text-light"
+  })]), _vm._v(" "), _c("button", {
+    staticClass: "btn bg-red",
+    attrs: {
+      toggle: "tooltip",
+      title: "Delete Staff"
+    },
+    on: {
+      click: function click($event) {
+        return _vm.deleteVehicle(_vm.vehicle.id);
+      }
+    }
+  }, [_c("i", {
+    staticClass: "fa-solid fa-trash-can"
+  })])])])])])]), _vm._v(" "), _c("div", {
+    directives: [{
+      name: "show",
+      rawName: "v-show",
+      value: _vm.vehicles,
+      expression: "vehicles"
+    }],
+    staticClass: "card-footer"
+  }, [_c("pagination", {
+    staticClass: "nav-item",
+    attrs: {
+      data: _vm.vehicles
+    },
+    on: {
+      "change-page": _vm.getResults
+    }
+  })], 1)])])])])]), _vm._v(" "), _c("div", {
+    staticClass: "modal fade",
+    attrs: {
+      id: "CreateEdit",
+      "data-backdrop": "static",
+      "data-keyboard": "false",
+      tabindex: "-1",
+      "aria-labelledby": "staticBackdropLabel",
+      "aria-hidden": "true"
+    }
+  }, [_c("div", {
+    staticClass: "modal-dialog"
+  }, [_c("div", {
+    staticClass: "modal-content"
+  }, [_c("div", {
+    staticClass: "modal-header"
+  }, [_c("h5", {
+    directives: [{
+      name: "show",
+      rawName: "v-show",
+      value: !_vm.editmode,
+      expression: "!editmode"
+    }],
+    staticClass: "modal-title",
+    attrs: {
+      id: "staticBackdropLabel"
+    }
+  }, [_vm._v("\n                    Create new Branch\n                ")]), _vm._v(" "), _c("h5", {
+    directives: [{
+      name: "show",
+      rawName: "v-show",
+      value: _vm.editmode,
+      expression: "editmode"
+    }],
+    staticClass: "modal-title",
+    attrs: {
+      id: "staticBackdropLabel"
+    }
+  }, [_vm._v("\n                    Update Branch\n                ")]), _vm._v(" "), _vm._m(3)]), _vm._v(" "), _c("form", {
+    on: {
+      submit: function submit($event) {
+        $event.preventDefault();
+        _vm.editmode ? _vm.updateVehicles() : _vm.createVehicles();
+      }
+    }
+  }, [_c("div", {
+    staticClass: "modal-body"
+  }, [_c("div", {
+    staticClass: "form-group"
+  }, [_c("label", [_vm._v("Name")]), _vm._v(" "), _c("input", {
+    directives: [{
+      name: "model",
+      rawName: "v-model",
+      value: _vm.form.name,
+      expression: "form.name"
+    }],
+    staticClass: "form-control",
+    "class": {
+      "is-invalid": _vm.form.errors.has("name")
+    },
+    attrs: {
+      type: "text",
+      name: "name",
+      placeholder: "Name"
+    },
+    domProps: {
+      value: _vm.form.name
+    },
+    on: {
+      input: function input($event) {
+        if ($event.target.composing) return;
+        _vm.$set(_vm.form, "name", $event.target.value);
+      }
+    }
+  }), _vm._v(" "), _vm.form.errors.has("name") ? _c("div", {
+    domProps: {
+      innerHTML: _vm._s(_vm.form.errors.get("name"))
+    }
+  }) : _vm._e()]), _vm._v(" "), _c("div", {
+    staticClass: "form-group"
+  }, [_c("label", [_vm._v("Category")]), _vm._v(" "), _c("input", {
+    directives: [{
+      name: "model",
+      rawName: "v-model",
+      value: _vm.form.category,
+      expression: "form.category"
+    }],
+    staticClass: "form-control",
+    "class": {
+      "is-invalid": _vm.form.errors.has("category")
+    },
+    attrs: {
+      type: "text",
+      name: "category",
+      placeholder: "Category"
+    },
+    domProps: {
+      value: _vm.form.category
+    },
+    on: {
+      input: function input($event) {
+        if ($event.target.composing) return;
+        _vm.$set(_vm.form, "category", $event.target.value);
+      }
+    }
+  }), _vm._v(" "), _vm.form.errors.has("category") ? _c("div", {
+    domProps: {
+      innerHTML: _vm._s(_vm.form.errors.get("category"))
+    }
+  }) : _vm._e()]), _vm._v(" "), _c("div", {
+    staticClass: "form-group"
+  }, [_c("label", [_vm._v("Brand")]), _vm._v(" "), _c("input", {
+    directives: [{
+      name: "model",
+      rawName: "v-model",
+      value: _vm.form.brand,
+      expression: "form.brand"
+    }],
+    staticClass: "form-control",
+    "class": {
+      "is-invalid": _vm.form.errors.has("brand")
+    },
+    attrs: {
+      type: "text",
+      name: "brand",
+      placeholder: "Brand"
+    },
+    domProps: {
+      value: _vm.form.brand
+    },
+    on: {
+      input: function input($event) {
+        if ($event.target.composing) return;
+        _vm.$set(_vm.form, "brand", $event.target.value);
+      }
+    }
+  }), _vm._v(" "), _vm.form.errors.has("brand") ? _c("div", {
+    domProps: {
+      innerHTML: _vm._s(_vm.form.errors.get("brand"))
+    }
+  }) : _vm._e()]), _vm._v(" "), _c("div", {
+    staticClass: "form-group"
+  }, [_c("label", [_vm._v("Model")]), _vm._v(" "), _c("input", {
+    directives: [{
+      name: "model",
+      rawName: "v-model",
+      value: _vm.form.model,
+      expression: "form.model"
+    }],
+    staticClass: "form-control",
+    "class": {
+      "is-invalid": _vm.form.errors.has("model")
+    },
+    attrs: {
+      type: "text",
+      name: "model",
+      placeholder: "Model"
+    },
+    domProps: {
+      value: _vm.form.model
+    },
+    on: {
+      input: function input($event) {
+        if ($event.target.composing) return;
+        _vm.$set(_vm.form, "model", $event.target.value);
+      }
+    }
+  }), _vm._v(" "), _vm.form.errors.has("model") ? _c("div", {
+    domProps: {
+      innerHTML: _vm._s(_vm.form.errors.get("model"))
+    }
+  }) : _vm._e()]), _vm._v(" "), _c("div", {
+    staticClass: "form-group"
+  }, [_c("label", [_vm._v("Year")]), _vm._v(" "), _c("input", {
+    directives: [{
+      name: "model",
+      rawName: "v-model",
+      value: _vm.form.year,
+      expression: "form.year"
+    }],
+    staticClass: "form-control",
+    "class": {
+      "is-invalid": _vm.form.errors.has("year")
+    },
+    attrs: {
+      type: "text",
+      name: "year",
+      placeholder: "Year"
+    },
+    domProps: {
+      value: _vm.form.year
+    },
+    on: {
+      input: function input($event) {
+        if ($event.target.composing) return;
+        _vm.$set(_vm.form, "year", $event.target.value);
+      }
+    }
+  }), _vm._v(" "), _vm.form.errors.has("year") ? _c("div", {
+    domProps: {
+      innerHTML: _vm._s(_vm.form.errors.get("year"))
+    }
+  }) : _vm._e()]), _vm._v(" "), _c("div", {
+    staticClass: "form-group"
+  }, [_c("label", [_vm._v("Situated")]), _vm._v(" "), _c("select", {
+    directives: [{
+      name: "model",
+      rawName: "v-model",
+      value: _vm.form.situated,
+      expression: "form.situated"
+    }],
+    staticClass: "form-control",
+    "class": {
+      "is-invalid": _vm.form.errors.has("situated")
+    },
+    attrs: {
+      "aria-label": "Default select example"
+    },
+    on: {
+      change: function change($event) {
+        var $$selectedVal = Array.prototype.filter.call($event.target.options, function (o) {
+          return o.selected;
+        }).map(function (o) {
+          var val = "_value" in o ? o._value : o.value;
+          return val;
+        });
+        _vm.$set(_vm.form, "situated", $event.target.multiple ? $$selectedVal : $$selectedVal[0]);
+      }
+    }
+  }, [_c("option", {
+    directives: [{
+      name: "show",
+      rawName: "v-show",
+      value: _vm.form.situated,
+      expression: "form.situated"
+    }],
+    attrs: {
+      selected: ""
+    }
+  }, [_vm._v(_vm._s(_vm.form.situated ? _vm.form.situated : ""))]), _vm._v(" "), _vm._l(_vm.branches, function (branch) {
+    return _c("option", {
+      key: branch.id
+    }, [_vm._v(_vm._s(branch.branch) + " " + _vm._s(branch.city) + "," + _vm._s(branch.province) + "," + _vm._s(branch.country))]);
+  })], 2), _vm._v(" "), _vm.form.errors.has("situated") ? _c("div", {
+    domProps: {
+      innerHTML: _vm._s(_vm.form.errors.get("situated"))
+    }
+  }) : _vm._e()]), _vm._v(" "), _c("div", {
+    staticClass: "form-group"
+  }, [_c("label", [_vm._v("Availability")]), _vm._v(" "), _c("input", {
+    directives: [{
+      name: "model",
+      rawName: "v-model",
+      value: _vm.form.availability,
+      expression: "form.availability"
+    }],
+    staticClass: "form-control",
+    "class": {
+      "is-invalid": _vm.form.errors.has("availability")
+    },
+    attrs: {
+      type: "text",
+      name: "availability",
+      placeholder: "Availability"
+    },
+    domProps: {
+      value: _vm.form.availability
+    },
+    on: {
+      input: function input($event) {
+        if ($event.target.composing) return;
+        _vm.$set(_vm.form, "availability", $event.target.value);
+      }
+    }
+  })]), _vm._v(" "), _c("div", {
+    staticClass: "d-flex justify-content-end"
+  }, [_c("button", {
+    staticClass: "btn btn-secondary mx-2",
+    attrs: {
+      type: "button",
+      "data-dismiss": "modal"
+    }
+  }, [_vm._v("\n                            Close\n                        ")]), _vm._v(" "), _c("button", {
+    directives: [{
+      name: "show",
+      rawName: "v-show",
+      value: !_vm.editmode,
+      expression: "!editmode"
+    }],
+    staticClass: "btn bg-blue",
+    attrs: {
+      type: "submit"
+    }
+  }, [_vm._v("\n                            Create\n                        ")]), _vm._v(" "), _c("button", {
+    directives: [{
+      name: "show",
+      rawName: "v-show",
+      value: _vm.editmode,
+      expression: "editmode"
+    }],
+    staticClass: "btn bg-blue",
+    attrs: {
+      type: "submit"
+    }
+  }, [_vm._v("\n                            Update\n                        ")])])])])])])]), _vm._v(" "), _c("div", {
     staticClass: "modal fade",
     attrs: {
       id: "Create",
@@ -6843,7 +7207,7 @@ var render = function render() {
     staticClass: "modal-dialog"
   }, [_c("div", {
     staticClass: "modal-content"
-  }, [_vm._m(3), _vm._v(" "), _c("form", {
+  }, [_vm._m(4), _vm._v(" "), _c("form", {
     on: {
       submit: function submit($event) {
         $event.preventDefault();
@@ -7027,7 +7391,7 @@ var render = function render() {
     domProps: {
       innerHTML: _vm._s(_vm.form.errors.get("branchid"))
     }
-  }) : _vm._e()]), _vm._v(" "), _vm._m(4)])])])])])]);
+  }) : _vm._e()]), _vm._v(" "), _vm._m(5)])])])])])]);
 };
 var staticRenderFns = [function () {
   var _vm = this,
@@ -7050,15 +7414,22 @@ var staticRenderFns = [function () {
 }, function () {
   var _vm = this,
     _c = _vm._self._c;
-  return _c("div", {
-    staticClass: "justify-content-center"
-  }, [_c("div", {
-    staticClass: "row"
-  }, [_c("div", {
-    staticClass: "col-md-12"
-  }, [_c("div", {
-    staticClass: "card"
-  })])])]);
+  return _c("thead", [_c("tr", [_c("th", [_vm._v("Plate Number")]), _vm._v(" "), _c("th", [_vm._v("Brand")]), _vm._v(" "), _c("th", [_vm._v("Model")]), _vm._v(" "), _c("th", [_vm._v("Category")]), _vm._v(" "), _c("th", [_vm._v("Year")]), _vm._v(" "), _c("th", [_vm._v("Situated")]), _vm._v(" "), _c("th", [_vm._v("Availability")]), _vm._v(" "), _c("th", [_vm._v("Action")])])]);
+}, function () {
+  var _vm = this,
+    _c = _vm._self._c;
+  return _c("button", {
+    staticClass: "close",
+    attrs: {
+      type: "button",
+      "data-dismiss": "modal",
+      "aria-label": "Close"
+    }
+  }, [_c("span", {
+    attrs: {
+      "aria-hidden": "true"
+    }
+  }, [_vm._v("×")])]);
 }, function () {
   var _vm = this,
     _c = _vm._self._c;
