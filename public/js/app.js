@@ -2517,7 +2517,6 @@ __webpack_require__.r(__webpack_exports__);
     Fire.$on("AfterCreated", function () {
       _this6.loadusers();
     });
-    ;
     this.loadusers();
     getResults(page);
   }
@@ -2717,6 +2716,7 @@ __webpack_require__.r(__webpack_exports__);
       user: {},
       branches: {},
       items: {},
+      shop: {},
       form: new vform__WEBPACK_IMPORTED_MODULE_2__["Form"]({
         id: '',
         name: '',
@@ -2726,14 +2726,14 @@ __webpack_require__.r(__webpack_exports__);
         height: '',
         length: '',
         width: '',
-        price: '',
         shopname: '',
         niche: '',
-        companyliscence: '',
-        branchid: ''
+        companyliscence: ''
+        // branchid: ''
       })
     };
   },
+
   methods: {
     confirm: function confirm() {
       if (this.profile.type == "Customer") {
@@ -2755,24 +2755,106 @@ __webpack_require__.r(__webpack_exports__);
     newMerchant: function newMerchant() {
       var _this = this;
       this.form.post("api/shop").then(function () {
-        sweetalert2__WEBPACK_IMPORTED_MODULE_1___default.a.fire({
-          position: "center",
-          icon: "success",
-          title: _this.form.name + "'s",
-          text: "Information has been updated",
-          showConfirmButton: true,
-          timer: 1500
-        });
         _this.$Progress.finish();
         Fire.$emit("AfterCreated");
         $("#Create").modal("hide");
+        location.refresh();
+      })["catch"](function () {
+        _this.$Progress.fail();
+      });
+    },
+    createItem: function createItem() {
+      var _this2 = this;
+      this.form.post("api/warehouse").then(function () {
+        sweetalert2__WEBPACK_IMPORTED_MODULE_1___default.a.fire({
+          position: "center",
+          icon: "success",
+          title: _this2.form.name,
+          text: "is created!",
+          showConfirmButton: true,
+          timer: 1500
+        });
+        _this2.$Progress.finish();
+        Fire.$emit("AfterCreated");
+        $("#CreateEdit").modal("hide");
       })["catch"](function () {
         sweetalert2__WEBPACK_IMPORTED_MODULE_1___default.a.fire({
           icon: "error",
           title: "Oops...",
           text: "Something went wrong!"
         });
-        _this.$Progress.fail();
+        _this2.$Progress.fail();
+      });
+    },
+    editModal: function editModal(item) {
+      this.editmode = true;
+      this.form.reset();
+      $("#CreateEdit").modal("show");
+      this.form.fill(item);
+    },
+    newModal: function newModal() {
+      this.editmode = false;
+      this.form.reset();
+      $("#CreateEdit").modal("show");
+    },
+    updateItem: function updateItem() {
+      var _this3 = this;
+      this.$Progress.start();
+      this.form.put("api/warehouse/" + this.form.id).then(function () {
+        sweetalert2__WEBPACK_IMPORTED_MODULE_1___default.a.fire({
+          position: "center",
+          icon: "success",
+          title: _this3.form.name + "'s",
+          text: "Information has been updated",
+          showConfirmButton: true,
+          timer: 1500
+        });
+        _this3.$Progress.finish();
+        Fire.$emit("AfterCreated");
+        $("#CreateEdit").modal("hide");
+      })["catch"](function () {
+        sweetalert2__WEBPACK_IMPORTED_MODULE_1___default.a.fire({
+          icon: "error",
+          title: "Oops...",
+          text: "Something went wrong!"
+        });
+        _this3.$Progress.fail();
+      });
+    },
+    deleteItem: function deleteItem(id) {
+      var _this4 = this;
+      sweetalert2__WEBPACK_IMPORTED_MODULE_1___default.a.fire({
+        title: "Are you sure?",
+        text: "You won't be able to revert this!",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#0d6efd",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Yes, delete it!"
+      }).then(function (result) {
+        if (result.isConfirmed) {
+          _this4.$Progress.start();
+          _this4.form["delete"]("api/warehouse/" + id).then(function () {
+            sweetalert2__WEBPACK_IMPORTED_MODULE_1___default.a.fire("Deleted!", "Your item has been deleted.", "success");
+          });
+          _this4.$Progress.finish();
+        }
+        Fire.$emit("AfterCreated");
+      });
+    },
+    loadall: function loadall() {
+      var _this5 = this;
+      axios.get("api/profile").then(function (_ref) {
+        var data = _ref.data;
+        return _this5.user = data;
+      });
+      axios__WEBPACK_IMPORTED_MODULE_0___default.a.get("api/branches").then(function (_ref2) {
+        var data = _ref2.data;
+        return _this5.branches = data;
+      });
+      axios__WEBPACK_IMPORTED_MODULE_0___default.a.get("api/warehouse").then(function (_ref3) {
+        var data = _ref3.data;
+        return _this5.items = data;
       });
     }
   },
@@ -2780,20 +2862,25 @@ __webpack_require__.r(__webpack_exports__);
     console.log('Component mounted.');
   },
   created: function created() {
-    var _this2 = this;
-    axios.get("api/profile").then(function (_ref) {
-      var data = _ref.data;
-      return _this2.user = data;
+    var _this6 = this;
+    // Axios.get("api/profile").then(({ data }) => this.form.fill(data));
+    axios.get("api/profile").then(function (_ref4) {
+      var data = _ref4.data;
+      return _this6.user = data;
     });
-    axios__WEBPACK_IMPORTED_MODULE_0___default.a.get("api/profile").then(function (_ref2) {
-      var data = _ref2.data;
-      return _this2.form.fill(data);
+    axios__WEBPACK_IMPORTED_MODULE_0___default.a.get("api/branches").then(function (_ref5) {
+      var data = _ref5.data;
+      return _this6.branches = data;
     });
-    axios.get("api/branches").then(function (_ref3) {
-      var data = _ref3.data;
-      return _this2.branches = data;
+    axios__WEBPACK_IMPORTED_MODULE_0___default.a.get("api/warehouse").then(function (_ref6) {
+      var data = _ref6.data;
+      return _this6.items = data;
     });
+    // Axios.get("api/shopIndex").then(({data}) => this.form. = data.id);
     this.confirm();
+    Fire.$on("AfterCreated", function () {
+      _this6.loadall();
+    });
   }
 });
 
@@ -6467,7 +6554,7 @@ var render = function render() {
     attrs: {
       id: "staticBackdropLabel"
     }
-  }, [_vm._v("\n                        Create new Branch\n                    ")]), _vm._v(" "), _c("h5", {
+  }, [_vm._v("\n                        Create new vehicle\n                    ")]), _vm._v(" "), _c("h5", {
     directives: [{
       name: "show",
       rawName: "v-show",
@@ -6478,7 +6565,7 @@ var render = function render() {
     attrs: {
       id: "staticBackdropLabel"
     }
-  }, [_vm._v("\n                        Update Branch\n                    ")]), _vm._v(" "), _vm._m(2)]), _vm._v(" "), _c("form", {
+  }, [_vm._v("\n                        Update vehicle\n                    ")]), _vm._v(" "), _vm._m(2)]), _vm._v(" "), _c("form", {
     on: {
       submit: function submit($event) {
         $event.preventDefault();
@@ -6825,7 +6912,7 @@ var render = function render() {
     staticClass: "card-header"
   }, [_c("h3", {
     staticClass: "card-title"
-  }, [_vm._v("Vehicles")]), _vm._v(" "), _c("div", {
+  }, [_vm._v("Warehouse")]), _vm._v(" "), _c("div", {
     staticClass: "card-tools"
   }, [_c("button", {
     staticClass: "btn bg-blue",
@@ -6847,49 +6934,45 @@ var render = function render() {
     staticClass: "card-body table-responsive p-0"
   }, [_c("table", {
     staticClass: "table table-hover text-nowrap"
-  }, [_vm._m(2), _vm._v(" "), _c("tbody", [_c("tr", [_c("td"), _vm._v(" "), _c("td"), _vm._v(" "), _c("td"), _vm._v(" "), _c("td"), _vm._v(" "), _c("td"), _vm._v(" "), _c("td"), _vm._v(" "), _c("td"), _vm._v(" "), _c("td", [_c("button", {
-    staticClass: "btn bg-orange",
-    attrs: {
-      toggle: "tooltip",
-      title: "Edit Staff"
-    },
-    on: {
-      click: function click($event) {
-        return _vm.editModal(_vm.vehicle);
+  }, [_vm._m(2), _vm._v(" "), _c("tbody", _vm._l(_vm.items, function (item) {
+    return _c("tr", {
+      key: item.id
+    }, [_c("td", [_vm._v(_vm._s(item.name))]), _vm._v(" "), _c("td", [_vm._v(_vm._s(item.category))]), _vm._v(" "), _c("td", [_vm._v(_vm._s(item.quantity))]), _vm._v(" "), _c("td", [_vm._v(_vm._s(item.weight))]), _vm._v(" "), _c("td", [_vm._v(_vm._s(item.height))]), _vm._v(" "), _c("td", [_vm._v(_vm._s(item.length))]), _vm._v(" "), _c("td", [_vm._v(_vm._s(item.width))]), _vm._v(" "), _c("td", [_c("button", {
+      staticClass: "btn bg-orange",
+      attrs: {
+        toggle: "tooltip",
+        title: "Edit Staff"
+      },
+      on: {
+        click: function click($event) {
+          return _vm.editModal(item);
+        }
       }
-    }
-  }, [_c("i", {
-    staticClass: "fa-solid fa-pen-to-square text-light"
-  })]), _vm._v(" "), _c("button", {
-    staticClass: "btn bg-red",
-    attrs: {
-      toggle: "tooltip",
-      title: "Delete Staff"
-    },
-    on: {
-      click: function click($event) {
-        return _vm.deleteVehicle(_vm.vehicle.id);
+    }, [_c("i", {
+      staticClass: "fa-solid fa-pen-to-square text-light"
+    })]), _vm._v(" "), _c("button", {
+      staticClass: "btn bg-red",
+      attrs: {
+        toggle: "tooltip",
+        title: "Delete Staff"
+      },
+      on: {
+        click: function click($event) {
+          return _vm.deleteItem(item.id);
+        }
       }
-    }
-  }, [_c("i", {
-    staticClass: "fa-solid fa-trash-can"
-  })])])])])])]), _vm._v(" "), _c("div", {
+    }, [_c("i", {
+      staticClass: "fa-solid fa-trash-can"
+    })])])]);
+  }), 0)])]), _vm._v(" "), _c("div", {
     directives: [{
       name: "show",
       rawName: "v-show",
-      value: _vm.vehicles,
-      expression: "vehicles"
+      value: _vm.items,
+      expression: "items"
     }],
     staticClass: "card-footer"
-  }, [_c("pagination", {
-    staticClass: "nav-item",
-    attrs: {
-      data: _vm.vehicles
-    },
-    on: {
-      "change-page": _vm.getResults
-    }
-  })], 1)])])])])]), _vm._v(" "), _c("div", {
+  })])])])])]), _vm._v(" "), _c("div", {
     staticClass: "modal fade",
     attrs: {
       id: "CreateEdit",
@@ -6916,7 +6999,7 @@ var render = function render() {
     attrs: {
       id: "staticBackdropLabel"
     }
-  }, [_vm._v("\n                    Create new Branch\n                ")]), _vm._v(" "), _c("h5", {
+  }, [_vm._v("\n                        Create new Item\n                    ")]), _vm._v(" "), _c("h5", {
     directives: [{
       name: "show",
       rawName: "v-show",
@@ -6927,11 +7010,11 @@ var render = function render() {
     attrs: {
       id: "staticBackdropLabel"
     }
-  }, [_vm._v("\n                    Update Branch\n                ")]), _vm._v(" "), _vm._m(3)]), _vm._v(" "), _c("form", {
+  }, [_vm._v("\n                        Update Items\n                    ")]), _vm._v(" "), _vm._m(3)]), _vm._v(" "), _c("form", {
     on: {
       submit: function submit($event) {
         $event.preventDefault();
-        _vm.editmode ? _vm.updateVehicles() : _vm.createVehicles();
+        _vm.editmode ? _vm.updateItem() : _vm.createItem();
       }
     }
   }, [_c("div", {
@@ -7000,167 +7083,157 @@ var render = function render() {
     }
   }) : _vm._e()]), _vm._v(" "), _c("div", {
     staticClass: "form-group"
-  }, [_c("label", [_vm._v("Brand")]), _vm._v(" "), _c("input", {
+  }, [_c("label", [_vm._v("Quantity")]), _vm._v(" "), _c("input", {
     directives: [{
       name: "model",
       rawName: "v-model",
-      value: _vm.form.brand,
-      expression: "form.brand"
+      value: _vm.form.quantity,
+      expression: "form.quantity"
     }],
     staticClass: "form-control",
     "class": {
-      "is-invalid": _vm.form.errors.has("brand")
+      "is-invalid": _vm.form.errors.has("quantity")
     },
     attrs: {
       type: "text",
-      name: "brand",
-      placeholder: "Brand"
+      name: "quantity",
+      placeholder: "Quantity"
     },
     domProps: {
-      value: _vm.form.brand
+      value: _vm.form.quantity
     },
     on: {
       input: function input($event) {
         if ($event.target.composing) return;
-        _vm.$set(_vm.form, "brand", $event.target.value);
+        _vm.$set(_vm.form, "quantity", $event.target.value);
       }
     }
-  }), _vm._v(" "), _vm.form.errors.has("brand") ? _c("div", {
+  }), _vm._v(" "), _vm.form.errors.has("quantity") ? _c("div", {
     domProps: {
-      innerHTML: _vm._s(_vm.form.errors.get("brand"))
+      innerHTML: _vm._s(_vm.form.errors.get("quantity"))
     }
   }) : _vm._e()]), _vm._v(" "), _c("div", {
     staticClass: "form-group"
-  }, [_c("label", [_vm._v("Model")]), _vm._v(" "), _c("input", {
+  }, [_c("label", [_vm._v("Weight")]), _vm._v(" "), _c("input", {
     directives: [{
       name: "model",
       rawName: "v-model",
-      value: _vm.form.model,
-      expression: "form.model"
+      value: _vm.form.weight,
+      expression: "form.weight"
     }],
     staticClass: "form-control",
     "class": {
-      "is-invalid": _vm.form.errors.has("model")
+      "is-invalid": _vm.form.errors.has("weight")
     },
     attrs: {
       type: "text",
-      name: "model",
-      placeholder: "Model"
+      name: "weight",
+      placeholder: "Weight(kg)",
+      pattern: "^\\d*(\\.\\d{0,2})?$"
     },
     domProps: {
-      value: _vm.form.model
+      value: _vm.form.weight
     },
     on: {
       input: function input($event) {
         if ($event.target.composing) return;
-        _vm.$set(_vm.form, "model", $event.target.value);
+        _vm.$set(_vm.form, "weight", $event.target.value);
       }
     }
-  }), _vm._v(" "), _vm.form.errors.has("model") ? _c("div", {
+  }), _vm._v(" "), _vm.form.errors.has("weight") ? _c("div", {
     domProps: {
-      innerHTML: _vm._s(_vm.form.errors.get("model"))
+      innerHTML: _vm._s(_vm.form.errors.get("weight"))
     }
   }) : _vm._e()]), _vm._v(" "), _c("div", {
     staticClass: "form-group"
-  }, [_c("label", [_vm._v("Year")]), _vm._v(" "), _c("input", {
+  }, [_c("label", [_vm._v("Height")]), _vm._v(" "), _c("input", {
     directives: [{
       name: "model",
       rawName: "v-model",
-      value: _vm.form.year,
-      expression: "form.year"
+      value: _vm.form.height,
+      expression: "form.height"
     }],
     staticClass: "form-control",
     "class": {
-      "is-invalid": _vm.form.errors.has("year")
+      "is-invalid": _vm.form.errors.has("height")
     },
     attrs: {
       type: "text",
-      name: "year",
-      placeholder: "Year"
+      name: "height",
+      placeholder: "Height(cm)",
+      pattern: "^\\d*(\\.\\d{0,2})?$"
     },
     domProps: {
-      value: _vm.form.year
+      value: _vm.form.height
     },
     on: {
       input: function input($event) {
         if ($event.target.composing) return;
-        _vm.$set(_vm.form, "year", $event.target.value);
+        _vm.$set(_vm.form, "height", $event.target.value);
       }
     }
-  }), _vm._v(" "), _vm.form.errors.has("year") ? _c("div", {
+  }), _vm._v(" "), _vm.form.errors.has("height") ? _c("div", {
     domProps: {
-      innerHTML: _vm._s(_vm.form.errors.get("year"))
+      innerHTML: _vm._s(_vm.form.errors.get("height"))
     }
   }) : _vm._e()]), _vm._v(" "), _c("div", {
     staticClass: "form-group"
-  }, [_c("label", [_vm._v("Situated")]), _vm._v(" "), _c("select", {
+  }, [_c("label", [_vm._v("Length")]), _vm._v(" "), _c("input", {
     directives: [{
       name: "model",
       rawName: "v-model",
-      value: _vm.form.situated,
-      expression: "form.situated"
+      value: _vm.form.length,
+      expression: "form.length"
     }],
     staticClass: "form-control",
     "class": {
-      "is-invalid": _vm.form.errors.has("situated")
-    },
-    attrs: {
-      "aria-label": "Default select example"
-    },
-    on: {
-      change: function change($event) {
-        var $$selectedVal = Array.prototype.filter.call($event.target.options, function (o) {
-          return o.selected;
-        }).map(function (o) {
-          var val = "_value" in o ? o._value : o.value;
-          return val;
-        });
-        _vm.$set(_vm.form, "situated", $event.target.multiple ? $$selectedVal : $$selectedVal[0]);
-      }
-    }
-  }, [_c("option", {
-    directives: [{
-      name: "show",
-      rawName: "v-show",
-      value: _vm.form.situated,
-      expression: "form.situated"
-    }],
-    attrs: {
-      selected: ""
-    }
-  }, [_vm._v(_vm._s(_vm.form.situated ? _vm.form.situated : ""))]), _vm._v(" "), _vm._l(_vm.branches, function (branch) {
-    return _c("option", {
-      key: branch.id
-    }, [_vm._v(_vm._s(branch.branch) + " " + _vm._s(branch.city) + "," + _vm._s(branch.province) + "," + _vm._s(branch.country))]);
-  })], 2), _vm._v(" "), _vm.form.errors.has("situated") ? _c("div", {
-    domProps: {
-      innerHTML: _vm._s(_vm.form.errors.get("situated"))
-    }
-  }) : _vm._e()]), _vm._v(" "), _c("div", {
-    staticClass: "form-group"
-  }, [_c("label", [_vm._v("Availability")]), _vm._v(" "), _c("input", {
-    directives: [{
-      name: "model",
-      rawName: "v-model",
-      value: _vm.form.availability,
-      expression: "form.availability"
-    }],
-    staticClass: "form-control",
-    "class": {
-      "is-invalid": _vm.form.errors.has("availability")
+      "is-invalid": _vm.form.errors.has("length")
     },
     attrs: {
       type: "text",
-      name: "availability",
-      placeholder: "Availability"
+      name: "length",
+      placeholder: "length(cm)",
+      pattern: "^\\d*(\\.\\d{0,2})?$"
     },
     domProps: {
-      value: _vm.form.availability
+      value: _vm.form.length
     },
     on: {
       input: function input($event) {
         if ($event.target.composing) return;
-        _vm.$set(_vm.form, "availability", $event.target.value);
+        _vm.$set(_vm.form, "length", $event.target.value);
+      }
+    }
+  }), _vm._v(" "), _vm.form.errors.has("length") ? _c("div", {
+    domProps: {
+      innerHTML: _vm._s(_vm.form.errors.get("length"))
+    }
+  }) : _vm._e()]), _vm._v(" "), _c("div", {
+    staticClass: "form-group"
+  }, [_c("label", [_vm._v("width")]), _vm._v(" "), _c("input", {
+    directives: [{
+      name: "model",
+      rawName: "v-model",
+      value: _vm.form.width,
+      expression: "form.width"
+    }],
+    staticClass: "form-control",
+    "class": {
+      "is-invalid": _vm.form.errors.has("width")
+    },
+    attrs: {
+      type: "text",
+      name: "width",
+      placeholder: "width(cm)",
+      pattern: "^\\d*(\\.\\d{0,2})?$"
+    },
+    domProps: {
+      value: _vm.form.width
+    },
+    on: {
+      input: function input($event) {
+        if ($event.target.composing) return;
+        _vm.$set(_vm.form, "width", $event.target.value);
       }
     }
   })]), _vm._v(" "), _c("div", {
@@ -7171,7 +7244,7 @@ var render = function render() {
       type: "button",
       "data-dismiss": "modal"
     }
-  }, [_vm._v("\n                            Close\n                        ")]), _vm._v(" "), _c("button", {
+  }, [_vm._v("\n                                Close\n                            ")]), _vm._v(" "), _c("button", {
     directives: [{
       name: "show",
       rawName: "v-show",
@@ -7182,7 +7255,7 @@ var render = function render() {
     attrs: {
       type: "submit"
     }
-  }, [_vm._v("\n                            Create\n                        ")]), _vm._v(" "), _c("button", {
+  }, [_vm._v("\n                                Create\n                            ")]), _vm._v(" "), _c("button", {
     directives: [{
       name: "show",
       rawName: "v-show",
@@ -7193,7 +7266,7 @@ var render = function render() {
     attrs: {
       type: "submit"
     }
-  }, [_vm._v("\n                            Update\n                        ")])])])])])])]), _vm._v(" "), _c("div", {
+  }, [_vm._v("\n                                Update\n                            ")])])])])])])]), _vm._v(" "), _c("div", {
     staticClass: "modal fade",
     attrs: {
       id: "Create",
@@ -7414,7 +7487,7 @@ var staticRenderFns = [function () {
 }, function () {
   var _vm = this,
     _c = _vm._self._c;
-  return _c("thead", [_c("tr", [_c("th", [_vm._v("Plate Number")]), _vm._v(" "), _c("th", [_vm._v("Brand")]), _vm._v(" "), _c("th", [_vm._v("Model")]), _vm._v(" "), _c("th", [_vm._v("Category")]), _vm._v(" "), _c("th", [_vm._v("Year")]), _vm._v(" "), _c("th", [_vm._v("Situated")]), _vm._v(" "), _c("th", [_vm._v("Availability")]), _vm._v(" "), _c("th", [_vm._v("Action")])])]);
+  return _c("thead", [_c("tr", [_c("th", [_vm._v("Name")]), _vm._v(" "), _c("th", [_vm._v("Product Type")]), _vm._v(" "), _c("th", [_vm._v("Quantity")]), _vm._v(" "), _c("th", [_vm._v("Weight(KG)")]), _vm._v(" "), _c("th", [_vm._v("Height(CM)")]), _vm._v(" "), _c("th", [_vm._v("Length(CM)")]), _vm._v(" "), _c("th", [_vm._v("Width(CM)")]), _vm._v(" "), _c("th", [_vm._v("Action")])])]);
 }, function () {
   var _vm = this,
     _c = _vm._self._c;

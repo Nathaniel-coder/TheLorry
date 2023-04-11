@@ -76,10 +76,10 @@
                 <div class="modal-content">
                     <div class="modal-header">
                         <h5 class="modal-title" v-show="!editmode" id="staticBackdropLabel">
-                            Create new Branch
+                            Create new vehicle
                         </h5>
                         <h5 class="modal-title" v-show="editmode" id="staticBackdropLabel">
-                            Update Branch
+                            Update vehicle
                         </h5>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span>

@@ -303,7 +303,7 @@ export default {
         })
         Fire.$on("AfterCreated", () => {
             this.loadusers();
-        });;
+        });
         this.loadusers();
         getResults(page);
     },

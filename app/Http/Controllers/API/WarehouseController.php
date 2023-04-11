@@ -3,9 +3,11 @@
 namespace App\Http\Controllers\API;
 
 use App\Shop;
+use App\User;
 use App\Warehouse;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
 
 class WarehouseController extends Controller
 {
@@ -20,7 +22,8 @@ class WarehouseController extends Controller
      */
     public function index()
     {
-        //
+        $user = auth('api')->user();
+        return Warehouse::where('user', $user->id)->get();
     }
 
     /**
@@ -32,29 +35,29 @@ class WarehouseController extends Controller
     public function store(Request $request)
     {
         $user = auth('api')->user();
-        $shop = Shop::where('userId', $user->id)->get();
-        $this->validate($request, [
-            'name' => 'required|string',
-            'category' => 'required|string|max:191',
-            'quantity' => 'required|string|max:191',
-            'weight' => 'required|numeric|between:0,99.99',
-            'length' => 'required|numeric|between:0,99.99',
-            'height' => 'required|numeric|between:0,99.99',
-            'width' => 'required|numeric|between:0,99.99',
-            'price' => 'price|numeric|between:0,9999.99',
-        ]);
+        // return $shop->id;
+        if ($user->type == "Merchant") {
+            $this->validate($request, [
+                'name' => 'required|string',
+                'category' => 'required|string|max:191',
+                'quantity' => 'required|numeric|between:0,999',
+                'weight' => 'required|numeric|between:0,99.99',
+                'length' => 'required|numeric|between:0,99.99',
+                'height' => 'required|numeric|between:0,99.99',
+                'width' => 'required|numeric|between:0,99.99',
+            ]);
 
-        Warehouse::create([
-            'shopId' => $shop->id,
-            'name' => $request['name'],
-            'category' => $request['category'],
-            'quantity' => $request['quantity'],
-            'weight' => $request['weight'],
-            'length' => $request['length'],
-            'height' => $request['height'],
-            'width' => $request['width'],
-            'price' => $request['price']
-        ]);
+            return Warehouse::create([
+                'user' => $user->id,
+                'name' => $request['name'],
+                'category' => $request['category'],
+                'quantity' => $request['quantity'],
+                'weight' => $request['weight'],
+                'length' => $request['length'],
+                'height' => $request['height'],
+                'width' => $request['width'],
+            ]);
+        }
     }
 
     /**
@@ -77,7 +80,28 @@ class WarehouseController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $warehouse = Warehouse::findorFail($id);
+        $this->validate($request, [
+            'name' => 'required|string',
+            'category' => 'required|string|max:191',
+            'quantity' => 'required|numeric|between:0,999',
+            'weight' => 'required|numeric|between:0,99.99',
+            'length' => 'required|numeric|between:0,99.99',
+            'height' => 'required|numeric|between:0,99.99',
+            'width' => 'required|numeric|between:0,99.99',
+        ]);
+
+        $warehouse->update([
+            'name' => $request['name'],
+            'category' => $request['category'],
+            'quantity' => $request['quantity'],
+            'weight' => $request['weight'],
+            'length' => $request['length'],
+            'height' => $request['height'],
+            'width' => $request['width'],
+        ]);
+
+        return ['message' => 'success'];
     }
 
     /**
@@ -88,6 +112,7 @@ class WarehouseController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $warehouse = Warehouse::findorFail($id);
+        return $warehouse->delete();
     }
 }

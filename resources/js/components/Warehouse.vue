@@ -21,7 +21,7 @@
                     <div class="col-md-12">
                         <div class="card">
                             <div class="card-header">
-                                <h3 class="card-title">Vehicles</h3>
+                                <h3 class="card-title">Warehouse</h3>
                                 <div class="card-tools">
                                     <button class="btn bg-blue" type="button" data-toggle="modal" data-target="#CreateEdit"
                                         @click="newModal()" toggle="tooltip" title="Create Staff">
@@ -34,32 +34,32 @@
                                 <table class="table table-hover text-nowrap">
                                     <thead>
                                         <tr>
-                                            <th>Plate Number</th>
-                                            <th>Brand</th>
-                                            <th>Model</th>
-                                            <th>Category</th>
-                                            <th>Year</th>
-                                            <th>Situated</th>
-                                            <th>Availability</th>
+                                            <th>Name</th>
+                                            <th>Product Type</th>
+                                            <th>Quantity</th>
+                                            <th>Weight(KG)</th>
+                                            <th>Height(CM)</th>
+                                            <th>Length(CM)</th>
+                                            <th>Width(CM)</th>
                                             <th>Action</th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <tr>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
+                                        <tr v-for="item in items" :key="item.id">
+                                            <td>{{ item.name }}</td>
+                                            <td>{{ item.category }}</td>
+                                            <td>{{ item.quantity }}</td>
+                                            <td>{{ item.weight }}</td>
+                                            <td>{{ item.height }}</td>
+                                            <td>{{ item.length }}</td>
+                                            <td>{{ item.width }}</td>
                                             <td>
                                                 <button class="btn bg-orange" toggle="tooltip" title="Edit Staff"
-                                                    @click="editModal()">
+                                                    @click="editModal(item)">
                                                     <i class="fa-solid fa-pen-to-square text-light"></i>
                                                 </button>
                                                 <button class="btn bg-red" toggle="tooltip" title="Delete Staff"
-                                                    @click="deleteItem()">
+                                                    @click="deleteItem(item.id)">
                                                     <i class="fa-solid fa-trash-can"></i>
                                                 </button>
                                             </td>
@@ -68,7 +68,7 @@
                                 </table>
                             </div>
                             <div class="card-footer" v-show="items">
-                                <pagination class="nav-item" :data="items" @change-page="getResults"></pagination>
+                                <!-- <pagination class="nav-item" :data="items" @change-page="getResults"></pagination> -->
                             </div>
                         </div>
                     </div>
@@ -77,85 +77,89 @@
         </div>
 
         <div class="modal fade" id="CreateEdit" data-backdrop="static" data-keyboard="false" tabindex="-1"
-        aria-labelledby="staticBackdropLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" v-show="!editmode" id="staticBackdropLabel">
-                        Create new Branch
-                    </h5>
-                    <h5 class="modal-title" v-show="editmode" id="staticBackdropLabel">
-                        Update Branch
-                    </h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <form @submit.prevent="editmode ? updateItem() : createItem()">
-                    <div class="modal-body">
-                        <div class="form-group">
-                            <label>Name</label>
-                            <input v-model="form.name" class="form-control" type="text" name="name"
-                                placeholder="Name" :class="{ 'is-invalid': form.errors.has('name') }" />
-                            <div v-if="form.errors.has('name')" v-html="form.errors.get('name')"></div>
-                        </div>
-                        <div class="form-group">
-                            <label>Category</label>
-                            <input v-model="form.category" class="form-control" type="text" name="category"
-                                placeholder="Category" :class="{ 'is-invalid': form.errors.has('category') }" />
-                            <div v-if="form.errors.has('category')" v-html="form.errors.get('category')"></div>
-                        </div>
-                        <div class="form-group">
-                            <label>Quantity</label>
-                            <input v-model="form.quantity" class="form-control" type="text" name="quantity"
-                            placeholder="Quantity" :class="{ 'is-invalid': form.errors.has('quantity') }" />
-                        <div v-if="form.errors.has('quantity')" v-html="form.errors.get('quantity')"></div>
-                        </div>
-                        <div class="form-group">
-                            <label>Weight</label>
-                            <input v-model="form.weight" class="form-control" type="text" name="weight"
-                                placeholder="Weight(kg)" :class="{ 'is-invalid': form.errors.has('weight') }" />
-                            <div v-if="form.errors.has('weight')" v-html="form.errors.get('weight')"></div>
-                        </div>
-                        <div class="form-group">
-                            <label>Height</label>
-                            <input v-model="form.height" class="form-control" type="text" name="height"
-                            placeholder="Height(cm)" :class="{ 'is-invalid': form.errors.has('height') }" />
-                        <div v-if="form.errors.has('height')" v-html="form.errors.get('height')"></div>
-                        </div>
-                        <div class="form-group">
-                            <label>Length</label>
-                            <input v-model="form.length" class="form-control" type="text" name="length"
-                            placeholder="length(cm)" :class="{ 'is-invalid': form.errors.has('length') }" />
-                        <div v-if="form.errors.has('length')" v-html="form.errors.get('length')"></div>
-                        </div>
-                        <div class="form-group">
-                            <label>width</label>
-                            <input v-model="form.width" class="form-control" type="text" name="width"
-                            placeholder="width(cm)" :class="{ 'is-invalid': form.errors.has('width') }" />
-                        </div>
-                        <div class="form-group">
-                            <label>RM</label>
-                            <input v-model="form.price" class="form-control" type="text" name="price"
-                            placeholder="Price" :class="{ 'is-invalid': form.errors.has('price') }" pattern="^\d*(\.\d{0,2})?$"/>
-                        </div>
-
-                        <div class="d-flex justify-content-end">
-                            <button type="button" class="btn btn-secondary mx-2" data-dismiss="modal">
-                                Close
-                            </button>
-                            <button v-show="!editmode" type="submit" class="btn bg-blue">
-                                Create
-                            </button>
-                            <button v-show="editmode" type="submit" class="btn bg-blue">
-                                Update
-                            </button>
-                        </div>
+            aria-labelledby="staticBackdropLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" v-show="!editmode" id="staticBackdropLabel">
+                            Create new Item
+                        </h5>
+                        <h5 class="modal-title" v-show="editmode" id="staticBackdropLabel">
+                            Update Items
+                        </h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
                     </div>
-                </form>
+                    <form @submit.prevent="editmode ? updateItem() : createItem()">
+                        <div class="modal-body">
+                            <div class="form-group">
+                                <label>Name</label>
+                                <input v-model="form.name" class="form-control" type="text" name="name" placeholder="Name"
+                                    :class="{ 'is-invalid': form.errors.has('name') }" />
+                                <div v-if="form.errors.has('name')" v-html="form.errors.get('name')"></div>
+                            </div>
+                            <!-- <div class="form-group">
+                            <input v-model="form.id" class="form-control" type="text" name="id"
+                                placeholder="Name" :class="{ 'is-invalid': form.errors.has('id') }"/>
+                            <div v-if="form.errors.has('id')" v-html="form.errors.get('id')"></div>
+                        </div> -->
+                            <div class="form-group">
+                                <label>Category</label>
+                                <input v-model="form.category" class="form-control" type="text" name="category"
+                                    placeholder="Category" :class="{ 'is-invalid': form.errors.has('category') }" />
+                                <div v-if="form.errors.has('category')" v-html="form.errors.get('category')"></div>
+                            </div>
+                            <div class="form-group">
+                                <label>Quantity</label>
+                                <input v-model="form.quantity" class="form-control" type="text" name="quantity"
+                                    placeholder="Quantity" :class="{ 'is-invalid': form.errors.has('quantity') }" />
+                                <div v-if="form.errors.has('quantity')" v-html="form.errors.get('quantity')"></div>
+                            </div>
+                            <div class="form-group">
+                                <label>Weight</label>
+                                <input v-model="form.weight" class="form-control" type="text" name="weight"
+                                    placeholder="Weight(kg)" :class="{ 'is-invalid': form.errors.has('weight') }"
+                                    pattern="^\d*(\.\d{0,2})?$" />
+                                <div v-if="form.errors.has('weight')" v-html="form.errors.get('weight')"></div>
+                            </div>
+                            <div class="form-group">
+                                <label>Height</label>
+                                <input v-model="form.height" class="form-control" type="text" name="height"
+                                    placeholder="Height(cm)" :class="{ 'is-invalid': form.errors.has('height') }"
+                                    pattern="^\d*(\.\d{0,2})?$" />
+                                <div v-if="form.errors.has('height')" v-html="form.errors.get('height')"></div>
+                            </div>
+                            <div class="form-group">
+                                <label>Length</label>
+                                <input v-model="form.length" class="form-control" type="text" name="length"
+                                    placeholder="length(cm)" :class="{ 'is-invalid': form.errors.has('length') }"
+                                    pattern="^\d*(\.\d{0,2})?$" />
+                                <div v-if="form.errors.has('length')" v-html="form.errors.get('length')"></div>
+                            </div>
+                            <div class="form-group">
+                                <label>width</label>
+                                <input v-model="form.width" class="form-control" type="text" name="width"
+                                    placeholder="width(cm)" :class="{ 'is-invalid': form.errors.has('width') }"
+                                    pattern="^\d*(\.\d{0,2})?$" />
+                            </div>
+
+                            <div class="d-flex justify-content-end">
+                                <button type="button" class="btn btn-secondary mx-2" data-dismiss="modal">
+                                    Close
+                                </button>
+                                <button v-show="!editmode" type="submit" class="btn bg-blue">
+                                    Create
+                                </button>
+                                <button v-show="editmode" type="submit" class="btn bg-blue">
+                                    Update
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
             </div>
         </div>
-    </div>
 
         <div class="modal fade" id="Create" data-backdrop="static" data-keyboard="false" tabindex="-1"
             aria-labelledby="staticBackdropLabel" aria-hidden="true">
@@ -236,10 +240,11 @@ export default {
     props: ['profile'],
     data() {
         return {
-            editmode : false,
+            editmode: false,
             user: {},
             branches: {},
             items: {},
+            shop: {},
             form: new Form({
                 id: '',
                 name: '',
@@ -249,11 +254,10 @@ export default {
                 height: '',
                 length: '',
                 width: '',
-                price: '',
                 shopname: '',
                 niche: '',
                 companyliscence: '',
-                branchid: ''
+                // branchid: ''
             }),
         };
     },
@@ -278,6 +282,53 @@ export default {
         newMerchant() {
             this.form.post("api/shop")
                 .then(() => {
+                    this.$Progress.finish();
+                    Fire.$emit("AfterCreated");
+                    $("#Create").modal("hide");
+                    location.refresh();
+                }).catch(() => {
+                    this.$Progress.fail();
+                });
+        },
+        createItem() {
+            this.form.post("api/warehouse")
+                .then(() => {
+                    Swal.fire({
+                        position: "center",
+                        icon: "success",
+                        title: this.form.name,
+                        text: "is created!",
+                        showConfirmButton: true,
+                        timer: 1500,
+                    });
+                    this.$Progress.finish();
+                    Fire.$emit("AfterCreated");
+                    $("#CreateEdit").modal("hide");
+                }).catch(() => {
+                    Swal.fire({
+                        icon: "error",
+                        title: "Oops...",
+                        text: "Something went wrong!",
+                    });
+                    this.$Progress.fail();
+                });
+        },
+        editModal(item) {
+            this.editmode = true;
+            this.form.reset();
+            $("#CreateEdit").modal("show");
+            this.form.fill(item);
+        },
+        newModal() {
+            this.editmode = false;
+            this.form.reset();
+            $("#CreateEdit").modal("show");
+        },
+        updateItem() {
+            this.$Progress.start();
+            this.form
+                .put("api/warehouse/" + this.form.id)
+                .then(() => {
                     Swal.fire({
                         position: "center",
                         icon: "success",
@@ -288,8 +339,9 @@ export default {
                     });
                     this.$Progress.finish();
                     Fire.$emit("AfterCreated");
-                    $("#Create").modal("hide");
-                }).catch(() => {
+                    $("#CreateEdit").modal("hide");
+                })
+                .catch(() => {
                     Swal.fire({
                         icon: "error",
                         title: "Oops...",
@@ -297,16 +349,46 @@ export default {
                     });
                     this.$Progress.fail();
                 });
+        },
+        deleteItem(id) {
+            Swal.fire({
+                title: "Are you sure?",
+                text: "You won't be able to revert this!",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#0d6efd",
+                cancelButtonColor: "#d33",
+                confirmButtonText: "Yes, delete it!",
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    this.$Progress.start();
+                    this.form.delete("api/warehouse/" + id).then(() => {
+                        Swal.fire("Deleted!", "Your item has been deleted.", "success");
+                    });
+                    this.$Progress.finish();
+                }
+                Fire.$emit("AfterCreated");
+            });
+        },
+        loadall() {
+            axios.get("api/profile").then(({ data }) => this.user = data);
+            Axios.get("api/branches").then(({ data }) => (this.branches = data));
+            Axios.get("api/warehouse").then(({ data }) => (this.items = data));
         }
     },
     mounted() {
         console.log('Component mounted.')
     },
     created() {
+        // Axios.get("api/profile").then(({ data }) => this.form.fill(data));
         axios.get("api/profile").then(({ data }) => this.user = data);
-        Axios.get("api/profile").then(({ data }) => this.form.fill(data));
-        axios.get("api/branches").then(({ data }) => (this.branches = data));
+        Axios.get("api/branches").then(({ data }) => (this.branches = data));
+        Axios.get("api/warehouse").then(({ data }) => (this.items = data));
+        // Axios.get("api/shopIndex").then(({data}) => this.form. = data.id);
         this.confirm();
+        Fire.$on("AfterCreated", () => {
+            this.loadall();
+        });
     }
 }
 </script>

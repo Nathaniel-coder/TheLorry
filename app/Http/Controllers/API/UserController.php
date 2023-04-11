@@ -173,6 +173,13 @@ class UserController extends Controller
         return ['message' => 'success'];
     }
 
+    // public function merchant(){
+    //     $user = auth('api')->user();
+    //     $user->update([
+    //         'type' => "Merchant"
+    //     ]);
+    // }
+
     /**
      * Remove the specified resource from storage.
      *
