@@ -183,7 +183,7 @@ export default {
     methods: {
         getResults(page) {
             axios.get('api/vehicle?page=' + page).then(response => {
-                this.branches = response.data;
+                this.vehicles = response.data;
             })
         },
         editModal(vehicle) {

@@ -24,7 +24,8 @@
                                 <h3 class="card-title">Warehouse</h3>
                                 <div class="card-tools">
                                     <button class="btn bg-blue" type="button" data-toggle="modal" data-target="#CreateEdit"
-                                        @click="newModal()" toggle="tooltip" title="Create Staff">
+                                        @click="newModal()" toggle="tooltip" title="Create Staff"
+                                        v-show="user.type == 'Merchant'">
                                         <i class="fa-solid fa-plus icon-btn-sm"></i>
                                     </button>
                                 </div>
@@ -41,11 +42,12 @@
                                             <th>Height(CM)</th>
                                             <th>Length(CM)</th>
                                             <th>Width(CM)</th>
+                                            <th v-show="user.type!='Merchant'">Merchant</th>
                                             <th>Action</th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <tr v-for="item in items" :key="item.id">
+                                        <tr v-for="item in items.data" :key="item.id">
                                             <td>{{ item.name }}</td>
                                             <td>{{ item.category }}</td>
                                             <td>{{ item.quantity }}</td>
@@ -53,9 +55,10 @@
                                             <td>{{ item.height }}</td>
                                             <td>{{ item.length }}</td>
                                             <td>{{ item.width }}</td>
+                                            <td v-show="user.type!='Merchant'">{{ item.user }}</td>
                                             <td>
                                                 <button class="btn bg-orange" toggle="tooltip" title="Edit Staff"
-                                                    @click="editModal(item)">
+                                                    @click="editModal(item)" v-show="user.type == 'Merchant'">
                                                     <i class="fa-solid fa-pen-to-square text-light"></i>
                                                 </button>
                                                 <button class="btn bg-red" toggle="tooltip" title="Delete Staff"
@@ -68,7 +71,7 @@
                                 </table>
                             </div>
                             <div class="card-footer" v-show="items">
-                                <!-- <pagination class="nav-item" :data="items" @change-page="getResults"></pagination> -->
+                                <pagination class="nav-item" :data="items" @change-page="getResults"></pagination>
                             </div>
                         </div>
                     </div>
@@ -262,6 +265,11 @@ export default {
         };
     },
     methods: {
+        getResults(page) {
+            axios.get('api/warehouse?page=' + page).then(response => {
+                this.warehouses = response.data;
+            })
+        },
         confirm() {
             if (this.profile.type == "Customer") {
                 Swal.fire({
@@ -371,8 +379,6 @@ export default {
             });
         },
         loadall() {
-            axios.get("api/profile").then(({ data }) => this.user = data);
-            Axios.get("api/branches").then(({ data }) => (this.branches = data));
             Axios.get("api/warehouse").then(({ data }) => (this.items = data));
         }
     },
@@ -381,9 +387,10 @@ export default {
     },
     created() {
         // Axios.get("api/profile").then(({ data }) => this.form.fill(data));
+        this.loadall();
+        this.getResults();
         axios.get("api/profile").then(({ data }) => this.user = data);
         Axios.get("api/branches").then(({ data }) => (this.branches = data));
-        Axios.get("api/warehouse").then(({ data }) => (this.items = data));
         // Axios.get("api/shopIndex").then(({data}) => this.form. = data.id);
         this.confirm();
         Fire.$on("AfterCreated", () => {

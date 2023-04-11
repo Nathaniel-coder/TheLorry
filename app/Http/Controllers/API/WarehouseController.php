@@ -23,7 +23,13 @@ class WarehouseController extends Controller
     public function index()
     {
         $user = auth('api')->user();
-        return Warehouse::where('user', $user->id)->get();
+        if ($user->type == "Merchant") {
+            return Warehouse::where('user', $user->name)->orderByRaw('created_at', 'Desc')->paginate(5);
+        }
+
+        if ($user->type != "Merchant" && $user->type != "Customer") {
+            return Warehouse::orderByRaw('created_at', 'Desc')->paginate(5);
+        }
     }
 
     /**
@@ -48,7 +54,7 @@ class WarehouseController extends Controller
             ]);
 
             return Warehouse::create([
-                'user' => $user->id,
+                'user' => $user->name,
                 'name' => $request['name'],
                 'category' => $request['category'],
                 'quantity' => $request['quantity'],

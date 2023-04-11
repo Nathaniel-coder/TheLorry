@@ -2566,7 +2566,7 @@ __webpack_require__.r(__webpack_exports__);
     getResults: function getResults(page) {
       var _this = this;
       axios.get('api/vehicle?page=' + page).then(function (response) {
-        _this.branches = response.data;
+        _this.vehicles = response.data;
       });
     },
     editModal: function editModal(vehicle) {
@@ -2735,6 +2735,12 @@ __webpack_require__.r(__webpack_exports__);
   },
 
   methods: {
+    getResults: function getResults(page) {
+      var _this = this;
+      axios.get('api/warehouse?page=' + page).then(function (response) {
+        _this.warehouses = response.data;
+      });
+    },
     confirm: function confirm() {
       if (this.profile.type == "Customer") {
         sweetalert2__WEBPACK_IMPORTED_MODULE_1___default.a.fire({
@@ -2753,59 +2759,24 @@ __webpack_require__.r(__webpack_exports__);
       }
     },
     newMerchant: function newMerchant() {
-      var _this = this;
+      var _this2 = this;
       this.form.post("api/shop").then(function () {
-        _this.$Progress.finish();
+        _this2.$Progress.finish();
         Fire.$emit("AfterCreated");
         $("#Create").modal("hide");
         location.refresh();
       })["catch"](function () {
-        _this.$Progress.fail();
+        _this2.$Progress.fail();
       });
     },
     createItem: function createItem() {
-      var _this2 = this;
+      var _this3 = this;
       this.form.post("api/warehouse").then(function () {
         sweetalert2__WEBPACK_IMPORTED_MODULE_1___default.a.fire({
           position: "center",
           icon: "success",
-          title: _this2.form.name,
+          title: _this3.form.name,
           text: "is created!",
-          showConfirmButton: true,
-          timer: 1500
-        });
-        _this2.$Progress.finish();
-        Fire.$emit("AfterCreated");
-        $("#CreateEdit").modal("hide");
-      })["catch"](function () {
-        sweetalert2__WEBPACK_IMPORTED_MODULE_1___default.a.fire({
-          icon: "error",
-          title: "Oops...",
-          text: "Something went wrong!"
-        });
-        _this2.$Progress.fail();
-      });
-    },
-    editModal: function editModal(item) {
-      this.editmode = true;
-      this.form.reset();
-      $("#CreateEdit").modal("show");
-      this.form.fill(item);
-    },
-    newModal: function newModal() {
-      this.editmode = false;
-      this.form.reset();
-      $("#CreateEdit").modal("show");
-    },
-    updateItem: function updateItem() {
-      var _this3 = this;
-      this.$Progress.start();
-      this.form.put("api/warehouse/" + this.form.id).then(function () {
-        sweetalert2__WEBPACK_IMPORTED_MODULE_1___default.a.fire({
-          position: "center",
-          icon: "success",
-          title: _this3.form.name + "'s",
-          text: "Information has been updated",
           showConfirmButton: true,
           timer: 1500
         });
@@ -2821,8 +2792,43 @@ __webpack_require__.r(__webpack_exports__);
         _this3.$Progress.fail();
       });
     },
-    deleteItem: function deleteItem(id) {
+    editModal: function editModal(item) {
+      this.editmode = true;
+      this.form.reset();
+      $("#CreateEdit").modal("show");
+      this.form.fill(item);
+    },
+    newModal: function newModal() {
+      this.editmode = false;
+      this.form.reset();
+      $("#CreateEdit").modal("show");
+    },
+    updateItem: function updateItem() {
       var _this4 = this;
+      this.$Progress.start();
+      this.form.put("api/warehouse/" + this.form.id).then(function () {
+        sweetalert2__WEBPACK_IMPORTED_MODULE_1___default.a.fire({
+          position: "center",
+          icon: "success",
+          title: _this4.form.name + "'s",
+          text: "Information has been updated",
+          showConfirmButton: true,
+          timer: 1500
+        });
+        _this4.$Progress.finish();
+        Fire.$emit("AfterCreated");
+        $("#CreateEdit").modal("hide");
+      })["catch"](function () {
+        sweetalert2__WEBPACK_IMPORTED_MODULE_1___default.a.fire({
+          icon: "error",
+          title: "Oops...",
+          text: "Something went wrong!"
+        });
+        _this4.$Progress.fail();
+      });
+    },
+    deleteItem: function deleteItem(id) {
+      var _this5 = this;
       sweetalert2__WEBPACK_IMPORTED_MODULE_1___default.a.fire({
         title: "Are you sure?",
         text: "You won't be able to revert this!",
@@ -2833,28 +2839,20 @@ __webpack_require__.r(__webpack_exports__);
         confirmButtonText: "Yes, delete it!"
       }).then(function (result) {
         if (result.isConfirmed) {
-          _this4.$Progress.start();
-          _this4.form["delete"]("api/warehouse/" + id).then(function () {
+          _this5.$Progress.start();
+          _this5.form["delete"]("api/warehouse/" + id).then(function () {
             sweetalert2__WEBPACK_IMPORTED_MODULE_1___default.a.fire("Deleted!", "Your item has been deleted.", "success");
           });
-          _this4.$Progress.finish();
+          _this5.$Progress.finish();
         }
         Fire.$emit("AfterCreated");
       });
     },
     loadall: function loadall() {
-      var _this5 = this;
-      axios.get("api/profile").then(function (_ref) {
+      var _this6 = this;
+      axios__WEBPACK_IMPORTED_MODULE_0___default.a.get("api/warehouse").then(function (_ref) {
         var data = _ref.data;
-        return _this5.user = data;
-      });
-      axios__WEBPACK_IMPORTED_MODULE_0___default.a.get("api/branches").then(function (_ref2) {
-        var data = _ref2.data;
-        return _this5.branches = data;
-      });
-      axios__WEBPACK_IMPORTED_MODULE_0___default.a.get("api/warehouse").then(function (_ref3) {
-        var data = _ref3.data;
-        return _this5.items = data;
+        return _this6.items = data;
       });
     }
   },
@@ -2862,24 +2860,22 @@ __webpack_require__.r(__webpack_exports__);
     console.log('Component mounted.');
   },
   created: function created() {
-    var _this6 = this;
+    var _this7 = this;
     // Axios.get("api/profile").then(({ data }) => this.form.fill(data));
-    axios.get("api/profile").then(function (_ref4) {
-      var data = _ref4.data;
-      return _this6.user = data;
+    this.loadall();
+    this.getResults();
+    axios.get("api/profile").then(function (_ref2) {
+      var data = _ref2.data;
+      return _this7.user = data;
     });
-    axios__WEBPACK_IMPORTED_MODULE_0___default.a.get("api/branches").then(function (_ref5) {
-      var data = _ref5.data;
-      return _this6.branches = data;
-    });
-    axios__WEBPACK_IMPORTED_MODULE_0___default.a.get("api/warehouse").then(function (_ref6) {
-      var data = _ref6.data;
-      return _this6.items = data;
+    axios__WEBPACK_IMPORTED_MODULE_0___default.a.get("api/branches").then(function (_ref3) {
+      var data = _ref3.data;
+      return _this7.branches = data;
     });
     // Axios.get("api/shopIndex").then(({data}) => this.form. = data.id);
     this.confirm();
     Fire.$on("AfterCreated", function () {
-      _this6.loadall();
+      _this7.loadall();
     });
   }
 });
@@ -6915,6 +6911,12 @@ var render = function render() {
   }, [_vm._v("Warehouse")]), _vm._v(" "), _c("div", {
     staticClass: "card-tools"
   }, [_c("button", {
+    directives: [{
+      name: "show",
+      rawName: "v-show",
+      value: _vm.user.type == "Merchant",
+      expression: "user.type == 'Merchant'"
+    }],
     staticClass: "btn bg-blue",
     attrs: {
       type: "button",
@@ -6934,10 +6936,30 @@ var render = function render() {
     staticClass: "card-body table-responsive p-0"
   }, [_c("table", {
     staticClass: "table table-hover text-nowrap"
-  }, [_vm._m(2), _vm._v(" "), _c("tbody", _vm._l(_vm.items, function (item) {
+  }, [_c("thead", [_c("tr", [_c("th", [_vm._v("Name")]), _vm._v(" "), _c("th", [_vm._v("Product Type")]), _vm._v(" "), _c("th", [_vm._v("Quantity")]), _vm._v(" "), _c("th", [_vm._v("Weight(KG)")]), _vm._v(" "), _c("th", [_vm._v("Height(CM)")]), _vm._v(" "), _c("th", [_vm._v("Length(CM)")]), _vm._v(" "), _c("th", [_vm._v("Width(CM)")]), _vm._v(" "), _c("th", {
+    directives: [{
+      name: "show",
+      rawName: "v-show",
+      value: _vm.user.type != "Merchant",
+      expression: "user.type!='Merchant'"
+    }]
+  }, [_vm._v("Merchant")]), _vm._v(" "), _c("th", [_vm._v("Action")])])]), _vm._v(" "), _c("tbody", _vm._l(_vm.items.data, function (item) {
     return _c("tr", {
       key: item.id
-    }, [_c("td", [_vm._v(_vm._s(item.name))]), _vm._v(" "), _c("td", [_vm._v(_vm._s(item.category))]), _vm._v(" "), _c("td", [_vm._v(_vm._s(item.quantity))]), _vm._v(" "), _c("td", [_vm._v(_vm._s(item.weight))]), _vm._v(" "), _c("td", [_vm._v(_vm._s(item.height))]), _vm._v(" "), _c("td", [_vm._v(_vm._s(item.length))]), _vm._v(" "), _c("td", [_vm._v(_vm._s(item.width))]), _vm._v(" "), _c("td", [_c("button", {
+    }, [_c("td", [_vm._v(_vm._s(item.name))]), _vm._v(" "), _c("td", [_vm._v(_vm._s(item.category))]), _vm._v(" "), _c("td", [_vm._v(_vm._s(item.quantity))]), _vm._v(" "), _c("td", [_vm._v(_vm._s(item.weight))]), _vm._v(" "), _c("td", [_vm._v(_vm._s(item.height))]), _vm._v(" "), _c("td", [_vm._v(_vm._s(item.length))]), _vm._v(" "), _c("td", [_vm._v(_vm._s(item.width))]), _vm._v(" "), _c("td", {
+      directives: [{
+        name: "show",
+        rawName: "v-show",
+        value: _vm.user.type != "Merchant",
+        expression: "user.type!='Merchant'"
+      }]
+    }, [_vm._v(_vm._s(item.user))]), _vm._v(" "), _c("td", [_c("button", {
+      directives: [{
+        name: "show",
+        rawName: "v-show",
+        value: _vm.user.type == "Merchant",
+        expression: "user.type == 'Merchant'"
+      }],
       staticClass: "btn bg-orange",
       attrs: {
         toggle: "tooltip",
@@ -6972,7 +6994,15 @@ var render = function render() {
       expression: "items"
     }],
     staticClass: "card-footer"
-  })])])])])]), _vm._v(" "), _c("div", {
+  }, [_c("pagination", {
+    staticClass: "nav-item",
+    attrs: {
+      data: _vm.items
+    },
+    on: {
+      "change-page": _vm.getResults
+    }
+  })], 1)])])])])]), _vm._v(" "), _c("div", {
     staticClass: "modal fade",
     attrs: {
       id: "CreateEdit",
@@ -7010,7 +7040,7 @@ var render = function render() {
     attrs: {
       id: "staticBackdropLabel"
     }
-  }, [_vm._v("\n                        Update Items\n                    ")]), _vm._v(" "), _vm._m(3)]), _vm._v(" "), _c("form", {
+  }, [_vm._v("\n                        Update Items\n                    ")]), _vm._v(" "), _vm._m(2)]), _vm._v(" "), _c("form", {
     on: {
       submit: function submit($event) {
         $event.preventDefault();
@@ -7280,7 +7310,7 @@ var render = function render() {
     staticClass: "modal-dialog"
   }, [_c("div", {
     staticClass: "modal-content"
-  }, [_vm._m(4), _vm._v(" "), _c("form", {
+  }, [_vm._m(3), _vm._v(" "), _c("form", {
     on: {
       submit: function submit($event) {
         $event.preventDefault();
@@ -7464,7 +7494,7 @@ var render = function render() {
     domProps: {
       innerHTML: _vm._s(_vm.form.errors.get("branchid"))
     }
-  }) : _vm._e()]), _vm._v(" "), _vm._m(5)])])])])])]);
+  }) : _vm._e()]), _vm._v(" "), _vm._m(4)])])])])])]);
 };
 var staticRenderFns = [function () {
   var _vm = this,
@@ -7484,10 +7514,6 @@ var staticRenderFns = [function () {
   return _c("div", {
     staticClass: "d-flex justify-content-center align-items-center"
   }, [_c("h3", [_vm._v("You are not a Merchant yet!")])]);
-}, function () {
-  var _vm = this,
-    _c = _vm._self._c;
-  return _c("thead", [_c("tr", [_c("th", [_vm._v("Name")]), _vm._v(" "), _c("th", [_vm._v("Product Type")]), _vm._v(" "), _c("th", [_vm._v("Quantity")]), _vm._v(" "), _c("th", [_vm._v("Weight(KG)")]), _vm._v(" "), _c("th", [_vm._v("Height(CM)")]), _vm._v(" "), _c("th", [_vm._v("Length(CM)")]), _vm._v(" "), _c("th", [_vm._v("Width(CM)")]), _vm._v(" "), _c("th", [_vm._v("Action")])])]);
 }, function () {
   var _vm = this,
     _c = _vm._self._c;
