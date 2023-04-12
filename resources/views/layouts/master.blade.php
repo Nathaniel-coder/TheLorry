@@ -30,7 +30,7 @@
 
             <ul class="navbar-nav ml-auto">
 
-                <li class="nav-item">
+                {{-- <li class="nav-item">
                     <a class="nav-link" data-widget="navbar-search" href="#" role="button">
                         <i class="fas fa-search"></i>
                     </a>
@@ -50,7 +50,7 @@
                             </div>
                         </form>
                     </div>
-                </li>
+                </li> --}}
 
                 <li class="nav-item">
                     <a class="nav-link" data-widget="fullscreen" href="#" role="button">
@@ -131,7 +131,7 @@
                                     <li class="nav-item">
                                         <router-link to="/vehicles" class="nav-link">
                                             <i class="fa-solid fa-van-shuttle nav-icon"></i>
-                                            <p>Vehicle</p>
+                                            <p>Vehicle / Assign</p>
                                         </router-link>
                                     </li>
                                     <li class="nav-item">

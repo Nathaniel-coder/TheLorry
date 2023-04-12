@@ -2548,8 +2548,12 @@ __webpack_require__.r(__webpack_exports__);
   data: function data() {
     return {
       editmode: false,
+      assign: false,
       vehicles: {},
       branches: {},
+      dropOffs: {},
+      pickUps: {},
+      users: {},
       form: new vform__WEBPACK_IMPORTED_MODULE_0__["Form"]({
         id: "",
         platno: "",
@@ -2558,7 +2562,11 @@ __webpack_require__.r(__webpack_exports__);
         category: "",
         year: "",
         situated: "",
-        availability: ""
+        availability: "",
+        toProvince: "",
+        toCountry: "",
+        vehicleId: "",
+        driverId: ""
       })
     };
   },
@@ -2567,6 +2575,18 @@ __webpack_require__.r(__webpack_exports__);
       var _this = this;
       axios.get('api/vehicle?page=' + page).then(function (response) {
         _this.vehicles = response.data;
+      });
+    },
+    getDrop: function getDrop(page) {
+      var _this2 = this;
+      axios.get('api/dropOff?page=' + page).then(function (response) {
+        _this2.dropOffs = response.data;
+      });
+    },
+    getPick: function getPick(page) {
+      var _this3 = this;
+      axios.get('api/pickUp?page=' + page).then(function (response) {
+        _this3.pickUps = response.data;
       });
     },
     editModal: function editModal(vehicle) {
@@ -2580,19 +2600,31 @@ __webpack_require__.r(__webpack_exports__);
       this.form.reset();
       $("#CreateEdit").modal("show");
     },
+    assignDrop: function assignDrop(dropOff) {
+      this.assign = false;
+      this.form.reset();
+      $('#Assign').modal("show");
+      this.form.fill(dropOff);
+    },
+    assignPick: function assignPick(pickUp) {
+      this.assign = true;
+      this.form.reset();
+      $('#Assign').modal("show");
+      this.form.fill(pickUp);
+    },
     updateVehicles: function updateVehicles() {
-      var _this2 = this;
+      var _this4 = this;
       this.$Progress.start();
       this.form.put("api/vehicle/" + this.form.id).then(function () {
         sweetalert2__WEBPACK_IMPORTED_MODULE_1___default.a.fire({
           position: "center",
           icon: "success",
-          title: _this2.form.platno + "'s",
-          text: "Information has been updated",
+          title: "Success!",
+          text: _this4.form.platno + " is updated",
           showConfirmButton: true,
           timer: 1500
         });
-        _this2.$Progress.finish();
+        _this4.$Progress.finish();
         Fire.$emit("AfterCreated");
         $("#CreateEdit").modal("hide");
       })["catch"](function () {
@@ -2601,21 +2633,21 @@ __webpack_require__.r(__webpack_exports__);
           title: "Oops...",
           text: "Something went wrong!"
         });
-        _this2.$Progress.fail();
+        _this4.$Progress.fail();
       });
     },
     createVehicles: function createVehicles() {
-      var _this3 = this;
+      var _this5 = this;
       this.$Progress.start();
       this.form.post("api/vehicle").then(function () {
         sweetalert2__WEBPACK_IMPORTED_MODULE_1___default.a.fire({
           position: "center",
           icon: "success",
-          title: _this3.form.platno + " is created",
+          title: _this5.form.platno + " is created",
           showConfirmButton: true,
           timer: 1500
         });
-        _this3.$Progress.finish();
+        _this5.$Progress.finish();
         Fire.$emit("AfterCreated");
       })["catch"](function () {
         sweetalert2__WEBPACK_IMPORTED_MODULE_1___default.a.fire({
@@ -2626,22 +2658,79 @@ __webpack_require__.r(__webpack_exports__);
       });
       $("#CreateEdit").modal("hide");
     },
+    drop: function drop() {
+      var _this6 = this;
+      this.form.put("api/dropOff/" + this.form.id).then(function () {
+        sweetalert2__WEBPACK_IMPORTED_MODULE_1___default.a.fire({
+          position: "center",
+          icon: "success",
+          title: _this6.form.driverId + "is Assigned",
+          showConfirmButton: true,
+          timer: 1500
+        });
+        _this6.$Progress.finish();
+        Fire.$emit("AfterCreated");
+      })["catch"](function () {
+        sweetalert2__WEBPACK_IMPORTED_MODULE_1___default.a.fire({
+          icon: "error",
+          title: "Oops...",
+          text: "Something went wrong!"
+        });
+      });
+      $("#Assign").modal("hide");
+    },
+    pick: function pick() {
+      var _this7 = this;
+      this.form.put("api/pickUp/" + this.form.id).then(function () {
+        sweetalert2__WEBPACK_IMPORTED_MODULE_1___default.a.fire({
+          position: "center",
+          icon: "success",
+          title: _this7.form.driverId + "is Assigned",
+          showConfirmButton: true,
+          timer: 1500
+        });
+        _this7.$Progress.finish();
+        Fire.$emit("AfterCreated");
+      })["catch"](function () {
+        sweetalert2__WEBPACK_IMPORTED_MODULE_1___default.a.fire({
+          icon: "error",
+          title: "Oops...",
+          text: "Something went wrong!"
+        });
+      });
+      $("#Assign").modal("hide");
+    },
     loadVehicles: function loadVehicles() {
-      var _this4 = this;
+      var _this8 = this;
       axios.get("api/vehicle").then(function (_ref) {
         var data = _ref.data;
-        return _this4.vehicles = data;
+        return _this8.vehicles = data;
+      });
+      axios.get("api/user").then(function (_ref2) {
+        var data = _ref2.data;
+        return _this8.users = data;
       });
     },
     loadBranches: function loadBranches() {
-      var _this5 = this;
-      axios.get("api/branches").then(function (_ref2) {
-        var data = _ref2.data;
-        return _this5.branches = data;
+      var _this9 = this;
+      axios.get("api/branches").then(function (_ref3) {
+        var data = _ref3.data;
+        return _this9.branches = data;
+      });
+    },
+    loadparcels: function loadparcels() {
+      var _this10 = this;
+      axios.get("api/dropOff").then(function (_ref4) {
+        var data = _ref4.data;
+        return _this10.dropOffs = data;
+      });
+      axios.get("api/pickUp").then(function (_ref5) {
+        var data = _ref5.data;
+        return _this10.pickUps = data;
       });
     },
     deleteVehicle: function deleteVehicle(id) {
-      var _this6 = this;
+      var _this11 = this;
       sweetalert2__WEBPACK_IMPORTED_MODULE_1___default.a.fire({
         title: "Are you sure?",
         text: "You won't be able to revert this!",
@@ -2651,24 +2740,24 @@ __webpack_require__.r(__webpack_exports__);
         confirmButtonText: "Yes, delete it!"
       }).then(function (result) {
         if (result.isConfirmed) {
-          _this6.$Progress.start();
-          _this6.form["delete"]("api/vehicle/" + id).then(function () {
+          _this11.$Progress.start();
+          _this11.form["delete"]("api/vehicle/" + id).then(function () {
             sweetalert2__WEBPACK_IMPORTED_MODULE_1___default.a.fire("Deleted!", "Your file has been deleted.", "success");
           });
-          _this6.$Progress.finish();
+          _this11.$Progress.finish();
         }
         Fire.$emit("AfterCreated");
       });
     }
   },
   created: function created() {
-    var _this7 = this;
+    var _this12 = this;
     Fire.$on('searching', function () {
-      var query = _this7.$parent.search;
-      _this7.$Progress.start();
+      var query = _this12.$parent.search;
+      _this12.$Progress.start();
       axios.get('api/findVehicle?q=' + query).then(function (data) {
-        _this7.vehicles = data.data;
-        _this7.$progress.finish();
+        _this12.vehicles = data.data;
+        _this12.$progress.finish();
         sweetalert2__WEBPACK_IMPORTED_MODULE_1___default.a.fire({
           icon: "success",
           title: "Users found"
@@ -2681,10 +2770,12 @@ __webpack_require__.r(__webpack_exports__);
       });
     });
     Fire.$on("AfterCreated", function () {
-      _this7.loadVehicles();
+      _this12.loadVehicles();
+      _this12.loadparcels();
     });
     this.loadVehicles();
     this.loadBranches();
+    this.loadparcels();
     getResults(page);
   }
 });
@@ -3829,7 +3920,7 @@ var render = function render() {
       name: "show",
       rawName: "v-show",
       value: _vm.dropOff == true,
-      expression: "dropOff==true"
+      expression: "dropOff == true"
     }],
     on: {
       submit: function submit($event) {
@@ -4318,7 +4409,7 @@ var render = function render() {
       name: "show",
       rawName: "v-show",
       value: _vm.pickUp == true,
-      expression: "pickUp==true"
+      expression: "pickUp == true"
     }],
     on: {
       submit: function submit($event) {
@@ -4905,10 +4996,10 @@ var render = function render() {
     }],
     staticClass: "form-control",
     "class": {
-      "is-invalid": _vm.form.errors.has("toCountry")
+      "is-invalid": _vm.form.errors.has("branch")
     },
     attrs: {
-      id: "toCountry",
+      id: "branch",
       "aria-label": "Default select example"
     },
     on: {
@@ -4924,13 +5015,15 @@ var render = function render() {
     }
   }, _vm._l(_vm.branches, function (branch) {
     return _c("option", {
+      directives: [{
+        name: "show",
+        rawName: "v-show",
+        value: branch.country == _vm.form.country,
+        expression: "branch.country == form.country"
+      }],
       key: branch.id
-    }, [_vm._v(_vm._s(branch.Country) + "\n                                                    ")]);
-  }), 0), _vm._v(" "), _vm.form.errors.has("toCountry") ? _c("div", {
-    domProps: {
-      innerHTML: _vm._s(_vm.form.errors.get("toCountry"))
-    }
-  }) : _vm._e()])])]), _vm._v(" "), _vm._m(34)])])])])])])])])]);
+    }, [_vm._v(_vm._s(branch.country))]);
+  }), 0)])])]), _vm._v(" "), _vm._m(34)])])])])])])])])]);
 };
 var staticRenderFns = [function () {
   var _vm = this,
@@ -4966,7 +5059,7 @@ var staticRenderFns = [function () {
     attrs: {
       "for": "date"
     }
-  }, [_vm._v("Date :")])]);
+  }, [_vm._v("Date ")])]);
 }, function () {
   var _vm = this,
     _c = _vm._self._c;
@@ -4983,7 +5076,7 @@ var staticRenderFns = [function () {
     attrs: {
       "for": "country"
     }
-  }, [_vm._v("Country :")])]);
+  }, [_vm._v("Country ")])]);
 }, function () {
   var _vm = this,
     _c = _vm._self._c;
@@ -4994,7 +5087,7 @@ var staticRenderFns = [function () {
     attrs: {
       "for": "name"
     }
-  }, [_vm._v("Name :")])]);
+  }, [_vm._v("Name ")])]);
 }, function () {
   var _vm = this,
     _c = _vm._self._c;
@@ -5005,7 +5098,7 @@ var staticRenderFns = [function () {
     attrs: {
       "for": "phone"
     }
-  }, [_vm._v("Phone :")])]);
+  }, [_vm._v("Phone ")])]);
 }, function () {
   var _vm = this,
     _c = _vm._self._c;
@@ -5016,7 +5109,7 @@ var staticRenderFns = [function () {
     attrs: {
       "for": "branch"
     }
-  }, [_vm._v("Branch :")])]);
+  }, [_vm._v("Branch ")])]);
 }, function () {
   var _vm = this,
     _c = _vm._self._c;
@@ -5033,7 +5126,7 @@ var staticRenderFns = [function () {
     attrs: {
       "for": "toName"
     }
-  }, [_vm._v("Name :")])]);
+  }, [_vm._v("Name ")])]);
 }, function () {
   var _vm = this,
     _c = _vm._self._c;
@@ -5044,7 +5137,7 @@ var staticRenderFns = [function () {
     attrs: {
       "for": "toPhone"
     }
-  }, [_vm._v("Phone :")])]);
+  }, [_vm._v("Phone ")])]);
 }, function () {
   var _vm = this,
     _c = _vm._self._c;
@@ -5055,7 +5148,7 @@ var staticRenderFns = [function () {
     attrs: {
       "for": "toAddress1"
     }
-  }, [_vm._v("Address:")])]);
+  }, [_vm._v("Address")])]);
 }, function () {
   var _vm = this,
     _c = _vm._self._c;
@@ -5066,7 +5159,7 @@ var staticRenderFns = [function () {
     attrs: {
       "for": "toPostcode"
     }
-  }, [_vm._v("Postcode:")])]);
+  }, [_vm._v("Postcode")])]);
 }, function () {
   var _vm = this,
     _c = _vm._self._c;
@@ -5077,7 +5170,7 @@ var staticRenderFns = [function () {
     attrs: {
       "for": "toCity"
     }
-  }, [_vm._v("City:")])]);
+  }, [_vm._v("City")])]);
 }, function () {
   var _vm = this,
     _c = _vm._self._c;
@@ -5088,7 +5181,7 @@ var staticRenderFns = [function () {
     attrs: {
       "for": "toProvice"
     }
-  }, [_vm._v("Provice:")])]);
+  }, [_vm._v("Provice")])]);
 }, function () {
   var _vm = this,
     _c = _vm._self._c;
@@ -5099,7 +5192,7 @@ var staticRenderFns = [function () {
     attrs: {
       "for": "toCountry"
     }
-  }, [_vm._v("Country :")])]);
+  }, [_vm._v("Country ")])]);
 }, function () {
   var _vm = this,
     _c = _vm._self._c;
@@ -5121,7 +5214,7 @@ var staticRenderFns = [function () {
     attrs: {
       "for": "date"
     }
-  }, [_vm._v("Date :")])]);
+  }, [_vm._v("Date ")])]);
 }, function () {
   var _vm = this,
     _c = _vm._self._c;
@@ -5138,7 +5231,7 @@ var staticRenderFns = [function () {
     attrs: {
       "for": "country"
     }
-  }, [_vm._v("Country :")])]);
+  }, [_vm._v("Country ")])]);
 }, function () {
   var _vm = this,
     _c = _vm._self._c;
@@ -5149,7 +5242,7 @@ var staticRenderFns = [function () {
     attrs: {
       "for": "name"
     }
-  }, [_vm._v("Name :")])]);
+  }, [_vm._v("Name ")])]);
 }, function () {
   var _vm = this,
     _c = _vm._self._c;
@@ -5160,7 +5253,7 @@ var staticRenderFns = [function () {
     attrs: {
       "for": "phone"
     }
-  }, [_vm._v("Phone :")])]);
+  }, [_vm._v("Phone ")])]);
 }, function () {
   var _vm = this,
     _c = _vm._self._c;
@@ -5171,7 +5264,7 @@ var staticRenderFns = [function () {
     attrs: {
       "for": "country"
     }
-  }, [_vm._v("Address :")])]);
+  }, [_vm._v("Address ")])]);
 }, function () {
   var _vm = this,
     _c = _vm._self._c;
@@ -5182,7 +5275,7 @@ var staticRenderFns = [function () {
     attrs: {
       "for": "country"
     }
-  }, [_vm._v("Postcode:")])]);
+  }, [_vm._v("Postcode")])]);
 }, function () {
   var _vm = this,
     _c = _vm._self._c;
@@ -5193,7 +5286,7 @@ var staticRenderFns = [function () {
     attrs: {
       "for": "country"
     }
-  }, [_vm._v("City :")])]);
+  }, [_vm._v("City ")])]);
 }, function () {
   var _vm = this,
     _c = _vm._self._c;
@@ -5204,7 +5297,7 @@ var staticRenderFns = [function () {
     attrs: {
       "for": "country"
     }
-  }, [_vm._v("Province :")])]);
+  }, [_vm._v("Province ")])]);
 }, function () {
   var _vm = this,
     _c = _vm._self._c;
@@ -5221,7 +5314,7 @@ var staticRenderFns = [function () {
     attrs: {
       "for": "toName"
     }
-  }, [_vm._v("Name :")])]);
+  }, [_vm._v("Name ")])]);
 }, function () {
   var _vm = this,
     _c = _vm._self._c;
@@ -5232,7 +5325,7 @@ var staticRenderFns = [function () {
     attrs: {
       "for": "toPhone"
     }
-  }, [_vm._v("Phone :")])]);
+  }, [_vm._v("Phone ")])]);
 }, function () {
   var _vm = this,
     _c = _vm._self._c;
@@ -5243,7 +5336,7 @@ var staticRenderFns = [function () {
     attrs: {
       "for": "toAddress1"
     }
-  }, [_vm._v("Address:")])]);
+  }, [_vm._v("Address")])]);
 }, function () {
   var _vm = this,
     _c = _vm._self._c;
@@ -5254,7 +5347,7 @@ var staticRenderFns = [function () {
     attrs: {
       "for": "toPostcode"
     }
-  }, [_vm._v("Postcode:")])]);
+  }, [_vm._v("Postcode")])]);
 }, function () {
   var _vm = this,
     _c = _vm._self._c;
@@ -5265,7 +5358,7 @@ var staticRenderFns = [function () {
     attrs: {
       "for": "toCity"
     }
-  }, [_vm._v("City:")])]);
+  }, [_vm._v("City")])]);
 }, function () {
   var _vm = this,
     _c = _vm._self._c;
@@ -5276,7 +5369,7 @@ var staticRenderFns = [function () {
     attrs: {
       "for": "toProvice"
     }
-  }, [_vm._v("Provice:")])]);
+  }, [_vm._v("Province")])]);
 }, function () {
   var _vm = this,
     _c = _vm._self._c;
@@ -5287,7 +5380,7 @@ var staticRenderFns = [function () {
     attrs: {
       "for": "toCountry"
     }
-  }, [_vm._v("Country :")])]);
+  }, [_vm._v("Country ")])]);
 }, function () {
   var _vm = this,
     _c = _vm._self._c;
@@ -6457,7 +6550,7 @@ var render = function render() {
     staticClass: "card-title"
   }, [_vm._v("Vehicles")]), _vm._v(" "), _c("div", {
     staticClass: "card-tools"
-  }, [_c("button", {
+  }, [_vm._m(1), _vm._v(" "), _c("button", {
     staticClass: "btn bg-blue",
     attrs: {
       type: "button",
@@ -6477,14 +6570,14 @@ var render = function render() {
     staticClass: "card-body table-responsive p-0"
   }, [_c("table", {
     staticClass: "table table-hover text-nowrap"
-  }, [_vm._m(1), _vm._v(" "), _c("tbody", _vm._l(_vm.vehicles.data, function (vehicle) {
+  }, [_vm._m(2), _vm._v(" "), _c("tbody", _vm._l(_vm.vehicles.data, function (vehicle) {
     return _c("tr", {
       key: vehicle.id
     }, [_c("td", [_vm._v(_vm._s(vehicle.platno))]), _vm._v(" "), _c("td", [_vm._v(_vm._s(vehicle.brand))]), _vm._v(" "), _c("td", [_vm._v(_vm._s(vehicle.model))]), _vm._v(" "), _c("td", [_vm._v(_vm._s(vehicle.category))]), _vm._v(" "), _c("td", [_vm._v(_vm._s(vehicle.year))]), _vm._v(" "), _c("td", [_vm._v(_vm._s(vehicle.situated))]), _vm._v(" "), _c("td", [_vm._v(_vm._s(vehicle.availability))]), _vm._v(" "), _c("td", [_c("button", {
       staticClass: "btn bg-orange",
       attrs: {
         toggle: "tooltip",
-        title: "Edit Staff"
+        title: "Edit Vehicle"
       },
       on: {
         click: function click($event) {
@@ -6497,7 +6590,7 @@ var render = function render() {
       staticClass: "btn bg-red",
       attrs: {
         toggle: "tooltip",
-        title: "Delete Staff"
+        title: "Delete Vehicle"
       },
       on: {
         click: function click($event) {
@@ -6522,6 +6615,102 @@ var render = function render() {
     },
     on: {
       "change-page": _vm.getResults
+    }
+  })], 1)])])]), _vm._v(" "), _c("div", {
+    staticClass: "row"
+  }, [_c("div", {
+    staticClass: "col-6"
+  }, [_c("div", {
+    staticClass: "card"
+  }, [_vm._m(3), _vm._v(" "), _c("div", {
+    staticClass: "card-body table-responsive p-0"
+  }, [_c("table", {
+    staticClass: "table table-hover text-nowrap"
+  }, [_vm._m(4), _vm._v(" "), _c("tbody", _vm._l(_vm.dropOffs.data, function (dropOff) {
+    return _c("tr", {
+      key: dropOff.id
+    }, [_c("td", [_vm._v("D" + _vm._s(_vm._f("invoiceDate")(dropOff.created_at)) + "-" + _vm._s(dropOff.id))]), _vm._v(" "), _c("td", [_vm._v(_vm._s(dropOff.toprovince))]), _vm._v(" "), _c("td", [_vm._v(_vm._s(dropOff.tocountry))]), _vm._v(" "), _c("td", [_vm._v(_vm._s(dropOff.driverId))]), _vm._v(" "), _c("td", [_vm._v(_vm._s(dropOff.vehicleId))]), _vm._v(" "), _c("td", [_c("button", {
+      directives: [{
+        name: "show",
+        rawName: "v-show",
+        value: !dropOff.driverId,
+        expression: "!dropOff.driverId"
+      }],
+      staticClass: "btn btn-sm border border-primary",
+      attrs: {
+        toggle: "tooltip",
+        title: "Assign Vehicle"
+      },
+      on: {
+        click: function click($event) {
+          return _vm.assignDrop(dropOff);
+        }
+      }
+    }, [_c("i", {
+      staticClass: "fa-solid fa-truck blue"
+    })])])]);
+  }), 0)])]), _vm._v(" "), _c("div", {
+    directives: [{
+      name: "show",
+      rawName: "v-show",
+      value: _vm.dropOffs,
+      expression: "dropOffs"
+    }],
+    staticClass: "card-footer"
+  }, [_c("pagination", {
+    staticClass: "nav-item",
+    attrs: {
+      data: _vm.dropOffs
+    },
+    on: {
+      "change-page": _vm.getDrop
+    }
+  })], 1)])]), _vm._v(" "), _c("div", {
+    staticClass: "col-6"
+  }, [_c("div", {
+    staticClass: "card"
+  }, [_vm._m(5), _vm._v(" "), _c("div", {
+    staticClass: "card-body table-responsive p-0"
+  }, [_c("table", {
+    staticClass: "table table-hover text-nowrap"
+  }, [_vm._m(6), _vm._v(" "), _c("tbody", _vm._l(_vm.pickUps.data, function (pickUp) {
+    return _c("tr", {
+      key: pickUp.id
+    }, [_c("td", [_vm._v("P" + _vm._s(_vm._f("invoiceDate")(pickUp.created_at)) + "-" + _vm._s(pickUp.id))]), _vm._v(" "), _c("td", [_vm._v(_vm._s(pickUp.toprovince))]), _vm._v(" "), _c("td", [_vm._v(_vm._s(pickUp.tocountry))]), _vm._v(" "), _c("td", [_vm._v(_vm._s(pickUp.driverId))]), _vm._v(" "), _c("td", [_vm._v(_vm._s(pickUp.vehicleId))]), _vm._v(" "), _c("td", [_c("button", {
+      directives: [{
+        name: "show",
+        rawName: "v-show",
+        value: !pickUp.driverId,
+        expression: "!pickUp.driverId"
+      }],
+      staticClass: "btn btn-sm border border-primary",
+      attrs: {
+        toggle: "tooltip",
+        title: "Assign Vehicle"
+      },
+      on: {
+        click: function click($event) {
+          return _vm.assignPick(pickUp);
+        }
+      }
+    }, [_c("i", {
+      staticClass: "fa-solid fa-truck blue"
+    })])])]);
+  }), 0)])]), _vm._v(" "), _c("div", {
+    directives: [{
+      name: "show",
+      rawName: "v-show",
+      value: _vm.pickUps,
+      expression: "pickUps"
+    }],
+    staticClass: "card-footer"
+  }, [_c("pagination", {
+    staticClass: "nav-item",
+    attrs: {
+      data: _vm.pickUps
+    },
+    on: {
+      "change-page": _vm.getPick
     }
   })], 1)])])])])]), _vm._v(" "), _c("div", {
     staticClass: "modal fade",
@@ -6561,7 +6750,7 @@ var render = function render() {
     attrs: {
       id: "staticBackdropLabel"
     }
-  }, [_vm._v("\n                        Update vehicle\n                    ")]), _vm._v(" "), _vm._m(2)]), _vm._v(" "), _c("form", {
+  }, [_vm._v("\n                        Update vehicle\n                    ")]), _vm._v(" "), _vm._m(7)]), _vm._v(" "), _c("form", {
     on: {
       submit: function submit($event) {
         $event.preventDefault();
@@ -6762,7 +6951,7 @@ var render = function render() {
     attrs: {
       selected: ""
     }
-  }, [_vm._v(_vm._s(_vm.form.situated ? _vm.form.situated : ""))]), _vm._v(" "), _vm._l(_vm.branches, function (branch) {
+  }, [_vm._v(_vm._s(_vm.form.situated ? _vm.form.situated : "") + "\n                                ")]), _vm._v(" "), _vm._l(_vm.branches, function (branch) {
     return _c("option", {
       key: branch.id
     }, [_vm._v(_vm._s(branch.branch) + " " + _vm._s(branch.city) + "," + _vm._s(branch.province) + "," + _vm._s(branch.country))]);
@@ -6827,6 +7016,179 @@ var render = function render() {
     attrs: {
       type: "submit"
     }
+  }, [_vm._v("\n                                Update\n                            ")])])])])])])]), _vm._v(" "), _c("div", {
+    staticClass: "modal fade",
+    attrs: {
+      id: "Assign",
+      "data-backdrop": "static",
+      "data-keyboard": "false",
+      tabindex: "-1",
+      "aria-labelledby": "staticBackdropLabel",
+      "aria-hidden": "true"
+    }
+  }, [_c("div", {
+    staticClass: "modal-dialog"
+  }, [_c("div", {
+    staticClass: "modal-content"
+  }, [_c("div", {
+    staticClass: "modal-header"
+  }, [_c("h5", {
+    directives: [{
+      name: "show",
+      rawName: "v-show",
+      value: !_vm.editmode,
+      expression: "!editmode"
+    }],
+    staticClass: "modal-title",
+    attrs: {
+      id: "staticBackdropLabel"
+    }
+  }, [_vm._v("\n                        Assign Vehicle\n                    ")]), _vm._v(" "), _c("h5", {
+    directives: [{
+      name: "show",
+      rawName: "v-show",
+      value: _vm.editmode,
+      expression: "editmode"
+    }],
+    staticClass: "modal-title",
+    attrs: {
+      id: "staticBackdropLabel"
+    }
+  }, [_vm._v("\n                        Update vehicle\n                    ")]), _vm._v(" "), _vm._m(8)]), _vm._v(" "), _c("form", {
+    on: {
+      submit: function submit($event) {
+        $event.preventDefault();
+        _vm.assign ? _vm.pick() : _vm.drop();
+      }
+    }
+  }, [_c("div", {
+    staticClass: "modal-body"
+  }, [_c("div", {
+    staticClass: "form-group"
+  }, [_c("label", [_vm._v("Driver")]), _vm._v(" "), _c("select", {
+    directives: [{
+      name: "model",
+      rawName: "v-model",
+      value: _vm.form.driverId,
+      expression: "form.driverId"
+    }],
+    staticClass: "form-control",
+    "class": {
+      "is-invalid": _vm.form.errors.has("driverId")
+    },
+    attrs: {
+      "aria-label": "Default select example"
+    },
+    on: {
+      change: function change($event) {
+        var $$selectedVal = Array.prototype.filter.call($event.target.options, function (o) {
+          return o.selected;
+        }).map(function (o) {
+          var val = "_value" in o ? o._value : o.value;
+          return val;
+        });
+        _vm.$set(_vm.form, "driverId", $event.target.multiple ? $$selectedVal : $$selectedVal[0]);
+      }
+    }
+  }, [_c("option", {
+    directives: [{
+      name: "show",
+      rawName: "v-show",
+      value: _vm.form.driverId,
+      expression: "form.driverId"
+    }],
+    attrs: {
+      selected: ""
+    }
+  }, [_vm._v(_vm._s(_vm.form.driverId ? _vm.form.driverId : "") + "\n                                ")]), _vm._v(" "), _vm._l(_vm.users.data, function (user) {
+    return _c("option", {
+      directives: [{
+        name: "show",
+        rawName: "v-show",
+        value: user.type == "Driver",
+        expression: "user.type == 'Driver'"
+      }],
+      key: user.id
+    }, [_vm._v("\n                                    " + _vm._s(user.name))]);
+  })], 2), _vm._v(" "), _vm.form.errors.has("driverId") ? _c("div", {
+    domProps: {
+      innerHTML: _vm._s(_vm.form.errors.get("driverId"))
+    }
+  }) : _vm._e()]), _vm._v(" "), _c("div", {
+    staticClass: "form-group"
+  }, [_c("label", [_vm._v("Vehicle")]), _vm._v(" "), _c("select", {
+    directives: [{
+      name: "model",
+      rawName: "v-model",
+      value: _vm.form.vehicleId,
+      expression: "form.vehicleId"
+    }],
+    staticClass: "form-control",
+    "class": {
+      "is-invalid": _vm.form.errors.has("vehicleId")
+    },
+    attrs: {
+      "aria-label": "Default select example"
+    },
+    on: {
+      change: function change($event) {
+        var $$selectedVal = Array.prototype.filter.call($event.target.options, function (o) {
+          return o.selected;
+        }).map(function (o) {
+          var val = "_value" in o ? o._value : o.value;
+          return val;
+        });
+        _vm.$set(_vm.form, "vehicleId", $event.target.multiple ? $$selectedVal : $$selectedVal[0]);
+      }
+    }
+  }, [_c("option", {
+    directives: [{
+      name: "show",
+      rawName: "v-show",
+      value: _vm.form.vehicleId,
+      expression: "form.vehicleId"
+    }],
+    attrs: {
+      selected: ""
+    }
+  }, [_vm._v(_vm._s(_vm.form.vehicleId ? _vm.form.vehicleId : "") + "\n                                ")]), _vm._v(" "), _vm._l(_vm.vehicles.data, function (vehicle) {
+    return _c("option", {
+      key: vehicle.id
+    }, [_vm._v(_vm._s(vehicle.platno))]);
+  })], 2), _vm._v(" "), _vm.form.errors.has("vehicleId") ? _c("div", {
+    domProps: {
+      innerHTML: _vm._s(_vm.form.errors.get("vehicleId"))
+    }
+  }) : _vm._e()]), _vm._v(" "), _c("div", {
+    staticClass: "d-flex justify-content-end"
+  }, [_c("button", {
+    staticClass: "btn btn-secondary mx-2",
+    attrs: {
+      type: "button",
+      "data-dismiss": "modal"
+    }
+  }, [_vm._v("\n                                Close\n                            ")]), _vm._v(" "), _c("button", {
+    directives: [{
+      name: "show",
+      rawName: "v-show",
+      value: !_vm.editmode,
+      expression: "!editmode"
+    }],
+    staticClass: "btn bg-blue",
+    attrs: {
+      type: "submit"
+    }
+  }, [_vm._v("\n                                Create\n                            ")]), _vm._v(" "), _c("button", {
+    directives: [{
+      name: "show",
+      rawName: "v-show",
+      value: _vm.editmode,
+      expression: "editmode"
+    }],
+    staticClass: "btn bg-blue",
+    attrs: {
+      type: "submit"
+    }
   }, [_vm._v("\n                                Update\n                            ")])])])])])])])]);
 };
 var staticRenderFns = [function () {
@@ -6844,7 +7206,78 @@ var staticRenderFns = [function () {
 }, function () {
   var _vm = this,
     _c = _vm._self._c;
+  return _c("button", {
+    staticClass: "btn btn-tool",
+    attrs: {
+      type: "button",
+      "data-card-widget": "collapse"
+    }
+  }, [_c("i", {
+    staticClass: "fas fa-minus"
+  })]);
+}, function () {
+  var _vm = this,
+    _c = _vm._self._c;
   return _c("thead", [_c("tr", [_c("th", [_vm._v("Plate Number")]), _vm._v(" "), _c("th", [_vm._v("Brand")]), _vm._v(" "), _c("th", [_vm._v("Model")]), _vm._v(" "), _c("th", [_vm._v("Category")]), _vm._v(" "), _c("th", [_vm._v("Year")]), _vm._v(" "), _c("th", [_vm._v("Situated")]), _vm._v(" "), _c("th", [_vm._v("Availability")]), _vm._v(" "), _c("th", [_vm._v("Action")])])]);
+}, function () {
+  var _vm = this,
+    _c = _vm._self._c;
+  return _c("div", {
+    staticClass: "card-header"
+  }, [_c("h3", {
+    staticClass: "card-title"
+  }, [_vm._v("Asssign vehicle (Drop Off)")]), _vm._v(" "), _c("div", {
+    staticClass: "card-tools"
+  }, [_c("button", {
+    staticClass: "btn btn-tool",
+    attrs: {
+      type: "button",
+      "data-card-widget": "collapse"
+    }
+  }, [_c("i", {
+    staticClass: "fas fa-minus"
+  })])])]);
+}, function () {
+  var _vm = this,
+    _c = _vm._self._c;
+  return _c("thead", [_c("tr", [_c("th", [_vm._v("Parcel ID")]), _vm._v(" "), _c("th", [_vm._v("Province")]), _vm._v(" "), _c("th", [_vm._v("Country")]), _vm._v(" "), _c("th", [_vm._v("Driver")]), _vm._v(" "), _c("th", [_vm._v("vehicle")]), _vm._v(" "), _c("th", [_vm._v("Action")])])]);
+}, function () {
+  var _vm = this,
+    _c = _vm._self._c;
+  return _c("div", {
+    staticClass: "card-header"
+  }, [_c("h3", {
+    staticClass: "card-title"
+  }, [_vm._v("Asssign vehicle (Pick Up)")]), _vm._v(" "), _c("div", {
+    staticClass: "card-tools"
+  }, [_c("button", {
+    staticClass: "btn btn-tool",
+    attrs: {
+      type: "button",
+      "data-card-widget": "collapse"
+    }
+  }, [_c("i", {
+    staticClass: "fas fa-minus"
+  })])])]);
+}, function () {
+  var _vm = this,
+    _c = _vm._self._c;
+  return _c("thead", [_c("tr", [_c("th", [_vm._v("Parcel ID")]), _vm._v(" "), _c("th", [_vm._v("Province")]), _vm._v(" "), _c("th", [_vm._v("Country")]), _vm._v(" "), _c("th", [_vm._v("Driver")]), _vm._v(" "), _c("th", [_vm._v("vehicle")]), _vm._v(" "), _c("th", [_vm._v("Action")])])]);
+}, function () {
+  var _vm = this,
+    _c = _vm._self._c;
+  return _c("button", {
+    staticClass: "close",
+    attrs: {
+      type: "button",
+      "data-dismiss": "modal",
+      "aria-label": "Close"
+    }
+  }, [_c("span", {
+    attrs: {
+      "aria-hidden": "true"
+    }
+  }, [_vm._v("×")])]);
 }, function () {
   var _vm = this,
     _c = _vm._self._c;

@@ -23,7 +23,8 @@
                                     <div class="col-6">
                                         <div class="card pointer" @click="drop()">
                                             <div class="card-body">
-                                                <div class="d-flex justify-content-center py-4"><i class="fa-solid fa-shop icon-size"></i></div>
+                                                <div class="d-flex justify-content-center py-4"><i
+                                                        class="fa-solid fa-shop icon-size"></i></div>
                                                 <p class="text-center pl-4">Drop Off</p>
                                             </div>
                                         </div>
@@ -31,7 +32,8 @@
                                     <div class="col-6">
                                         <div class="card pointer" @click="pick()">
                                             <div class="card-body">
-                                                <div class="d-flex justify-content-center py-4"><i class="fa-solid fa-truck-ramp-box icon-size"></i></div>
+                                                <div class="d-flex justify-content-center py-4"><i
+                                                        class="fa-solid fa-truck-ramp-box icon-size"></i></div>
                                                 <p class="text-center pl-4">Pick Up</p>
                                             </div>
                                         </div>
@@ -44,16 +46,17 @@
 
                 <div class="row">
                     <div class="col-md-12">
-                        <form @submit.prevent="createDropOff" v-show="dropOff==true">
+                        <form @submit.prevent="createDropOff" v-show="dropOff == true">
                             <div class="row d-flex justify-content-around">
                                 <div class="card card-body col-5 col-md-5">
                                     <div class="row">
                                         <div class="col-lg-2 col-md-3">
-                                            <label for="date" class="pt-2">Date :</label>
+                                            <label for="date" class="pt-2">Date </label>
                                         </div>
                                         <div class="col-lg-10 col-md-9">
-                                            <input id="date" v-model="form.date" class="form-control" type="date" name="date"
-                                                placeholder="Date" :class="{ 'is-invalid': form.errors.has('date') }" />
+                                            <input id="date" v-model="form.date" class="form-control" type="date"
+                                                name="date" placeholder="Date"
+                                                :class="{ 'is-invalid': form.errors.has('date') }" />
                                             <div v-if="form.errors.has('date')" v-html="form.errors.get('date')"></div>
                                         </div>
                                     </div>
@@ -67,20 +70,21 @@
                                         <div class="card-body">
                                             <div class="form-group row">
                                                 <div class="col-lg-2 col-md-3">
-                                                    <label for="country" class="pt-2">Country :</label>
+                                                    <label for="country" class="pt-2">Country </label>
                                                 </div>
                                                 <div class="col-lg-10 col-md-9">
                                                     <input id="name" v-model="form.country" class="form-control" type="text"
                                                         name="name" placeholder="Country"
                                                         :class="{ 'is-invalid': form.errors.has('country') }" />
-                                                    <div v-if="form.errors.has('country')" v-html="form.errors.get('country')">
+                                                    <div v-if="form.errors.has('country')"
+                                                        v-html="form.errors.get('country')">
                                                     </div>
                                                 </div>
                                             </div>
 
                                             <div class="form-group row">
                                                 <div class="col-lg-2 col-md-3">
-                                                    <label for="name" class="pt-2">Name :</label>
+                                                    <label for="name" class="pt-2">Name </label>
                                                 </div>
                                                 <div class="col-lg-10 col-md-9">
                                                     <input id="name" v-model="form.name" class="form-control" type="text"
@@ -93,7 +97,7 @@
 
                                             <div class="form-group row">
                                                 <div class="col-lg-2 col-md-3">
-                                                    <label for="phone" class="pt-2">Phone :</label>
+                                                    <label for="phone" class="pt-2">Phone </label>
                                                 </div>
                                                 <div class="col-lg-10 col-md-9">
                                                     <input id="phone" v-model="form.phone" class="form-control" type="text"
@@ -106,16 +110,18 @@
 
                                             <div class="form-group row">
                                                 <div class="col-lg-2 col-md-3">
-                                                    <label for="branch" class="pt-2">Branch :</label>
+                                                    <label for="branch" class="pt-2">Branch </label>
                                                 </div>
                                                 <div class="col-lg-10 col-md-9">
                                                     <select id="branch" v-model="form.branch" class="form-control"
                                                         aria-label="Default select example"
                                                         :class="{ 'is-invalid': form.errors.has('branch') }">
-                                                        <option v-for="branch in branches" :key="branch.id" v-show="branch.country == form.country">{{ branch.branch }}, {{
-                                                            branch.province }}, {{ branch.country }}</option>
+                                                        <option v-for="branch in branches" :key="branch.id"
+                                                            v-show="branch.country == form.country">{{ branch.branch }}, {{
+                                                                branch.province }}, {{ branch.country }}</option>
                                                     </select>
-                                                    <div v-if="form.errors.has('branch')" v-html="form.errors.get('branch')">
+                                                    <div v-if="form.errors.has('branch')"
+                                                        v-html="form.errors.get('branch')">
                                                     </div>
                                                     <!-- <fieldset v-show="form.country">{{ branch.address1 }},{{ branch.address2 }},{{ branch.postcode }},{{ branch.province }},{{ branch.country }}</fieldset> -->
                                                 </div>
@@ -129,32 +135,34 @@
                                         <div class="card-body">
                                             <div class="form-group row">
                                                 <div class="col-lg-2 col-md-3">
-                                                    <label for="toName" class="pt-2">Name :</label>
+                                                    <label for="toName" class="pt-2">Name </label>
                                                 </div>
                                                 <div class="col-lg-10 col-md-9">
-                                                    <input id="toName" v-model="form.toName" class="form-control" type="text"
-                                                        name="toName" placeholder="Name"
+                                                    <input id="toName" v-model="form.toName" class="form-control"
+                                                        type="text" name="toName" placeholder="Name"
                                                         :class="{ 'is-invalid': form.errors.has('toName') }" />
-                                                    <div v-if="form.errors.has('toName')" v-html="form.errors.get('toName')"></div>
+                                                    <div v-if="form.errors.has('toName')"
+                                                        v-html="form.errors.get('toName')"></div>
                                                 </div>
                                             </div>
 
                                             <div class="form-group row">
                                                 <div class="col-lg-2 col-md-3">
-                                                    <label for="toPhone" class="pt-2">Phone :</label>
+                                                    <label for="toPhone" class="pt-2">Phone </label>
                                                 </div>
                                                 <div class="col-lg-10 col-md-9">
-                                                    <input id="toPhone" v-model="form.toPhone" class="form-control" type="number"
-                                                        name="toPhone" placeholder="Phone No."
+                                                    <input id="toPhone" v-model="form.toPhone" class="form-control"
+                                                        type="number" name="toPhone" placeholder="Phone No."
                                                         :class="{ 'is-invalid': form.errors.has('toPhone') }" />
-                                                    <div v-if="form.errors.has('toPhone')" v-html="form.errors.get('toPhone')">
+                                                    <div v-if="form.errors.has('toPhone')"
+                                                        v-html="form.errors.get('toPhone')">
                                                     </div>
                                                 </div>
                                             </div>
 
                                             <div class="form-group row">
                                                 <div class="col-lg-2 col-md-3">
-                                                    <label for="toAddress1" class="pt-2">Address:</label>
+                                                    <label for="toAddress1" class="pt-2">Address</label>
                                                 </div>
                                                 <div class="col-lg-10 col-md-9">
                                                     <input id="toAddress1" v-model="form.toAddress1" class="form-control"
@@ -168,7 +176,7 @@
 
                                             <div class="form-group row">
                                                 <div class="col-lg-2 col-md-3">
-                                                    <!-- <label for="toAddress2" class="pt-2">Address 2 :</label> -->
+                                                    <!-- <label for="toAddress2" class="pt-2">Address 2 </label> -->
                                                 </div>
                                                 <div class="col-lg-10 col-md-9 justify-content-end">
                                                     <input id="toAddress2" v-model="form.toAddress2" class="form-control"
@@ -182,7 +190,7 @@
 
                                             <div class="form-group row">
                                                 <div class="col-lg-2 col-md-3">
-                                                    <label for="toPostcode" class="pt-2">Postcode:</label>
+                                                    <label for="toPostcode" class="pt-2">Postcode</label>
                                                 </div>
                                                 <div class="col-lg-10 col-md-9">
                                                     <input id="toPostcode" v-model="form.toPostcode" class="form-control"
@@ -196,20 +204,21 @@
 
                                             <div class="form-group row">
                                                 <div class="col-lg-2 col-md-3">
-                                                    <label for="toCity" class="pt-2">City:</label>
+                                                    <label for="toCity" class="pt-2">City</label>
                                                 </div>
                                                 <div class="col-lg-10 col-md-9">
-                                                    <input id="toCity" v-model="form.toCity" class="form-control" type="text"
-                                                        name="toCity" placeholder="City"
+                                                    <input id="toCity" v-model="form.toCity" class="form-control"
+                                                        type="text" name="toCity" placeholder="City"
                                                         :class="{ 'is-invalid': form.errors.has('toCity') }" />
-                                                    <div v-if="form.errors.has('toCity')" v-html="form.errors.get('toCity')">
+                                                    <div v-if="form.errors.has('toCity')"
+                                                        v-html="form.errors.get('toCity')">
                                                     </div>
                                                 </div>
                                             </div>
 
                                             <div class="form-group row">
                                                 <div class="col-lg-2 col-md-3">
-                                                    <label for="toProvice" class="pt-2">Provice:</label>
+                                                    <label for="toProvice" class="pt-2">Provice</label>
                                                 </div>
                                                 <div class="col-lg-10 col-md-9">
                                                     <input id="toProvince" v-model="form.toProvince" class="form-control"
@@ -223,15 +232,17 @@
 
                                             <div class="form-group row">
                                                 <div class="col-lg-2 col-md-3">
-                                                    <label for="toCountry" class="pt-2">Country :</label>
+                                                    <label for="toCountry" class="pt-2">Country </label>
                                                 </div>
                                                 <div class="col-lg-10 col-md-9">
                                                     <select id="toCountry" v-model="form.toCountry" class="form-control"
                                                         aria-label="Default select example"
                                                         :class="{ 'is-invalid': form.errors.has('toCountry') }">
-                                                        <option v-for="branch in branches" :key="branch.id">{{ branch.country }}</option>
+                                                        <option v-for="branch in branches" :key="branch.id">{{
+                                                            branch.country }}</option>
                                                     </select>
-                                                    <div v-if="form.errors.has('toCountry')" v-html="form.errors.get('toCountry')">
+                                                    <div v-if="form.errors.has('toCountry')"
+                                                        v-html="form.errors.get('toCountry')">
                                                     </div>
                                                 </div>
                                             </div>
@@ -244,16 +255,17 @@
                             </div>
                         </form>
 
-                        <form @submit.prevent="createPickUp" v-show="pickUp==true">
+                        <form @submit.prevent="createPickUp" v-show="pickUp == true">
                             <div class="row d-flex justify-content-around">
                                 <div class="card card-body col-5 col-md-5">
                                     <div class="row">
                                         <div class="col-lg-2 col-md-3">
-                                            <label for="date" class="pt-2">Date :</label>
+                                            <label for="date" class="pt-2">Date </label>
                                         </div>
                                         <div class="col-lg-10 col-md-9">
-                                            <input id="date" v-model="form.date" class="form-control" type="date" name="date"
-                                                placeholder="Date" :class="{ 'is-invalid': form.errors.has('date') }" />
+                                            <input id="date" v-model="form.date" class="form-control" type="date"
+                                                name="date" placeholder="Date"
+                                                :class="{ 'is-invalid': form.errors.has('date') }" />
                                             <div v-if="form.errors.has('date')" v-html="form.errors.get('date')"></div>
                                         </div>
                                     </div>
@@ -267,20 +279,21 @@
                                         <div class="card-body">
                                             <div class="form-group row">
                                                 <div class="col-lg-2 col-md-3">
-                                                    <label for="country" class="pt-2">Country :</label>
+                                                    <label for="country" class="pt-2">Country </label>
                                                 </div>
                                                 <div class="col-lg-10 col-md-9">
                                                     <input id="name" v-model="form.country" class="form-control" type="text"
                                                         name="name" placeholder="Country"
                                                         :class="{ 'is-invalid': form.errors.has('country') }" />
-                                                    <div v-if="form.errors.has('country')" v-html="form.errors.get('country')">
+                                                    <div v-if="form.errors.has('country')"
+                                                        v-html="form.errors.get('country')">
                                                     </div>
                                                 </div>
                                             </div>
 
                                             <div class="form-group row">
                                                 <div class="col-lg-2 col-md-3">
-                                                    <label for="name" class="pt-2">Name :</label>
+                                                    <label for="name" class="pt-2">Name </label>
                                                 </div>
                                                 <div class="col-lg-10 col-md-9">
                                                     <input id="name" v-model="form.name" class="form-control" type="text"
@@ -293,7 +306,7 @@
 
                                             <div class="form-group row">
                                                 <div class="col-lg-2 col-md-3">
-                                                    <label for="phone" class="pt-2">Phone :</label>
+                                                    <label for="phone" class="pt-2">Phone </label>
                                                 </div>
                                                 <div class="col-lg-10 col-md-9">
                                                     <input id="phone" v-model="form.phone" class="form-control" type="text"
@@ -306,46 +319,49 @@
 
                                             <div class="form-group row">
                                                 <div class="col-lg-2 col-md-3">
-                                                    <label for="country" class="pt-2">Address :</label>
+                                                    <label for="country" class="pt-2">Address </label>
                                                 </div>
                                                 <div class="col-lg-10 col-md-9">
-                                                    <input id="address1" v-model="form.address1" class="form-control" type="text"
-                                                        name="address1" placeholder="Address 1"
+                                                    <input id="address1" v-model="form.address1" class="form-control"
+                                                        type="text" name="address1" placeholder="Address 1"
                                                         :class="{ 'is-invalid': form.errors.has('address1') }" />
-                                                    <div v-if="form.errors.has('address1')" v-html="form.errors.get('address1')">
+                                                    <div v-if="form.errors.has('address1')"
+                                                        v-html="form.errors.get('address1')">
                                                     </div>
                                                 </div>
                                             </div>
 
                                             <div class="form-group row">
                                                 <div class="col-lg-2 col-md-3">
-                                                    <!-- <label for="country" class="pt-2">Address 2 :</label> -->
+                                                    <!-- <label for="country" class="pt-2">Address 2 </label> -->
                                                 </div>
                                                 <div class="col-lg-10 col-md-9">
-                                                    <input id="address2" v-model="form.address2" class="form-control" type="text"
-                                                        name="address2" placeholder="Address 2"
+                                                    <input id="address2" v-model="form.address2" class="form-control"
+                                                        type="text" name="address2" placeholder="Address 2"
                                                         :class="{ 'is-invalid': form.errors.has('address2') }" />
-                                                    <div v-if="form.errors.has('address2')" v-html="form.errors.get('address2')">
+                                                    <div v-if="form.errors.has('address2')"
+                                                        v-html="form.errors.get('address2')">
                                                     </div>
                                                 </div>
                                             </div>
 
                                             <div class="form-group row">
                                                 <div class="col-lg-2 col-md-3">
-                                                    <label for="country" class="pt-2">Postcode:</label>
+                                                    <label for="country" class="pt-2">Postcode</label>
                                                 </div>
                                                 <div class="col-lg-10 col-md-9">
-                                                    <input id="postcode" v-model="form.postcode" class="form-control" type="text"
-                                                        name="postcode" placeholder="postcode"
+                                                    <input id="postcode" v-model="form.postcode" class="form-control"
+                                                        type="text" name="postcode" placeholder="postcode"
                                                         :class="{ 'is-invalid': form.errors.has('postcode') }" />
-                                                    <div v-if="form.errors.has('postcode')" v-html="form.errors.get('postcode')">
+                                                    <div v-if="form.errors.has('postcode')"
+                                                        v-html="form.errors.get('postcode')">
                                                     </div>
                                                 </div>
                                             </div>
 
                                             <div class="form-group row">
                                                 <div class="col-lg-2 col-md-3">
-                                                    <label for="country" class="pt-2">City :</label>
+                                                    <label for="country" class="pt-2">City </label>
                                                 </div>
                                                 <div class="col-lg-10 col-md-9">
                                                     <input id="city" v-model="form.city" class="form-control" type="text"
@@ -358,13 +374,14 @@
 
                                             <div class="form-group row">
                                                 <div class="col-lg-2 col-md-3">
-                                                    <label for="country" class="pt-2">Province :</label>
+                                                    <label for="country" class="pt-2">Province </label>
                                                 </div>
                                                 <div class="col-lg-10 col-md-9">
-                                                    <input id="province" v-model="form.province" class="form-control" type="text"
-                                                        name="province" placeholder="Province"
+                                                    <input id="province" v-model="form.province" class="form-control"
+                                                        type="text" name="province" placeholder="Province"
                                                         :class="{ 'is-invalid': form.errors.has('province') }" />
-                                                    <div v-if="form.errors.has('city')" v-html="form.errors.get('province')">
+                                                    <div v-if="form.errors.has('city')"
+                                                        v-html="form.errors.get('province')">
                                                     </div>
                                                 </div>
                                             </div>
@@ -378,32 +395,34 @@
                                         <div class="card-body">
                                             <div class="form-group row">
                                                 <div class="col-lg-2 col-md-3">
-                                                    <label for="toName" class="pt-2">Name :</label>
+                                                    <label for="toName" class="pt-2">Name </label>
                                                 </div>
                                                 <div class="col-lg-10 col-md-9">
-                                                    <input id="toName" v-model="form.toName" class="form-control" type="text"
-                                                        name="toName" placeholder="Name"
+                                                    <input id="toName" v-model="form.toName" class="form-control"
+                                                        type="text" name="toName" placeholder="Name"
                                                         :class="{ 'is-invalid': form.errors.has('toName') }" />
-                                                    <div v-if="form.errors.has('toName')" v-html="form.errors.get('toName')"></div>
+                                                    <div v-if="form.errors.has('toName')"
+                                                        v-html="form.errors.get('toName')"></div>
                                                 </div>
                                             </div>
 
                                             <div class="form-group row">
                                                 <div class="col-lg-2 col-md-3">
-                                                    <label for="toPhone" class="pt-2">Phone :</label>
+                                                    <label for="toPhone" class="pt-2">Phone </label>
                                                 </div>
                                                 <div class="col-lg-10 col-md-9">
-                                                    <input id="toPhone" v-model="form.toPhone" class="form-control" type="number"
-                                                        name="toPhone" placeholder="Phone No."
+                                                    <input id="toPhone" v-model="form.toPhone" class="form-control"
+                                                        type="number" name="toPhone" placeholder="Phone No."
                                                         :class="{ 'is-invalid': form.errors.has('toPhone') }" />
-                                                    <div v-if="form.errors.has('toPhone')" v-html="form.errors.get('toPhone')">
+                                                    <div v-if="form.errors.has('toPhone')"
+                                                        v-html="form.errors.get('toPhone')">
                                                     </div>
                                                 </div>
                                             </div>
 
                                             <div class="form-group row">
                                                 <div class="col-lg-2 col-md-3">
-                                                    <label for="toAddress1" class="pt-2">Address:</label>
+                                                    <label for="toAddress1" class="pt-2">Address</label>
                                                 </div>
                                                 <div class="col-lg-10 col-md-9">
                                                     <input id="toAddress1" v-model="form.toAddress1" class="form-control"
@@ -417,7 +436,7 @@
 
                                             <div class="form-group row">
                                                 <div class="col-lg-2 col-md-3">
-                                                    <!-- <label for="toAddress2" class="pt-2">Address 2 :</label> -->
+                                                    <!-- <label for="toAddress2" class="pt-2">Address 2 </label> -->
                                                 </div>
                                                 <div class="col-lg-10 col-md-9 justify-content-end">
                                                     <input id="toAddress2" v-model="form.toAddress2" class="form-control"
@@ -431,7 +450,7 @@
 
                                             <div class="form-group row">
                                                 <div class="col-lg-2 col-md-3">
-                                                    <label for="toPostcode" class="pt-2">Postcode:</label>
+                                                    <label for="toPostcode" class="pt-2">Postcode</label>
                                                 </div>
                                                 <div class="col-lg-10 col-md-9">
                                                     <input id="toPostcode" v-model="form.toPostcode" class="form-control"
@@ -445,20 +464,21 @@
 
                                             <div class="form-group row">
                                                 <div class="col-lg-2 col-md-3">
-                                                    <label for="toCity" class="pt-2">City:</label>
+                                                    <label for="toCity" class="pt-2">City</label>
                                                 </div>
                                                 <div class="col-lg-10 col-md-9">
-                                                    <input id="toCity" v-model="form.toCity" class="form-control" type="text"
-                                                        name="toCity" placeholder="City"
+                                                    <input id="toCity" v-model="form.toCity" class="form-control"
+                                                        type="text" name="toCity" placeholder="City"
                                                         :class="{ 'is-invalid': form.errors.has('toCity') }" />
-                                                    <div v-if="form.errors.has('toCity')" v-html="form.errors.get('toCity')">
+                                                    <div v-if="form.errors.has('toCity')"
+                                                        v-html="form.errors.get('toCity')">
                                                     </div>
                                                 </div>
                                             </div>
 
                                             <div class="form-group row">
                                                 <div class="col-lg-2 col-md-3">
-                                                    <label for="toProvice" class="pt-2">Provice:</label>
+                                                    <label for="toProvice" class="pt-2">Province</label>
                                                 </div>
                                                 <div class="col-lg-10 col-md-9">
                                                     <input id="toProvince" v-model="form.toProvince" class="form-control"
@@ -472,17 +492,15 @@
 
                                             <div class="form-group row">
                                                 <div class="col-lg-2 col-md-3">
-                                                    <label for="toCountry" class="pt-2">Country :</label>
+                                                    <label for="toCountry" class="pt-2">Country </label>
                                                 </div>
                                                 <div class="col-lg-10 col-md-9">
-                                                    <select id="toCountry" v-model="form.toCountry" class="form-control"
+                                                    <select id="branch" v-model="form.toCountry" class="form-control"
                                                         aria-label="Default select example"
-                                                        :class="{ 'is-invalid': form.errors.has('toCountry') }">
-                                                        <option v-for="branch in branches" :key="branch.id">{{ branch.Country }}
-                                                        </option>
+                                                        :class="{ 'is-invalid': form.errors.has('branch') }">
+                                                        <option v-for="branch in branches" :key="branch.id"
+                                                            v-show="branch.country == form.country">{{ branch.country }}</option>
                                                     </select>
-                                                    <div v-if="form.errors.has('toCountry')" v-html="form.errors.get('toCountry')">
-                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
@@ -533,21 +551,21 @@ export default {
             })
         }
     },
-    methods:{
-        drop(){
-            if(this.dropOff == false){
+    methods: {
+        drop() {
+            if (this.dropOff == false) {
                 this.dropOff = true;
                 this.mode = 'Drop Off';
-            }else{
+            } else {
                 this.dropOff = false;
                 this.mode = 'New Delivery';
             }
         },
-        pick(){
-            if(this.pickUp == false){
+        pick() {
+            if (this.pickUp == false) {
                 this.pickUp = true;
                 this.mode = 'Pick Up';
-            }else{
+            } else {
                 this.pickUp = false;
                 this.mode = 'New Delivery';
             }
@@ -572,7 +590,7 @@ export default {
             })
 
         },
-        createPickUp(){
+        createPickUp() {
             this.$Progress.start();
             this.form.post('api/pickUp').then(({ data }) => {
                 Swal.fire({

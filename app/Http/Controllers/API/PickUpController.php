@@ -3,11 +3,16 @@
 namespace App\Http\Controllers\API;
 
 use App\Pickup;
+use App\Vehicle;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 
 class PickUpController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('auth:api');
+    }
     /**
      * Display a listing of the resource.
      *
@@ -15,7 +20,12 @@ class PickUpController extends Controller
      */
     public function index()
     {
-        //
+        $user = auth('api')->user();
+        if($user->type == "Customer"){
+            return Pickup::where('name' ,'!=', $user->name)->orderByRaw('created_at', 'Desc')->paginate(5);
+        }
+
+        return Pickup::orderByRaw('created_at', 'Desc')->paginate(5);
     }
 
     /**
@@ -88,7 +98,20 @@ class PickUpController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $user = auth('api')->user();
+        // return ['message' => 'success'];
+        if($user->type == 'Staff' || $user->type == 'Administrator'){
+            $pickUp = Pickup::findorFail($id);
+            $this->validate($request, [
+                'driverId' => 'required',
+                'vehicleId' => 'required'
+            ]);
+
+            $pickUp->update([
+                'driverId' => $request['driverId'],
+                'vehicleId' => $request['vehicleId']
+            ]);
+        }
     }
 
     /**
