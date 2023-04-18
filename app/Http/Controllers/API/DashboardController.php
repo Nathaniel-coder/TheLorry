@@ -2,8 +2,11 @@
 
 namespace App\Http\Controllers\API;
 
-use App\Http\Controllers\Controller;
+use App\Pickup;
+use App\Dropoff;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
 
 class DashboardController extends Controller
 {
@@ -14,7 +17,14 @@ class DashboardController extends Controller
      */
     public function index()
     {
-        //
+        $label1Count = Dropoff::count();
+        $label2Count = Pickup::count();
+
+        return[
+            'label1Count' => $label1Count,
+            'label2Count' => $label2Count
+        ];
+
     }
 
     /**

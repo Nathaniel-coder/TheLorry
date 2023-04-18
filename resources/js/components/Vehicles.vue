@@ -524,17 +524,12 @@ export default {
                     showConfirmButton: true,
                     timer: 1500,
                 }));
+                window.open('', '_blank');
         },
         dropXml(id) {
             axios.get("api/truckD/" + id)
-                .then(Swal.fire({
-                    position: "center",
-                    icon: "success",
-                    title: "XML is created",
-                    text: "Check your project public/XML file",
-                    showConfirmButton: true,
-                    timer: 1500,
-                }));
+                .then(({data})=>(this.qrcode = data));
+            window.open(this.qrcode, '_blank');
         }
     },
     created() {

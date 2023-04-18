@@ -11,7 +11,10 @@ import moment from 'moment';
 import VueProgressBar from 'vue-progressbar'
 import { Form, Errors } from 'vform';
 import Swal from 'sweetalert2';
-import VueRouter from 'vue-router'
+import VueRouter from 'vue-router';
+// import echarts from 'echarts'
+
+// import Chart from 'chart.js/auto';
 Vue.use(VueRouter)
 
 let routes = [

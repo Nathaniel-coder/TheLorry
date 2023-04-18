@@ -24,6 +24,8 @@ Route::apiResources(['vehicle' => 'API\VehicleController']);
 Route::apiResources(['dropOff' => 'API\DropOffController']);
 Route::apiResources(['pickUp' => 'API\PickUpController']);
 Route::apiResources(['shop' => 'API\ShopController']);
+Route::apiResources(['dashboard' => 'API\DashboardController']);
+
 Route::apiResources(['warehouse' => 'API\WarehouseController']);
 Route::get('shopIndex', 'API\ShopController@index');
 

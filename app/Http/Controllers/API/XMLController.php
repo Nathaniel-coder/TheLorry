@@ -2,11 +2,12 @@
 
 namespace App\Http\Controllers\API;
 
-use App\Dropoff;
 use App\Pickup;
+use App\Dropoff;
 use Illuminate\Http\Request;
-use App\Http\Controllers\Controller;
 use Illuminate\Http\Response;
+use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\View;
 use Illuminate\Support\Facades\Storage;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
@@ -50,6 +51,12 @@ class XMLController extends Controller
             // add other data elements as needed
         }
         $xml->asXML(public_path('/XML/Delivery/DropOff/dropOff' . $id . '.xml'));
+        $xmlFilePath = public_path('/XML/Delivery/DropOff/dropOff' . $id . '.xml');
+        return $xmlFilePath;
+        // return response()->download($path, 'dropOff' . $id . '.xml', ['Content-Type' => 'application/xml']);
+        // return file_get_contents($xmlFilePath);
+        // ->header('Content-Type', 'application/xml')
+        // ->header('Content-Disposition', 'inline; filename="dropOff' . $id . '.xml"');
     }
 
     /**

@@ -2086,9 +2086,13 @@ __webpack_require__.r(__webpack_exports__);
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony default export */ __webpack_exports__["default"] = ({
+  data: function data() {
+    return {};
+  },
   mounted: function mounted() {
-    console.log('Component mounted.');
-  }
+    console.log('Component Mounted');
+  },
+  methods: {}
 });
 
 /***/ }),
@@ -2808,26 +2812,25 @@ __webpack_require__.r(__webpack_exports__);
         showConfirmButton: true,
         timer: 1500
       }));
+      window.open('', '_blank');
     },
     dropXml: function dropXml(id) {
-      axios.get("api/truckD/" + id).then(sweetalert2__WEBPACK_IMPORTED_MODULE_1___default.a.fire({
-        position: "center",
-        icon: "success",
-        title: "XML is created",
-        text: "Check your project public/XML file",
-        showConfirmButton: true,
-        timer: 1500
-      }));
+      var _this12 = this;
+      axios.get("api/truckD/" + id).then(function (_ref6) {
+        var data = _ref6.data;
+        return _this12.qrcode = data;
+      });
+      window.open(this.qrcode, '_blank');
     }
   },
   created: function created() {
-    var _this12 = this;
+    var _this13 = this;
     Fire.$on('searching', function () {
-      var query = _this12.$parent.search;
-      _this12.$Progress.start();
+      var query = _this13.$parent.search;
+      _this13.$Progress.start();
       axios.get('api/findVehicle?q=' + query).then(function (data) {
-        _this12.vehicles = data.data;
-        _this12.$progress.finish();
+        _this13.vehicles = data.data;
+        _this13.$progress.finish();
         sweetalert2__WEBPACK_IMPORTED_MODULE_1___default.a.fire({
           icon: "success",
           title: "Users found"
@@ -2840,8 +2843,8 @@ __webpack_require__.r(__webpack_exports__);
       });
     });
     Fire.$on("AfterCreated", function () {
-      _this12.loadVehicles();
-      _this12.loadparcels();
+      _this13.loadVehicles();
+      _this13.loadparcels();
     });
     this.loadVehicles();
     this.loadBranches();
@@ -3868,19 +3871,150 @@ var render = function render() {
 var staticRenderFns = [function () {
   var _vm = this,
     _c = _vm._self._c;
-  return _c("div", {
+  return _c("div", [_c("section", {
+    staticClass: "content-header"
+  }, [_c("div", {
+    staticClass: "container-fluid"
+  }, [_c("div", {
+    staticClass: "row mb-2"
+  }, [_c("div", {
+    staticClass: "col-sm-6"
+  }, [_c("h1", [_vm._v("Vehicles")])])])])]), _vm._v(" "), _c("div", {
     staticClass: "container"
   }, [_c("div", {
-    staticClass: "row justify-content-center"
+    staticClass: "justify-content-center"
   }, [_c("div", {
-    staticClass: "col-md-8"
+    staticClass: "row"
+  }, [_c("div", {
+    staticClass: "col-lg-3 col-6"
+  }, [_c("div", {
+    staticClass: "small-box bg-info"
+  }, [_c("div", {
+    staticClass: "inner"
+  }, [_c("h3", [_vm._v("150")]), _vm._v(" "), _c("p", [_vm._v("New Orders")])]), _vm._v(" "), _c("div", {
+    staticClass: "icon"
+  }, [_c("i", {
+    staticClass: "ion ion-bag"
+  })])])]), _vm._v(" "), _c("div", {
+    staticClass: "col-lg-3 col-6"
+  }, [_c("div", {
+    staticClass: "small-box bg-success"
+  }, [_c("div", {
+    staticClass: "inner"
+  }, [_c("h3", [_vm._v("53"), _c("sup", {
+    staticStyle: {
+      "font-size": "20px"
+    }
+  }, [_vm._v("%")])]), _vm._v(" "), _c("p", [_vm._v("Bounce Rate")])]), _vm._v(" "), _c("div", {
+    staticClass: "icon"
+  }, [_c("i", {
+    staticClass: "ion ion-stats-bars"
+  })])])]), _vm._v(" "), _c("div", {
+    staticClass: "col-lg-3 col-6"
+  }, [_c("div", {
+    staticClass: "small-box bg-warning"
+  }, [_c("div", {
+    staticClass: "inner"
+  }, [_c("h3", [_vm._v("44")]), _vm._v(" "), _c("p", [_vm._v("User Registrations")])]), _vm._v(" "), _c("div", {
+    staticClass: "icon"
+  }, [_c("i", {
+    staticClass: "ion ion-person-add"
+  })])])]), _vm._v(" "), _c("div", {
+    staticClass: "col-lg-3 col-6"
+  }, [_c("div", {
+    staticClass: "small-box bg-danger"
+  }, [_c("div", {
+    staticClass: "inner"
+  }, [_c("h3", [_vm._v("65")]), _vm._v(" "), _c("p", [_vm._v("Unique Visitors")])]), _vm._v(" "), _c("div", {
+    staticClass: "icon"
+  }, [_c("i", {
+    staticClass: "ion ion-pie-graph"
+  })])])])]), _vm._v(" "), _c("div", {
+    staticClass: "row"
+  }, [_c("div", {
+    staticClass: "col-md-4 float-right"
+  }, [_c("div", {
+    staticClass: "card"
+  }, [_c("div", {
+    staticClass: "card-header border-0"
+  }, [_c("h3", {
+    staticClass: "card-title"
+  }, [_vm._v("Online Store Overview")])]), _vm._v(" "), _c("div", {
+    staticClass: "card-body"
+  }, [_c("div", {
+    staticClass: "d-flex justify-content-between align-items-center border-bottom mb-3"
+  }, [_c("p", {
+    staticClass: "text-success text-xl"
+  }, [_c("i", {
+    staticClass: "ion ion-ios-refresh-empty"
+  })]), _vm._v(" "), _c("p", {
+    staticClass: "d-flex flex-column text-right"
+  }, [_c("span", {
+    staticClass: "font-weight-bold"
+  }, [_c("i", {
+    staticClass: "ion ion-android-arrow-up text-success"
+  }), _vm._v(" 12%\n                                    ")]), _vm._v(" "), _c("span", {
+    staticClass: "text-muted"
+  }, [_vm._v("CONVERSION RATE")])])]), _vm._v(" "), _c("div", {
+    staticClass: "d-flex justify-content-between align-items-center border-bottom mb-3"
+  }, [_c("p", {
+    staticClass: "text-warning text-xl"
+  }, [_c("i", {
+    staticClass: "ion ion-ios-cart-outline"
+  })]), _vm._v(" "), _c("p", {
+    staticClass: "d-flex flex-column text-right"
+  }, [_c("span", {
+    staticClass: "font-weight-bold"
+  }, [_c("i", {
+    staticClass: "ion ion-android-arrow-up text-warning"
+  }), _vm._v(" 0.8%\n                                    ")]), _vm._v(" "), _c("span", {
+    staticClass: "text-muted"
+  }, [_vm._v("SALES RATE")])])]), _vm._v(" "), _c("div", {
+    staticClass: "d-flex justify-content-between align-items-center mb-0"
+  }, [_c("p", {
+    staticClass: "text-danger text-xl"
+  }, [_c("i", {
+    staticClass: "ion ion-ios-people-outline"
+  })]), _vm._v(" "), _c("p", {
+    staticClass: "d-flex flex-column text-right"
+  }, [_c("span", {
+    staticClass: "font-weight-bold"
+  }, [_c("i", {
+    staticClass: "ion ion-android-arrow-down text-danger"
+  }), _vm._v(" 1%\n                                    ")]), _vm._v(" "), _c("span", {
+    staticClass: "text-muted"
+  }, [_vm._v("REGISTRATION RATE")])])])])])]), _vm._v(" "), _c("div", {
+    staticClass: "col-md-4"
   }, [_c("div", {
     staticClass: "card"
   }, [_c("div", {
     staticClass: "card-header"
-  }, [_vm._v("Dashboard Component")]), _vm._v(" "), _c("div", {
+  }, [_c("h3", {
+    staticClass: "card-title"
+  }, [_vm._v("Shipment Status")]), _vm._v(" "), _c("div", {
+    staticClass: "card-tools"
+  }, [_c("button", {
+    staticClass: "btn btn-tool nav-icon",
+    attrs: {
+      type: "button",
+      "data-card-widget": "collapse",
+      title: "Collapse"
+    }
+  }, [_c("i", {
+    staticClass: "fas fa-angle-down"
+  })])])]), _vm._v(" "), _c("div", {
     staticClass: "card-body"
-  }, [_vm._v("\n                    I'm an example component.\n                ")])])])])]);
+  }, [_c("table", {
+    staticClass: "table text-nowrap pointer"
+  }, [_c("tbody", [_c("tr", [_c("td", [_vm._v("Pending")]), _vm._v(" "), _c("td", [_vm._v("1"), _c("i", {
+    staticClass: "icon-size-sm fa fa-truck fa-bounce-long mx-2"
+  })])]), _vm._v(" "), _c("tr", [_c("td", [_vm._v("Scheduled")]), _vm._v(" "), _c("td", [_vm._v("2"), _c("i", {
+    staticClass: "icon-size-sm fa-regular fa-calendar-check mx-2"
+  })])]), _vm._v(" "), _c("tr", [_c("td", [_vm._v("Out For Delivery")]), _vm._v(" "), _c("td", [_vm._v("3"), _c("i", {
+    staticClass: "icon-size-sm fa fa-truck-fast fa-beat-fade mx-2"
+  })])]), _vm._v(" "), _c("tr", [_c("td", [_vm._v("Delivered")]), _vm._v(" "), _c("td", [_vm._v("9"), _c("i", {
+    staticClass: "icon-size-sm fa fa-truck-fast mx-2"
+  })])])])])])])])])])])]);
 }];
 render._withStripped = true;
 
@@ -86486,6 +86620,9 @@ window.Vue = __webpack_require__(/*! vue */ "./node_modules/vue/dist/vue.common.
 
 
 
+// import echarts from 'echarts'
+
+// import Chart from 'chart.js/auto';
 Vue.use(vue_router__WEBPACK_IMPORTED_MODULE_4__["default"]);
 var routes = [{
   path: '/dashboard',
