@@ -106,7 +106,8 @@ class DropOffController extends Controller
 
             $dropOff->update([
                 'driverId' => $request['driverId'],
-                'vehicleId' => $request['vehicleId']
+                'vehicleId' => $request['vehicleId'],
+                'status' => 'In Progress'
             ]);
 
         }

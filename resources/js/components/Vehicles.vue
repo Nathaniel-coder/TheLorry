@@ -108,6 +108,10 @@
                                                     v-show="!dropOff.driverId">
                                                     <i class="fa-solid fa-truck blue"></i>
                                                 </button>
+                                                <button class="btn btn-sm border border-success" toggle="tooltip"
+                                                    title="Assign Vehicle" @click="dropXml(dropOff.id)">
+                                                    <i class="fa-solid fa-qrcode green"></i>
+                                                </button>
                                             </td>
                                         </tr>
                                     </tbody>
@@ -153,6 +157,10 @@
                                                     title="Assign Vehicle" @click="assignPick(pickUp)"
                                                     v-show="!pickUp.driverId">
                                                     <i class="fa-solid fa-truck blue"></i>
+                                                </button>
+                                                <button class="btn btn-sm border border-success" toggle="tooltip"
+                                                    title="Assign Vehicle" @click="pickXml(pickUp.id)">
+                                                    <i class="fa-solid fa-qrcode green"></i>
                                                 </button>
                                             </td>
                                         </tr>
@@ -327,6 +335,7 @@ export default {
             dropOffs: {},
             pickUps: {},
             users: {},
+            qrcode: '',
             form: new Form({
                 id: "",
                 platno: "",
@@ -439,7 +448,7 @@ export default {
                     Swal.fire({
                         position: "center",
                         icon: "success",
-                        title: this.form.driverId + "is Assigned",
+                        title: this.form.driverId + " is Assigned",
                         showConfirmButton: true,
                         timer: 1500,
                     });
@@ -460,7 +469,7 @@ export default {
                     Swal.fire({
                         position: "center",
                         icon: "success",
-                        title: this.form.driverId + "is Assigned",
+                        title: this.form.driverId + " is Assigned",
                         showConfirmButton: true,
                         timer: 1500,
                     });
@@ -505,6 +514,28 @@ export default {
                 Fire.$emit("AfterCreated");
             });
         },
+        pickXml(id) {
+            axios.get("api/truckP/" + id)
+                .then(Swal.fire({
+                    position: "center",
+                    icon: "success",
+                    title: "XML is created",
+                    text: "Check your project public/XML file",
+                    showConfirmButton: true,
+                    timer: 1500,
+                }));
+        },
+        dropXml(id) {
+            axios.get("api/truckD/" + id)
+                .then(Swal.fire({
+                    position: "center",
+                    icon: "success",
+                    title: "XML is created",
+                    text: "Check your project public/XML file",
+                    showConfirmButton: true,
+                    timer: 1500,
+                }));
+        }
     },
     created() {
         Fire.$on('searching', () => {

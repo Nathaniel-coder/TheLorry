@@ -47,3 +47,11 @@ Route::put('profile', 'API\UserController@updateProfile');
 
 Route::get('dropOffCount', 'API\DropOffController@count');
 Route::get('pickUpCount', 'API\PickUpController@count');
+
+
+
+//XML Generator
+Route::get('truckD/{dropID}', 'API\XMLController@DropXML');
+Route::get('truckP/{pickID}', 'API\XMLController@PickXML');
+Route::get('items/{ID}', 'API\XMLController@WarehouseItem');
+

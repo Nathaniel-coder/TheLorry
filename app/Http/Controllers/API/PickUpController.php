@@ -109,7 +109,8 @@ class PickUpController extends Controller
 
             $pickUp->update([
                 'driverId' => $request['driverId'],
-                'vehicleId' => $request['vehicleId']
+                'vehicleId' => $request['vehicleId'],
+                'status' => 'In Progress'
             ]);
         }
     }

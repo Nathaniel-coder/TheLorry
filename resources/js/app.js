@@ -24,7 +24,7 @@ let routes = [
     { path: '/invoiceD', component: require('./components/Dashboard.vue').default },
     { path: '/invoiceP', component: require('./components/Dashboard.vue').default },
     { path: '/warehouse', component: require('./components/Warehouse.vue').default },
-    { path: '/dashboard', component: require('./components/Dashboard.vue').default },
+    { path: '/history', component: require('./components/History.vue').default },
     { path: '/dashboard', component: require('./components/Dashboard.vue').default },
     { path: '/dashboard', component: require('./components/Dashboard.vue').default },
     { path: '/dashboard', component: require('./components/Dashboard.vue').default },
