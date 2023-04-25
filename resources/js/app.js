@@ -29,7 +29,7 @@ let routes = [
     { path: '/warehouse', component: require('./components/Warehouse.vue').default },
     { path: '/history', component: require('./components/History.vue').default },
     { path: '/invoicePick', component: require('./components/PickUpInvoice.vue').default },
-    { path: '/dashboard', component: require('./components/Dashboard.vue').default },
+    { path: '/invoiceDrop', component: require('./components/DropOffInvoice.vue').default },
     { path: '/dashboard', component: require('./components/Dashboard.vue').default },
     { path: '/dashboard', component: require('./components/Dashboard.vue').default },
     { path: '/dashboard', component: require('./components/Dashboard.vue').default },
@@ -89,7 +89,7 @@ Vue.filter('myDate', function () {
 })
 
 Vue.filter('invoiceDate', function () {
-    return moment().format('myd');
+    return moment().format('YMMD');
 })
 Vue.filter('Date', function () {
     return moment().format('d/m/Y');

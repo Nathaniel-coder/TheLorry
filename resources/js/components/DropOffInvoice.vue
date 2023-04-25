@@ -336,7 +336,7 @@ export default {
             window.print();
         },
         generateInvoice() {
-            Axios.get('api/pickUp/' + this.profile.phone).then(({ data }) => this.invoice = data);
+            Axios.get('api/dropOff/' + this.profile.phone).then(({ data }) => this.invoice = data);
         },
         makePayment() {
             if (this.payment == false) {

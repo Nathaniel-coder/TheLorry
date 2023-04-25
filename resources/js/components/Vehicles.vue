@@ -18,7 +18,7 @@
                                 <h3 class="card-title">Vehicles</h3>
                                 <div class="card-tools">
                                     <button type="button" class="btn btn-tool" data-card-widget="collapse">
-                                        <i class="fas fa-minus"></i>
+                                        <i class="fas fa-minus text-dark"></i>
                                     </button>
                                     <button class="btn bg-blue" type="button" data-toggle="modal" data-target="#CreateEdit"
                                         @click="newModal()" toggle="tooltip" title="Create Staff">
@@ -78,7 +78,7 @@
                                 <h3 class="card-title">Asssign vehicle (Drop Off)</h3>
                                 <div class="card-tools">
                                     <button type="button" class="btn btn-tool" data-card-widget="collapse">
-                                        <i class="fas fa-minus"></i>
+                                        <i class="fas fa-minus text-dark"></i>
                                     </button>
                                 </div>
                             </div>
@@ -128,7 +128,7 @@
                                 <h3 class="card-title">Asssign vehicle (Pick Up)</h3>
                                 <div class="card-tools">
                                     <button type="button" class="btn btn-tool" data-card-widget="collapse">
-                                        <i class="fas fa-minus"></i>
+                                        <i class="fas fa-minus text-dark"></i>
                                     </button>
                                 </div>
                             </div>
@@ -524,13 +524,20 @@ export default {
                     showConfirmButton: true,
                     timer: 1500,
                 }));
-                window.open('', '_blank');
+            // window.open('', '_blank');
         },
         dropXml(id) {
             axios.get("api/truckD/" + id)
-                .then(({data})=>(this.qrcode = data));
-            window.open(this.qrcode, '_blank');
-        }
+                .then(Swal.fire({
+                    position: "center",
+                    icon: "success",
+                    title: "XML is created",
+                    text: "Check your project public/XML file",
+                    showConfirmButton: true,
+                    timer: 1500,
+                }));
+            // window.open(this.qrcode, '_blank');
+        },
     },
     created() {
         Fire.$on('searching', () => {

@@ -50,6 +50,8 @@ Route::put('profile', 'API\UserController@updateProfile');
 Route::get('dropOffCount', 'API\DropOffController@count');
 Route::get('pickUpCount', 'API\PickUpController@count');
 
+//CSV generator
+Route::get('csv', 'API\PickUpController@CSV');
 
 
 //XML Generator

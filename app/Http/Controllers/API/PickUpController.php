@@ -21,8 +21,8 @@ class PickUpController extends Controller
     public function index()
     {
         $user = auth('api')->user();
-        if($user->type == "Customer"){
-            return Pickup::where('name' ,'!=', $user->name)->orderByRaw('created_at', 'Desc')->paginate(5);
+        if ($user->type == "Customer") {
+            return Pickup::where('name', '!=', $user->name)->orderByRaw('created_at', 'Desc')->paginate(5);
         }
 
         return Pickup::orderByRaw('created_at', 'Desc')->paginate(5);
@@ -75,7 +75,6 @@ class PickUpController extends Controller
             'topostcode' => $request['toPostcode'],
             'tocity' => $request['toCity']
         ]);
-
     }
 
     /**
@@ -100,7 +99,7 @@ class PickUpController extends Controller
     {
         $user = auth('api')->user();
         // return ['message' => 'success'];
-        if($user->type == 'Staff' || $user->type == 'Administrator'){
+        if ($user->type == 'Staff' || $user->type == 'Administrator') {
             $pickUp = Pickup::findorFail($id);
             $this->validate($request, [
                 'driverId' => 'required',

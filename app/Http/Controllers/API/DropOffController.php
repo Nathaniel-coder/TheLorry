@@ -78,7 +78,7 @@ class DropOffController extends Controller
      */
     public function show($phone)
     {
-        return $data =  Dropoff::where('phone', $phone)->orderBy('created_at', 'DESC')->first();
+        return Dropoff::where('phone', $phone)->first();
     }
 
     public function branches()

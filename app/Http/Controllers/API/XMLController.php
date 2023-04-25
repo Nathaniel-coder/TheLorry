@@ -52,6 +52,7 @@ class XMLController extends Controller
         }
         $xml->asXML(public_path('/XML/Delivery/DropOff/dropOff' . $id . '.xml'));
         $xmlFilePath = public_path('/XML/Delivery/DropOff/dropOff' . $id . '.xml');
+        fopen($xmlFilePath, 'r');
         return $xmlFilePath;
         // return response()->download($path, 'dropOff' . $id . '.xml', ['Content-Type' => 'application/xml']);
         // return file_get_contents($xmlFilePath);
