@@ -76,9 +76,9 @@ class DropOffController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show($phone)
     {
-        //
+        return $data =  Dropoff::where('phone', $phone)->orderBy('created_at', 'DESC')->first();
     }
 
     public function branches()

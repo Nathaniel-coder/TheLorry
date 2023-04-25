@@ -555,18 +555,22 @@ export default {
         drop() {
             if (this.dropOff == false) {
                 this.dropOff = true;
+                this.pickUp = false;
                 this.mode = 'Drop Off';
             } else {
                 this.dropOff = false;
+                this.pickUp = false;
                 this.mode = 'New Delivery';
             }
         },
         pick() {
             if (this.pickUp == false) {
                 this.pickUp = true;
+                this.dropOff = false;
                 this.mode = 'Pick Up';
             } else {
                 this.pickUp = false;
+                this.dropOff = false;
                 this.mode = 'New Delivery';
             }
         },
@@ -599,7 +603,7 @@ export default {
                     text: "Redirecting to payment page"
                 })
                 this.$Progress.finish();
-                this.$router.push('/invoiceP');
+                this.$router.push('/invoicePick');
             }).catch(() => {
                 this.$Progress.fail();
                 Swal.fire({

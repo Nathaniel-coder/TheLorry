@@ -28,7 +28,7 @@ let routes = [
     { path: '/invoiceP', component: require('./components/Dashboard.vue').default },
     { path: '/warehouse', component: require('./components/Warehouse.vue').default },
     { path: '/history', component: require('./components/History.vue').default },
-    { path: '/dashboard', component: require('./components/Dashboard.vue').default },
+    { path: '/invoicePick', component: require('./components/PickUpInvoice.vue').default },
     { path: '/dashboard', component: require('./components/Dashboard.vue').default },
     { path: '/dashboard', component: require('./components/Dashboard.vue').default },
     { path: '/dashboard', component: require('./components/Dashboard.vue').default },
@@ -95,7 +95,7 @@ Vue.filter('Date', function () {
     return moment().format('d/m/Y');
 })
 Vue.filter('date', function () {
-    return moment().format('d-MM-Y');
+    return moment().format('D/MM/Y');
 })
 
 Vue.component('pagination', require('laravel-vue-semantic-ui-pagination'));
