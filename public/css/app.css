@@ -53067,6 +53067,10 @@ a.text-muted:hover {
   color: #d63384;
 }
 
+.bg-pink {
+  background: #d63384;
+}
+
 .pagination {
   display: inline-block;
   text-decoration: none;

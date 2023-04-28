@@ -126,6 +126,57 @@
                                                     <!-- <fieldset v-show="form.country">{{ branch.address1 }},{{ branch.address2 }},{{ branch.postcode }},{{ branch.province }},{{ branch.country }}</fieldset> -->
                                                 </div>
                                             </div>
+                                            <div class="form-group row">
+                                                <div class="col-lg-2 col-md-3">
+                                                    <label for="phone" class="pt-2">Height(CM) </label>
+                                                </div>
+                                                <div class="col-lg-10 col-md-9">
+                                                    <input id="height" v-model="form.height" class="form-control"
+                                                        type="number" step="0.01" name="height" placeholder="height"
+                                                        :class="{ 'is-invalid': form.errors.has('height') }" />
+                                                    <div v-if="form.errors.has('height')"
+                                                        v-html="form.errors.get('height')">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="form-group row">
+                                                <div class="col-lg-2 col-md-3">
+                                                    <label for="width" class="pt-2">Width(CM) </label>
+                                                </div>
+                                                <div class="col-lg-10 col-md-9">
+                                                    <input id="width" v-model="form.width" class="form-control"
+                                                        type="number" step="0.01" name="width" placeholder="width"
+                                                        :class="{ 'is-invalid': form.errors.has('width') }" />
+                                                    <div v-if="form.errors.has('width')" v-html="form.errors.get('width')">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="form-group row">
+                                                <div class="col-lg-2 col-md-3">
+                                                    <label for="length" class="pt-2">Length(CM) </label>
+                                                </div>
+                                                <div class="col-lg-10 col-md-9">
+                                                    <input id="length" v-model="form.length" class="form-control"
+                                                        type="number" step="0.01" name="length" placeholder="length"
+                                                        :class="{ 'is-invalid': form.errors.has('length') }" />
+                                                    <div v-if="form.errors.has('length')"
+                                                        v-html="form.errors.get('length')">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="form-group row">
+                                                <div class="col-lg-2 col-md-3">
+                                                    <label for="weigth" class="pt-2">Weigth(KG) </label>
+                                                </div>
+                                                <div class="col-lg-10 col-md-9">
+                                                    <input id="weight" v-model="form.weight" class="form-control"
+                                                        type="number" step="0.01" name="weight" placeholder="weight"
+                                                        :class="{ 'is-invalid': form.errors.has('weight') }" />
+                                                    <div v-if="form.errors.has('weight')"
+                                                        v-html="form.errors.get('weight')">
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -385,7 +436,57 @@
                                                     </div>
                                                 </div>
                                             </div>
-
+                                            <div class="form-group row">
+                                                <div class="col-lg-2 col-md-3">
+                                                    <label for="phone" class="pt-2">Height(CM) </label>
+                                                </div>
+                                                <div class="col-lg-10 col-md-9">
+                                                    <input id="height" v-model="form.height" class="form-control"
+                                                        type="number" step="0.01" name="height" placeholder="height"
+                                                        :class="{ 'is-invalid': form.errors.has('height') }" />
+                                                    <div v-if="form.errors.has('height')"
+                                                        v-html="form.errors.get('height')">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="form-group row">
+                                                <div class="col-lg-2 col-md-3">
+                                                    <label for="width" class="pt-2">Width(CM) </label>
+                                                </div>
+                                                <div class="col-lg-10 col-md-9">
+                                                    <input id="width" v-model="form.width" class="form-control"
+                                                        type="number" step="0.01" name="width" placeholder="width"
+                                                        :class="{ 'is-invalid': form.errors.has('width') }" />
+                                                    <div v-if="form.errors.has('width')" v-html="form.errors.get('width')">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="form-group row">
+                                                <div class="col-lg-2 col-md-3">
+                                                    <label for="length" class="pt-2">Length(CM) </label>
+                                                </div>
+                                                <div class="col-lg-10 col-md-9">
+                                                    <input id="length" v-model="form.length" class="form-control"
+                                                        type="number" step="0.01" name="length" placeholder="length"
+                                                        :class="{ 'is-invalid': form.errors.has('length') }" />
+                                                    <div v-if="form.errors.has('length')"
+                                                        v-html="form.errors.get('length')">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="form-group row">
+                                                <div class="col-lg-2 col-md-3">
+                                                    <label for="weigth" class="pt-2">Weigth(KG) </label>
+                                                </div>
+                                                <div class="col-lg-10 col-md-9">
+                                                    <input id="weight" v-model="form.weight" class="form-control"
+                                                        type="number" step="0.01" name="weight" placeholder="weight"
+                                                        :class="{ 'is-invalid': form.errors.has('weight') }" />
+                                                    <div v-if="form.errors.has('weight')"
+                                                        v-html="form.errors.get('weight')">
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -499,7 +600,8 @@
                                                         aria-label="Default select example"
                                                         :class="{ 'is-invalid': form.errors.has('branch') }">
                                                         <option v-for="branch in branches" :key="branch.id"
-                                                            v-show="branch.country == form.country">{{ branch.country }}</option>
+                                                            v-show="branch.country == form.country">{{ branch.country }}
+                                                        </option>
                                                     </select>
                                                 </div>
                                             </div>
@@ -535,6 +637,10 @@ export default {
                 name: "",
                 phone: "",
                 country: "",
+                weight: "",
+                height: "",
+                width: "",
+                length: "",
                 address1: "",
                 address2: "",
                 postcode: "",
@@ -583,7 +689,7 @@ export default {
                     text: "Redirecting to payment page"
                 })
                 this.$Progress.finish();
-                this.$router.push('/invoiceD');
+                this.$router.push('/invoiceDrop');
             }).catch(() => {
                 this.$Progress.fail();
                 Swal.fire({
@@ -624,6 +730,7 @@ export default {
     created() {
         this.load();
         Axios.get("api/profile").then(({ data }) => this.form.fill(data));
+        this.weight = this.height*this.width*this.length;
     }
 }
 </script>

@@ -62,12 +62,12 @@
                             <table class="table table-striped">
                                 <thead>
                                     <tr>
-                                        <th>Description</th>
-                                        <th>Quantité</th>
-                                        <th>Unité</th>
-                                        <th>PU HT</th>
-                                        <th>TVA</th>
-                                        <th>Total HT</th>
+                                        <th>Type</th>
+                                            <th>Weight</th>
+                                            <th>Height</th>
+                                            <th>Width</th>
+                                            <th>length</th>
+                                            <th>Total (RM)</th>
                                     </tr>
                                 </thead>
                                 <tbody>

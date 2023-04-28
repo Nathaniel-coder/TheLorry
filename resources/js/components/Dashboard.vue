@@ -4,7 +4,7 @@
             <div class="container-fluid">
                 <div class="row mb-2">
                     <div class="col-sm-6">
-                        <h1>Vehicles</h1>
+                        <h1>Dashboard</h1>
                     </div>
                 </div>
             </div>
@@ -14,13 +14,26 @@
                 <div class="row">
                     <div class="col-lg-3 col-6">
 
-                        <div class="small-box bg-info">
-                            <div class="inner">
-                                <h3>150</h3>
-                                <p>New Orders</p>
+                        <div class="small-box" style="background: #f87979;">
+                            <div class="inner text-white">
+                                <h3>{{ drop }}</h3>
+                                <p>Drop Off</p>
                             </div>
                             <div class="icon">
-                                <i class="ion ion-bag"></i>
+                                <i class="fas fa-shop"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-3 col-6">
+
+                        <div class="small-box" style="background-color: #36a2eb;">
+                            <div class="inner text-white">
+                                <h3>{{ pick }}</h3>
+                                <p>Pick Up</p>
+                            </div>
+                            <div class="icon">
+                                <i class="fa-solid fa-truck-ramp-box"></i>
                             </div>
                         </div>
                     </div>
@@ -29,24 +42,11 @@
 
                         <div class="small-box bg-success">
                             <div class="inner">
-                                <h3>53<sup style="font-size: 20px">%</sup></h3>
+                                <h3>{{ count[2] }} %</h3>
                                 <p>Bounce Rate</p>
                             </div>
                             <div class="icon">
-                                <i class="ion ion-stats-bars"></i>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="col-lg-3 col-6">
-
-                        <div class="small-box bg-warning">
-                            <div class="inner">
-                                <h3>44</h3>
-                                <p>User Registrations</p>
-                            </div>
-                            <div class="icon">
-                                <i class="ion ion-person-add"></i>
+                                <i class="fas fa-chart-column"></i>
                             </div>
                         </div>
                     </div>
@@ -55,96 +55,59 @@
 
                         <div class="small-box bg-danger">
                             <div class="inner">
-                                <h3>65</h3>
-                                <p>Unique Visitors</p>
+                                <h3>RM {{ count[1] }}</h3>
+                                <p>Today Sales</p>
                             </div>
                             <div class="icon">
-                                <i class="ion ion-pie-graph"></i>
+                                <i class="fas fa-chart-pie"></i>
                             </div>
                         </div>
                     </div>
-
                 </div>
-                <div class="row">
-                    <div class="col-md-4 float-right">
+
+                <div class="row d-flex justify-content-around">
+                    <div class="col-md-8">
                         <div class="card">
-                            <div class="card-header border-0">
-                                <h3 class="card-title">Online Store Overview</h3>
-                            </div>
+                            <!-- <div class="card-header">
+                                <h3 class="card-title">Delivery chart</h3>
+                            </div> -->
                             <div class="card-body">
-                                <div class="d-flex justify-content-between align-items-center border-bottom mb-3">
-                                    <p class="text-success text-xl">
-                                        <i class="ion ion-ios-refresh-empty"></i>
-                                    </p>
-                                    <p class="d-flex flex-column text-right">
-                                        <span class="font-weight-bold">
-                                            <i class="ion ion-android-arrow-up text-success"></i> 12%
-                                        </span>
-                                        <span class="text-muted">CONVERSION RATE</span>
-                                    </p>
-                                </div>
-
-                                <div class="d-flex justify-content-between align-items-center border-bottom mb-3">
-                                    <p class="text-warning text-xl">
-                                        <i class="ion ion-ios-cart-outline"></i>
-                                    </p>
-                                    <p class="d-flex flex-column text-right">
-                                        <span class="font-weight-bold">
-                                            <i class="ion ion-android-arrow-up text-warning"></i> 0.8%
-                                        </span>
-                                        <span class="text-muted">SALES RATE</span>
-                                    </p>
-                                </div>
-
-                                <div class="d-flex justify-content-between align-items-center mb-0">
-                                    <p class="text-danger text-xl">
-                                        <i class="ion ion-ios-people-outline"></i>
-                                    </p>
-                                    <p class="d-flex flex-column text-right">
-                                        <span class="font-weight-bold">
-                                            <i class="ion ion-android-arrow-down text-danger"></i> 1%
-                                        </span>
-                                        <span class="text-muted">REGISTRATION RATE</span>
-                                    </p>
-                                </div>
-
+                                <canvas ref="chart" height="325"></canvas>
                             </div>
                         </div>
                     </div>
                     <div class="col-md-4">
-                        <div class="card">
-                            <div class="card-header">
-                                <h3 class="card-title">Shipment Status</h3>
-                                <div class="card-tools">
-                                    <button type="button" class="btn btn-tool nav-icon" data-card-widget="collapse"
-                                        title="Collapse">
-                                        <i class="fas fa-angle-down"></i>
-                                    </button>
 
-                                </div>
+                        <div class="info-box mb-3 bg-orange">
+                            <span class="info-box-icon"><i class="fas fa-tag text-white"></i></span>
+                            <div class="info-box-content">
+                                <span class="info-box-text text-white">Inventory</span>
+                                <span class="info-box-number text-white">{{ count[3] }}</span>
                             </div>
-                            <div class="card-body">
-                                <table class="table text-nowrap pointer">
-                                    <tbody>
-                                        <tr>
-                                            <td>Pending</td>
-                                            <td>1<i class="icon-size-sm fa fa-truck fa-bounce-long mx-2"></i></td>
-                                        </tr>
-                                        <tr>
-                                            <td>Scheduled</td>
-                                            <td>2<i class="icon-size-sm fa-regular fa-calendar-check mx-2"></i>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td>Out For Delivery</td>
-                                            <td>3<i class="icon-size-sm fa fa-truck-fast fa-beat-fade mx-2"></i></td>
-                                        </tr>
-                                        <tr>
-                                            <td>Delivered</td>
-                                            <td>9<i class="icon-size-sm fa fa-truck-fast mx-2"></i></td>
-                                        </tr>
-                                    </tbody>
-                                </table>
+                        </div>
+
+                        <div class="info-box mb-3 bg-danger">
+                            <span class="info-box-icon"><i class="far fa-heart"></i></span>
+                            <div class="info-box-content">
+                                <span class="info-box-text">Mentions</span>
+                                <span class="info-box-number">92,050</span>
+                            </div>
+                        </div>
+
+                        <div class="info-box mb-3 bg-green pointer" type="button" @click="downloadCSV()" toggle="tooltip"
+                            title="Financial Report">
+                            <span class="info-box-icon"><i class="fas fa-file-excel"></i></span>
+                            <div class="info-box-content">
+                                <span class="info-box-text">Total Generated</span>
+                                <span class="info-box-number">RM {{ count[4] }}</span>
+                            </div>
+                        </div>
+
+                        <div class="info-box mb-3 bg-info">
+                            <span class="info-box-icon"><i class="far fa-comment"></i></span>
+                            <div class="info-box-content">
+                                <span class="info-box-text">Direct Messages</span>
+                                <span class="info-box-number">163,921</span>
                             </div>
                         </div>
                     </div>
@@ -155,17 +118,57 @@
 </template>
 
 <script>
+import Axios from 'axios';
+import Chart from 'chart.js';
 export default {
     data() {
         return {
-
+            drop: '',
+            pick: '',
+            pickUps: {},
+            dropOffs: {},
+            modal: '',
+            count:'',
         }
     },
     mounted() {
         console.log('Component Mounted');
     },
     methods: {
-
+        downloadCSV() {
+            Axios.get("/csv", { responseType: 'arraybuffer' }).then(response => {
+                var fileURL = window.URL.createObjectURL(new Blob([response.data]));
+                var fileLink = document.createElement('a');
+                fileLink.href = fileURL;
+                fileLink.setAttribute('download', 'Financial Report.xlsx');
+                document.body.appendChild(fileLink);
+                fileLink.click();
+            })
+        },
+        renderChart(data) {
+            new Chart(this.$refs.chart, {
+                type: 'pie',
+                data: {
+                    labels: data.map(data => data.label),
+                    datasets: [{
+                        backgroundColor: ['#f87979', '#36a2eb'],
+                        data: data.map(data => data.value)
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false
+                }
+            });
+        },
+    },
+    created() {
+        axios.get('api/dropOffCount').then(({ data }) => (this.drop = data));
+        axios.get('api/pickUpCount').then(({ data }) => (this.pick = data));
+        axios.get('api/dropData').then(({ data }) => (this.pickUps = data));
+        axios.get('api/pickData').then(({ data }) => (this.dropOffs = data));
+        axios.get('api/dashboard').then(({ data }) => (this.count = data));
+        axios.get('api/chart').then(response => { this.renderChart(response.data) });
     }
 }
 </script>

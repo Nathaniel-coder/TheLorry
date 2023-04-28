@@ -54,6 +54,10 @@ class PickUpController extends Controller
             'toCity' => 'required|string|max:191',
             'toProvince' => 'required|string|max:191',
             'toCountry' => 'required|string|max:191',
+            'height' => 'required',
+            'length' => 'required',
+            'width' => 'required',
+            'weight' => 'required'
         ]);
 
         return Pickup::create([
@@ -73,7 +77,13 @@ class PickUpController extends Controller
             'toaddress1' => $request['toAddress1'],
             'toaddress2' => $request['toAddress2'],
             'topostcode' => $request['toPostcode'],
-            'tocity' => $request['toCity']
+            'tocity' => $request['toCity'],
+            'height' => $request['height'],
+            'length' => $request['length'],
+            'width' => $request['width'],
+            'weight' => $request['weight'],
+            'price' => $request['weight']*6
+
         ]);
     }
 

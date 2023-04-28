@@ -21,7 +21,7 @@
                             class="fas fa-bars"></i></a>
                 </li>
                 <li class="nav-item d-none d-sm-inline-block">
-                    <a href="index3.html" class="nav-link">Home</a>
+                    <router-link to="/home" class="nav-link">Home</router-link>
                 </li>
                 <li class="nav-item d-none d-sm-inline-block">
                     <a href="#" class="nav-link">Contact</a>
@@ -29,31 +29,13 @@
             </ul>
 
             <ul class="navbar-nav ml-auto">
-
-                {{-- <li class="nav-item">
-                    <a class="nav-link" data-widget="navbar-search" href="#" role="button">
-                        <i class="fas fa-search"></i>
-                    </a>
-                    <div class="navbar-search-block">
-                        <form class="form-inline">
-                            <div class="input-group input-group-sm">
-                                <input class="form-control form-control-navbar" @keyup.enter="searchit" v-model="search"
-                                    type="search" placeholder="Search" aria-label="Search">
-                                <div class="input-group-append">
-                                    <button class="btn btn-navbar" type="submit" @click="searchit">
-                                        <i class="fas fa-search"></i>
-                                    </button>
-                                    <button class="btn btn-navbar" type="button" data-widget="navbar-search">
-                                        <i class="fas fa-times"></i>
-                                    </button>
-                                </div>
-                            </div>
-                        </form>
-                    </div>
-                </li> --}}
-
                 <li class="nav-item">
-                    <a class="nav-link" data-widget="fullscreen" href="#" role="button">
+                    <a class="nav-link" href="rateXML" role="button" toggle="tooltip" title="Rates">
+                        <i class="fa-solid fa-money-bill-1"></i>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" data-widget="fullscreen" href="#" role="button" toggle="tooltip" title="Full Screen">
                         <i class="fas fa-expand-arrows-alt"></i>
                     </a>
                 </li>
@@ -64,11 +46,11 @@
 
         <aside class="main-sidebar sidebar-dark-primary elevation-4">
 
-            <a href="index3.html" class="brand-link">
+            <router-link to="/home" class="brand-link">
                 <img src="dist/img/AdminLTELogo.png" alt="AdminLTE Logo" class="brand-image img-circle elevation-3"
                     style="opacity: .8">
                 <span class="brand-text font-weight-light">AdminLTE 3</span>
-            </a>
+            </router-link>
 
             <div class="sidebar">
 
@@ -97,15 +79,12 @@
                 <nav class="mt-2">
                     <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu"
                         data-accordion="false">
-
-                        @can('isAdministrator')
                             <li class="nav-item">
-                                <router-link to="/dashboard" class="nav-link">
+                                <router-link to="/home" class="nav-link">
                                     <i class="fa-solid fa-gauge-high nav-icon"></i>
                                     <p>Dashboard</p>
                                 </router-link>
                             </li>
-                        @endcan
                         <li class="nav-item">
                             <router-link to="/delivery" class="nav-link">
                                 <i class="fa-solid fa-truck-fast nav-icon"></i>
@@ -157,6 +136,14 @@
                                     Warehouse
                                 </p>
                                 </router-li>
+                        </li>
+                        <li class="nav-item">
+                            <a href={{ url('receipt&Invoice') }} class="nav-link">
+                                <i class="nav-icon fa-solid fa-clock-rotate-left"></i>
+                                <p>
+                                    History
+                                </p>
+                            </a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" href="{{ route('logout') }}"

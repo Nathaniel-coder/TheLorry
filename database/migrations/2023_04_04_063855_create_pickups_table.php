@@ -36,6 +36,11 @@ class CreatePickupsTable extends Migration
             $table->string('vehicleId')->nullable();
             $table->string('status')->nullable();
             $table->string('picture')->nullable();
+            $table->string('weight');
+            $table->string('height');
+            $table->string('length');
+            $table->string('width');
+            $table->string('price');
             $table->timestamps();
         });
     }

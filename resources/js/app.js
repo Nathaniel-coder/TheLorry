@@ -12,33 +12,21 @@ import VueProgressBar from 'vue-progressbar'
 import { Form, Errors } from 'vform';
 import Swal from 'sweetalert2';
 import VueRouter from 'vue-router';
-// import echarts from 'echarts'
+import Chart from 'chart.js';
+import MapChart from 'vue-map-chart';
 
-// import Chart from 'chart.js/auto';
 Vue.use(VueRouter)
 
 let routes = [
-    { path: '/dashboard', component: require('./components/Dashboard.vue').default },
     { path: '/profile', component: require('./components/Profile.vue').default },
+    { path: '/home', component: require('./components/Dashboard.vue').default },
     { path: '/staff', component: require('./components/Staff.vue').default },
     { path: '/branches', component: require('./components/Branches.vue').default },
     { path: '/vehicles', component: require('./components/Vehicles.vue').default },
     { path: '/delivery', component: require('./components/NewDelivery.vue').default },
-    { path: '/invoiceD', component: require('./components/Dashboard.vue').default },
-    { path: '/invoiceP', component: require('./components/Dashboard.vue').default },
     { path: '/warehouse', component: require('./components/Warehouse.vue').default },
-    { path: '/history', component: require('./components/History.vue').default },
     { path: '/invoicePick', component: require('./components/PickUpInvoice.vue').default },
     { path: '/invoiceDrop', component: require('./components/DropOffInvoice.vue').default },
-    { path: '/dashboard', component: require('./components/Dashboard.vue').default },
-    { path: '/dashboard', component: require('./components/Dashboard.vue').default },
-    { path: '/dashboard', component: require('./components/Dashboard.vue').default },
-    { path: '/dashboard', component: require('./components/Dashboard.vue').default },
-    { path: '/dashboard', component: require('./components/Dashboard.vue').default },
-    { path: '/dashboard', component: require('./components/Dashboard.vue').default },
-    { path: '/dashboard', component: require('./components/Dashboard.vue').default },
-    { path: '/dashboard', component: require('./components/Dashboard.vue').default },
-    { path: '/dashboard', component: require('./components/Dashboard.vue').default },
 
   ]
 

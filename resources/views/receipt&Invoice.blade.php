@@ -21,7 +21,7 @@
                             class="fas fa-bars"></i></a>
                 </li>
                 <li class="nav-item d-none d-sm-inline-block">
-                    <a href="index3.html" class="nav-link">Home</a>
+                    <a href="/home" class="nav-link">Home</a>
                 </li>
                 <li class="nav-item d-none d-sm-inline-block">
                     <a href="#" class="nav-link">Contact</a>
@@ -45,7 +45,7 @@
 
         <aside class="main-sidebar sidebar-dark-primary elevation-4">
 
-            <a href="index3.html" class="brand-link">
+            <a href="/home" class="brand-link">
                 <img src="dist/img/AdminLTELogo.png" alt="AdminLTE Logo" class="brand-image img-circle elevation-3"
                     style="opacity: .8">
                 <span class="brand-text font-weight-light">AdminLTE 3</span>
@@ -78,15 +78,12 @@
                 <nav class="mt-2">
                     <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu"
                         data-accordion="false">
-
-                        @can('isAdministrator')
                             <li class="nav-item">
-                                <a href="/dashboard" class="nav-link">
+                                <a href="/home" class="nav-link">
                                     <i class="fa-solid fa-gauge-high nav-icon"></i>
                                     <p>Dashboard</p>
                                 </a>
                             </li>
-                        @endcan
                         <li class="nav-item">
                             <a href="/delivery" class="nav-link">
                                 <i class="fa-solid fa-truck-fast nav-icon"></i>
@@ -199,7 +196,12 @@
                                                     Drop Off
                                                 </h3>
                                                 <div class="card-tools">
-                                                    <a href="dropCSV" type="button" class="btn btn-tool bg-green" toggle="tooltip" title="Generate CSV">
+                                                    <a href="DAXML" type="button" class="btn btn-tool bg-purple"
+                                                        toggle="tooltip" title="Generate XML">
+                                                        <i class="fa-solid fa-file-code text-white"></i>
+                                                    </a>
+                                                    <a href="dropCSV" type="button" class="btn btn-tool bg-green"
+                                                        toggle="tooltip" title="Download CSV">
                                                         <i class="fa-solid fa-file-excel text-white"></i>
                                                     </a>
                                                 </div>
@@ -269,16 +271,25 @@
                                                                     {{ $dropOff->status ? $dropOff->status : 'Unpaid' }}
                                                                 </td>
                                                                 <td>
-                                                                    <a class="btn bg-orange" toggle="tooltip"
-                                                                        title="Generate Invoice"
-                                                                        href="invoiceDropOff/{{ $dropOff->id }}">
-                                                                        <i class="fa-solid fa-file-lines text-white"></i>
-                                                                    </a>
                                                                     <a class="btn bg-purple" toggle="tooltip"
                                                                         title="Generate XML"
                                                                         href="dropXML/{{ $dropOff->id }}">
-                                                                        <i class="fa-solid fa-qrcode"></i>
+                                                                        <i class="fa-solid fa-code text-white"></i>
                                                                     </a>
+                                                                    @if ($dropOff->status && $dropOff->status != 'Unpaid')
+                                                                        <a class="btn bg-orange" toggle="tooltip"
+                                                                            title="Generate Invoice"
+                                                                            href="invoiceDropOff/{{ $dropOff->id }}">
+                                                                            <i
+                                                                                class="fa-solid fa-file-lines text-white"></i>
+                                                                        </a>
+                                                                        <a class="btn bg-dark" toggle="tooltip"
+                                                                            title="Download QRCODE"
+                                                                            href="dropQR/{{ $dropOff->id }}">
+                                                                            <i
+                                                                                class="fa-solid fa-qrcode text-white"></i>
+                                                                        </a>
+                                                                    @endif
                                                                 </td>
                                                             </tr>
                                                         @endforeach
@@ -295,7 +306,12 @@
                                             <div class="card-header">
                                                 <h3 class="card-title">Pick Up</h3>
                                                 <div class="card-tools">
-                                                    <a href="pickCSV" type="button" class="btn btn-tool bg-green" toggle="tooltip" title="Generate CSV">
+                                                    <a href="PAXML" type="button" class="btn btn-tool bg-purple"
+                                                        toggle="tooltip" title="Generate XML">
+                                                        <i class="fa-solid fa-file-code text-white"></i>
+                                                    </a>
+                                                    <a href="pickCSV" type="button" class="btn btn-tool bg-green"
+                                                        toggle="tooltip" title="Download CSV">
                                                         <i class="fa-solid fa-file-excel text-white"></i>
                                                     </a>
                                                 </div>
@@ -309,8 +325,9 @@
                                                             <th>Date</th>
                                                             <th>Sender</th>
                                                             <th>Receiver</th>
-                                                            <th>Origin</th>
-                                                            <th>Destined</th>
+                                                            <th>Origin Address</th>
+                                                            <th>Destined Address</th>
+                                                            <th>Status</th>
                                                             <th>Action</th>
                                                         </tr>
                                                     </thead>
@@ -356,16 +373,28 @@
                                                                     {{ Str::limit($pickUp->toaddress1 . ', ' . $pickUp->toaddress2 . ', ' . $pickUp->topostcode . ', ' . $pickUp->tocity . ', ' . $pickUp->toprovince . ', ' . $pickUp->tocountry, 30) }}
                                                                 </td>
                                                                 <td>
-                                                                    <a class="btn bg-orange" toggle="tooltip"
-                                                                        title="Generate Invoice"
-                                                                        href="invoicePickUP/{{ $pickUp->id }}">
-                                                                        <i class="fa-solid fa-file-lines text-white"></i>
-                                                                    </a>
+                                                                    {{ $pickUp->status ? $pickUp->status : 'Unpaid' }}
+                                                                </td>
+                                                                <td>
                                                                     <a class="btn bg-purple" toggle="tooltip"
                                                                         title="Generate XML"
                                                                         href="pickXML/{{ $pickUp->id }}">
-                                                                        <i class="fa-solid fa-qrcode white"></i>
+                                                                        <i class="fa-solid fa-code white"></i>
                                                                     </a>
+                                                                    @if ($pickUp->status && $pickUp->status != 'Unpaid')
+                                                                        <a class="btn bg-orange" toggle="tooltip"
+                                                                            title="Generate Receipt"
+                                                                            href="invoicePickUP/{{ $pickUp->id }}">
+                                                                            <i
+                                                                                class="fa-solid fa-file-lines text-white"></i>
+                                                                        </a>
+                                                                        <a class="btn bg-dark" toggle="tooltip"
+                                                                            title="Download QRCODE"
+                                                                            href="pickQR/{{ $pickUp->id }}">
+                                                                            <i
+                                                                                class="fa-solid fa-qrcode text-white"></i>
+                                                                        </a>
+                                                                    @endif
                                                                 </td>
                                                             </tr>
                                                         @endforeach

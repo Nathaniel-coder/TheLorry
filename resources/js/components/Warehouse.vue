@@ -23,6 +23,12 @@
                             <div class="card-header">
                                 <h3 class="card-title">Warehouse</h3>
                                 <div class="card-tools">
+                                    <div class="card-tools">
+                                        <button type="button" class="btn btn-tool bg-green" toggle="tooltip"
+                                            title="Generate CSV" @click="generateCSV()">
+                                            <i class="fa-solid fa-file-excel text-white"></i>
+                                        </button>
+                                    </div>
                                     <button class="btn bg-blue" type="button" data-toggle="modal" data-target="#CreateEdit"
                                         @click="newModal()" toggle="tooltip" title="Create Staff"
                                         v-show="user.type == 'Merchant'">
@@ -42,7 +48,7 @@
                                             <th>Height(CM)</th>
                                             <th>Length(CM)</th>
                                             <th>Width(CM)</th>
-                                            <th v-show="user.type!='Merchant'">Merchant</th>
+                                            <th v-show="user.type != 'Merchant'">Merchant</th>
                                             <th>Action</th>
                                         </tr>
                                     </thead>
@@ -55,7 +61,7 @@
                                             <td>{{ item.height }}</td>
                                             <td>{{ item.length }}</td>
                                             <td>{{ item.width }}</td>
-                                            <td v-show="user.type!='Merchant'">{{ item.user }}</td>
+                                            <td v-show="user.type != 'Merchant'">{{ item.user }}</td>
                                             <td>
                                                 <button class="btn bg-orange" toggle="tooltip" title="Edit Staff"
                                                     @click="editModal(item)" v-show="user.type == 'Merchant'">
@@ -380,6 +386,16 @@ export default {
         },
         loadall() {
             Axios.get("api/warehouse").then(({ data }) => (this.items = data));
+        },
+        generateCSV() {
+            Axios.get("/warehouseCSV", {responseType: 'arraybuffer'}).then(response => {
+                var fileURL = window.URL.createObjectURL(new Blob([response.data]));
+                var fileLink = document.createElement('a');
+                fileLink.href = fileURL;
+                fileLink.setAttribute('download', 'Warehouse.xlsx');
+                document.body.appendChild(fileLink);
+                fileLink.click();
+            })
         }
     },
     mounted() {

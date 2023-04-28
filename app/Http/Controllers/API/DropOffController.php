@@ -51,7 +51,14 @@ class DropOffController extends Controller
             'toAddress2' => 'required|string|max:191',
             'toPostcode' => 'required|string|max:191',
             'toCity' => 'required|string|max:191',
+            'height' => 'required',
+            'length' => 'required',
+            'width' => 'required',
+            'weight' => 'required'
         ]);
+
+
+
 
         return DropOff::create([
             'date' => $request['date'],
@@ -66,7 +73,12 @@ class DropOffController extends Controller
             'toaddress1' => $request['toAddress1'],
             'toaddress2' => $request['toAddress2'],
             'topostcode' => $request['toPostcode'],
-            'tocity' => $request['toCity']
+            'tocity' => $request['toCity'],
+            'height' => $request['height'],
+            'length' => $request['length'],
+            'width' => $request['width'],
+            'weight' => $request['weight'],
+            'price' => $request['weight']*4
         ]);
     }
 

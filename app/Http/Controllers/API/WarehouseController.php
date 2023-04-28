@@ -41,6 +41,7 @@ class WarehouseController extends Controller
     public function store(Request $request)
     {
         $user = auth('api')->user();
+        $data = Shop::where('userId', $user->id)->get();
         // return $shop->id;
         if ($user->type == "Merchant") {
             $this->validate($request, [
@@ -54,7 +55,7 @@ class WarehouseController extends Controller
             ]);
 
             return Warehouse::create([
-                'user' => $user->name,
+                'user' => $data->shopname,
                 'name' => $request['name'],
                 'category' => $request['category'],
                 'quantity' => $request['quantity'],

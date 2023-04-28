@@ -47,11 +47,11 @@ Route::get('shop', 'API\UserController@Shop');
 Route::put('profile', 'API\UserController@updateProfile');
 
 
-Route::get('dropOffCount', 'API\DropOffController@count');
-Route::get('pickUpCount', 'API\PickUpController@count');
+Route::get('dropOffCount', 'API\DashboardController@DropCount');
+Route::get('pickUpCount', 'API\DashboardController@PickCount');
+Route::get('chart', 'API\DashboardController@chart');
+Route::get('generated', 'API\DashboardController@totalGenerated');
 
-//CSV generator
-Route::get('csv', 'API\PickUpController@CSV');
 
 
 //XML Generator

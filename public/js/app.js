@@ -2085,14 +2085,86 @@ __webpack_require__.r(__webpack_exports__);
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
+/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! axios */ "./node_modules/axios/index.js");
+/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(axios__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var chart_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! chart.js */ "./node_modules/chart.js/dist/chart.js");
+/* harmony import */ var chart_js__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(chart_js__WEBPACK_IMPORTED_MODULE_1__);
+
+
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
-    return {};
+    return {
+      drop: '',
+      pick: '',
+      pickUps: {},
+      dropOffs: {},
+      modal: '',
+      count: ''
+    };
   },
   mounted: function mounted() {
     console.log('Component Mounted');
   },
-  methods: {}
+  methods: {
+    downloadCSV: function downloadCSV() {
+      axios__WEBPACK_IMPORTED_MODULE_0___default.a.get("/csv", {
+        responseType: 'arraybuffer'
+      }).then(function (response) {
+        var fileURL = window.URL.createObjectURL(new Blob([response.data]));
+        var fileLink = document.createElement('a');
+        fileLink.href = fileURL;
+        fileLink.setAttribute('download', 'Financial Report.xlsx');
+        document.body.appendChild(fileLink);
+        fileLink.click();
+      });
+    },
+    renderChart: function renderChart(data) {
+      new chart_js__WEBPACK_IMPORTED_MODULE_1___default.a(this.$refs.chart, {
+        type: 'pie',
+        data: {
+          labels: data.map(function (data) {
+            return data.label;
+          }),
+          datasets: [{
+            backgroundColor: ['#f87979', '#36a2eb'],
+            data: data.map(function (data) {
+              return data.value;
+            })
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false
+        }
+      });
+    }
+  },
+  created: function created() {
+    var _this = this;
+    axios.get('api/dropOffCount').then(function (_ref) {
+      var data = _ref.data;
+      return _this.drop = data;
+    });
+    axios.get('api/pickUpCount').then(function (_ref2) {
+      var data = _ref2.data;
+      return _this.pick = data;
+    });
+    axios.get('api/dropData').then(function (_ref3) {
+      var data = _ref3.data;
+      return _this.pickUps = data;
+    });
+    axios.get('api/pickData').then(function (_ref4) {
+      var data = _ref4.data;
+      return _this.dropOffs = data;
+    });
+    axios.get('api/dashboard').then(function (_ref5) {
+      var data = _ref5.data;
+      return _this.count = data;
+    });
+    axios.get('api/chart').then(function (response) {
+      _this.renderChart(response.data);
+    });
+  }
 });
 
 /***/ }),
@@ -2178,55 +2250,6 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 
-/***/ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/History.vue?vue&type=script&lang=js&":
-/*!******************************************************************************************************************************************************************!*\
-  !*** ./node_modules/babel-loader/lib??ref--4-0!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/History.vue?vue&type=script&lang=js& ***!
-  \******************************************************************************************************************************************************************/
-/*! exports provided: default */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony import */ var vform__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! vform */ "./node_modules/vform/dist/vform.es.js");
-/* harmony import */ var sweetalert2__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! sweetalert2 */ "./node_modules/sweetalert2/dist/sweetalert2.all.js");
-/* harmony import */ var sweetalert2__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(sweetalert2__WEBPACK_IMPORTED_MODULE_1__);
-/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! axios */ "./node_modules/axios/index.js");
-/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(axios__WEBPACK_IMPORTED_MODULE_2__);
-
-
-
-/* harmony default export */ __webpack_exports__["default"] = ({
-  props: ["profile"],
-  data: function data() {
-    return {
-      dropOffs: {},
-      pickUps: {}
-    };
-  },
-  mounted: function mounted() {
-    console.log("Component mounted.");
-  },
-  created: function created() {
-    this.loadDropOff();
-    console.log(this.dropOffs.data);
-  },
-  methods: {
-    loadDropOff: function loadDropOff() {
-      var _this = this;
-      axios.get("api/dropOff").then(function (_ref) {
-        var data = _ref.data;
-        return _this.dropOffs = data;
-      });
-      axios.get("api/pickUp").then(function (_ref2) {
-        var data = _ref2.data;
-        return _this.pickUps = data;
-      });
-    }
-  }
-});
-
-/***/ }),
-
 /***/ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/NewDelivery.vue?vue&type=script&lang=js&":
 /*!**********************************************************************************************************************************************************************!*\
   !*** ./node_modules/babel-loader/lib??ref--4-0!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/NewDelivery.vue?vue&type=script&lang=js& ***!
@@ -2257,6 +2280,10 @@ __webpack_require__.r(__webpack_exports__);
         name: "",
         phone: "",
         country: "",
+        weight: "",
+        height: "",
+        width: "",
+        length: "",
         address1: "",
         address2: "",
         postcode: "",
@@ -2307,7 +2334,7 @@ __webpack_require__.r(__webpack_exports__);
           text: "Redirecting to payment page"
         });
         _this.$Progress.finish();
-        _this.$router.push('/invoiceD');
+        _this.$router.push('/invoiceDrop');
       })["catch"](function () {
         _this.$Progress.fail();
         sweetalert2__WEBPACK_IMPORTED_MODULE_1___default.a.fire({
@@ -2357,6 +2384,7 @@ __webpack_require__.r(__webpack_exports__);
       var data = _ref4.data;
       return _this4.form.fill(data);
     });
+    this.weight = this.height * this.width * this.length;
   }
 });
 
@@ -2956,23 +2984,6 @@ __webpack_require__.r(__webpack_exports__);
         timer: 1500
       }));
       // window.open(this.qrcode, '_blank');
-    },
-    csv: function csv() {
-      axios.get("api/csv").then(fetch('/api/csv').then(function (response) {
-        if (!response.ok) {
-          throw new Error('Network response was not ok');
-        }
-        return response.blob();
-      }).then(function (blob) {
-        var url = window.URL.createObjectURL(blob);
-        var a = document.createElement('a');
-        a.href = url;
-        a.download = 'file.csv';
-        // document.body.appendChild(a);
-        a.click();
-      })["catch"](function (error) {
-        return console.error(error);
-      }));
     }
   },
   created: function created() {
@@ -3169,6 +3180,18 @@ __webpack_require__.r(__webpack_exports__);
       axios__WEBPACK_IMPORTED_MODULE_0___default.a.get("api/warehouse").then(function (_ref) {
         var data = _ref.data;
         return _this6.items = data;
+      });
+    },
+    generateCSV: function generateCSV() {
+      axios__WEBPACK_IMPORTED_MODULE_0___default.a.get("/warehouseCSV", {
+        responseType: 'arraybuffer'
+      }).then(function (response) {
+        var fileURL = window.URL.createObjectURL(new Blob([response.data]));
+        var fileLink = document.createElement('a');
+        fileLink.href = fileURL;
+        fileLink.setAttribute('download', 'Warehouse.xlsx');
+        document.body.appendChild(fileLink);
+        fileLink.click();
       });
     }
   },
@@ -4018,20 +4041,7 @@ __webpack_require__.r(__webpack_exports__);
 var render = function render() {
   var _vm = this,
     _c = _vm._self._c;
-  return _vm._m(0);
-};
-var staticRenderFns = [function () {
-  var _vm = this,
-    _c = _vm._self._c;
-  return _c("div", [_c("section", {
-    staticClass: "content-header"
-  }, [_c("div", {
-    staticClass: "container-fluid"
-  }, [_c("div", {
-    staticClass: "row mb-2"
-  }, [_c("div", {
-    staticClass: "col-sm-6"
-  }, [_c("h1", [_vm._v("Vehicles")])])])])]), _vm._v(" "), _c("div", {
+  return _c("div", [_vm._m(0), _vm._v(" "), _c("div", {
     staticClass: "container"
   }, [_c("div", {
     staticClass: "justify-content-center"
@@ -4040,133 +4050,168 @@ var staticRenderFns = [function () {
   }, [_c("div", {
     staticClass: "col-lg-3 col-6"
   }, [_c("div", {
-    staticClass: "small-box bg-info"
+    staticClass: "small-box",
+    staticStyle: {
+      background: "#f87979"
+    }
   }, [_c("div", {
-    staticClass: "inner"
-  }, [_c("h3", [_vm._v("150")]), _vm._v(" "), _c("p", [_vm._v("New Orders")])]), _vm._v(" "), _c("div", {
-    staticClass: "icon"
-  }, [_c("i", {
-    staticClass: "ion ion-bag"
-  })])])]), _vm._v(" "), _c("div", {
+    staticClass: "inner text-white"
+  }, [_c("h3", [_vm._v(_vm._s(_vm.drop))]), _vm._v(" "), _c("p", [_vm._v("Drop Off")])]), _vm._v(" "), _vm._m(1)])]), _vm._v(" "), _c("div", {
+    staticClass: "col-lg-3 col-6"
+  }, [_c("div", {
+    staticClass: "small-box",
+    staticStyle: {
+      "background-color": "#36a2eb"
+    }
+  }, [_c("div", {
+    staticClass: "inner text-white"
+  }, [_c("h3", [_vm._v(_vm._s(_vm.pick))]), _vm._v(" "), _c("p", [_vm._v("Pick Up")])]), _vm._v(" "), _vm._m(2)])]), _vm._v(" "), _c("div", {
     staticClass: "col-lg-3 col-6"
   }, [_c("div", {
     staticClass: "small-box bg-success"
   }, [_c("div", {
     staticClass: "inner"
-  }, [_c("h3", [_vm._v("53"), _c("sup", {
-    staticStyle: {
-      "font-size": "20px"
-    }
-  }, [_vm._v("%")])]), _vm._v(" "), _c("p", [_vm._v("Bounce Rate")])]), _vm._v(" "), _c("div", {
-    staticClass: "icon"
-  }, [_c("i", {
-    staticClass: "ion ion-stats-bars"
-  })])])]), _vm._v(" "), _c("div", {
-    staticClass: "col-lg-3 col-6"
-  }, [_c("div", {
-    staticClass: "small-box bg-warning"
-  }, [_c("div", {
-    staticClass: "inner"
-  }, [_c("h3", [_vm._v("44")]), _vm._v(" "), _c("p", [_vm._v("User Registrations")])]), _vm._v(" "), _c("div", {
-    staticClass: "icon"
-  }, [_c("i", {
-    staticClass: "ion ion-person-add"
-  })])])]), _vm._v(" "), _c("div", {
+  }, [_c("h3", [_vm._v(_vm._s(_vm.count[2]) + " %")]), _vm._v(" "), _c("p", [_vm._v("Bounce Rate")])]), _vm._v(" "), _vm._m(3)])]), _vm._v(" "), _c("div", {
     staticClass: "col-lg-3 col-6"
   }, [_c("div", {
     staticClass: "small-box bg-danger"
   }, [_c("div", {
     staticClass: "inner"
-  }, [_c("h3", [_vm._v("65")]), _vm._v(" "), _c("p", [_vm._v("Unique Visitors")])]), _vm._v(" "), _c("div", {
-    staticClass: "icon"
-  }, [_c("i", {
-    staticClass: "ion ion-pie-graph"
-  })])])])]), _vm._v(" "), _c("div", {
-    staticClass: "row"
+  }, [_c("h3", [_vm._v("RM " + _vm._s(_vm.count[1]))]), _vm._v(" "), _c("p", [_vm._v("Today Sales")])]), _vm._v(" "), _vm._m(4)])])]), _vm._v(" "), _c("div", {
+    staticClass: "row d-flex justify-content-around"
   }, [_c("div", {
-    staticClass: "col-md-4 float-right"
+    staticClass: "col-md-8"
   }, [_c("div", {
     staticClass: "card"
   }, [_c("div", {
-    staticClass: "card-header border-0"
-  }, [_c("h3", {
-    staticClass: "card-title"
-  }, [_vm._v("Online Store Overview")])]), _vm._v(" "), _c("div", {
     staticClass: "card-body"
-  }, [_c("div", {
-    staticClass: "d-flex justify-content-between align-items-center border-bottom mb-3"
-  }, [_c("p", {
-    staticClass: "text-success text-xl"
-  }, [_c("i", {
-    staticClass: "ion ion-ios-refresh-empty"
-  })]), _vm._v(" "), _c("p", {
-    staticClass: "d-flex flex-column text-right"
-  }, [_c("span", {
-    staticClass: "font-weight-bold"
-  }, [_c("i", {
-    staticClass: "ion ion-android-arrow-up text-success"
-  }), _vm._v(" 12%\n                                    ")]), _vm._v(" "), _c("span", {
-    staticClass: "text-muted"
-  }, [_vm._v("CONVERSION RATE")])])]), _vm._v(" "), _c("div", {
-    staticClass: "d-flex justify-content-between align-items-center border-bottom mb-3"
-  }, [_c("p", {
-    staticClass: "text-warning text-xl"
-  }, [_c("i", {
-    staticClass: "ion ion-ios-cart-outline"
-  })]), _vm._v(" "), _c("p", {
-    staticClass: "d-flex flex-column text-right"
-  }, [_c("span", {
-    staticClass: "font-weight-bold"
-  }, [_c("i", {
-    staticClass: "ion ion-android-arrow-up text-warning"
-  }), _vm._v(" 0.8%\n                                    ")]), _vm._v(" "), _c("span", {
-    staticClass: "text-muted"
-  }, [_vm._v("SALES RATE")])])]), _vm._v(" "), _c("div", {
-    staticClass: "d-flex justify-content-between align-items-center mb-0"
-  }, [_c("p", {
-    staticClass: "text-danger text-xl"
-  }, [_c("i", {
-    staticClass: "ion ion-ios-people-outline"
-  })]), _vm._v(" "), _c("p", {
-    staticClass: "d-flex flex-column text-right"
-  }, [_c("span", {
-    staticClass: "font-weight-bold"
-  }, [_c("i", {
-    staticClass: "ion ion-android-arrow-down text-danger"
-  }), _vm._v(" 1%\n                                    ")]), _vm._v(" "), _c("span", {
-    staticClass: "text-muted"
-  }, [_vm._v("REGISTRATION RATE")])])])])])]), _vm._v(" "), _c("div", {
+  }, [_c("canvas", {
+    ref: "chart",
+    attrs: {
+      height: "325"
+    }
+  })])])]), _vm._v(" "), _c("div", {
     staticClass: "col-md-4"
   }, [_c("div", {
-    staticClass: "card"
-  }, [_c("div", {
-    staticClass: "card-header"
-  }, [_c("h3", {
-    staticClass: "card-title"
-  }, [_vm._v("Shipment Status")]), _vm._v(" "), _c("div", {
-    staticClass: "card-tools"
-  }, [_c("button", {
-    staticClass: "btn btn-tool nav-icon",
+    staticClass: "info-box mb-3 bg-orange"
+  }, [_vm._m(5), _vm._v(" "), _c("div", {
+    staticClass: "info-box-content"
+  }, [_c("span", {
+    staticClass: "info-box-text text-white"
+  }, [_vm._v("Inventory")]), _vm._v(" "), _c("span", {
+    staticClass: "info-box-number text-white"
+  }, [_vm._v(_vm._s(_vm.count[3]))])])]), _vm._v(" "), _vm._m(6), _vm._v(" "), _c("div", {
+    staticClass: "info-box mb-3 bg-green pointer",
     attrs: {
       type: "button",
-      "data-card-widget": "collapse",
-      title: "Collapse"
+      toggle: "tooltip",
+      title: "Financial Report"
+    },
+    on: {
+      click: function click($event) {
+        return _vm.downloadCSV();
+      }
     }
+  }, [_vm._m(7), _vm._v(" "), _c("div", {
+    staticClass: "info-box-content"
+  }, [_c("span", {
+    staticClass: "info-box-text"
+  }, [_vm._v("Total Generated")]), _vm._v(" "), _c("span", {
+    staticClass: "info-box-number"
+  }, [_vm._v("RM " + _vm._s(_vm.count[4]))])])]), _vm._v(" "), _vm._m(8)])])])])]);
+};
+var staticRenderFns = [function () {
+  var _vm = this,
+    _c = _vm._self._c;
+  return _c("section", {
+    staticClass: "content-header"
+  }, [_c("div", {
+    staticClass: "container-fluid"
+  }, [_c("div", {
+    staticClass: "row mb-2"
+  }, [_c("div", {
+    staticClass: "col-sm-6"
+  }, [_c("h1", [_vm._v("Dashboard")])])])])]);
+}, function () {
+  var _vm = this,
+    _c = _vm._self._c;
+  return _c("div", {
+    staticClass: "icon"
   }, [_c("i", {
-    staticClass: "fas fa-angle-down"
-  })])])]), _vm._v(" "), _c("div", {
-    staticClass: "card-body"
-  }, [_c("table", {
-    staticClass: "table text-nowrap pointer"
-  }, [_c("tbody", [_c("tr", [_c("td", [_vm._v("Pending")]), _vm._v(" "), _c("td", [_vm._v("1"), _c("i", {
-    staticClass: "icon-size-sm fa fa-truck fa-bounce-long mx-2"
-  })])]), _vm._v(" "), _c("tr", [_c("td", [_vm._v("Scheduled")]), _vm._v(" "), _c("td", [_vm._v("2"), _c("i", {
-    staticClass: "icon-size-sm fa-regular fa-calendar-check mx-2"
-  })])]), _vm._v(" "), _c("tr", [_c("td", [_vm._v("Out For Delivery")]), _vm._v(" "), _c("td", [_vm._v("3"), _c("i", {
-    staticClass: "icon-size-sm fa fa-truck-fast fa-beat-fade mx-2"
-  })])]), _vm._v(" "), _c("tr", [_c("td", [_vm._v("Delivered")]), _vm._v(" "), _c("td", [_vm._v("9"), _c("i", {
-    staticClass: "icon-size-sm fa fa-truck-fast mx-2"
-  })])])])])])])])])])])]);
+    staticClass: "fas fa-shop"
+  })]);
+}, function () {
+  var _vm = this,
+    _c = _vm._self._c;
+  return _c("div", {
+    staticClass: "icon"
+  }, [_c("i", {
+    staticClass: "fa-solid fa-truck-ramp-box"
+  })]);
+}, function () {
+  var _vm = this,
+    _c = _vm._self._c;
+  return _c("div", {
+    staticClass: "icon"
+  }, [_c("i", {
+    staticClass: "fas fa-chart-column"
+  })]);
+}, function () {
+  var _vm = this,
+    _c = _vm._self._c;
+  return _c("div", {
+    staticClass: "icon"
+  }, [_c("i", {
+    staticClass: "fas fa-chart-pie"
+  })]);
+}, function () {
+  var _vm = this,
+    _c = _vm._self._c;
+  return _c("span", {
+    staticClass: "info-box-icon"
+  }, [_c("i", {
+    staticClass: "fas fa-tag text-white"
+  })]);
+}, function () {
+  var _vm = this,
+    _c = _vm._self._c;
+  return _c("div", {
+    staticClass: "info-box mb-3 bg-danger"
+  }, [_c("span", {
+    staticClass: "info-box-icon"
+  }, [_c("i", {
+    staticClass: "far fa-heart"
+  })]), _vm._v(" "), _c("div", {
+    staticClass: "info-box-content"
+  }, [_c("span", {
+    staticClass: "info-box-text"
+  }, [_vm._v("Mentions")]), _vm._v(" "), _c("span", {
+    staticClass: "info-box-number"
+  }, [_vm._v("92,050")])])]);
+}, function () {
+  var _vm = this,
+    _c = _vm._self._c;
+  return _c("span", {
+    staticClass: "info-box-icon"
+  }, [_c("i", {
+    staticClass: "fas fa-file-excel"
+  })]);
+}, function () {
+  var _vm = this,
+    _c = _vm._self._c;
+  return _c("div", {
+    staticClass: "info-box mb-3 bg-info"
+  }, [_c("span", {
+    staticClass: "info-box-icon"
+  }, [_c("i", {
+    staticClass: "far fa-comment"
+  })]), _vm._v(" "), _c("div", {
+    staticClass: "info-box-content"
+  }, [_c("span", {
+    staticClass: "info-box-text"
+  }, [_vm._v("Direct Messages")]), _vm._v(" "), _c("span", {
+    staticClass: "info-box-number"
+  }, [_vm._v("163,921")])])]);
 }];
 render._withStripped = true;
 
@@ -4210,7 +4255,7 @@ var render = function render() {
     staticClass: "col-5"
   }, [_vm._m(1), _vm._v(" "), _c("p", {
     staticClass: "text-right"
-  }, [_c("strong", [_vm._v("Ref. Code "), _c("em", [_vm._v("P" + _vm._s(_vm._f("invoiceDate")(_vm.invoice.created_at)) + "-" + _vm._s(_vm.profile.id))])])])])]), _vm._v(" "), _c("div", {
+  }, [_c("strong", [_vm._v("Ref. Code "), _c("em", [_vm._v("D" + _vm._s(_vm._f("invoiceDate")(_vm.invoice.created_at)) + "-" + _vm._s(_vm.profile.id))])])])])]), _vm._v(" "), _c("div", {
     staticClass: "row"
   }, [_c("div", {
     staticClass: "col-9"
@@ -4242,7 +4287,25 @@ var render = function render() {
       value: _vm.profile.type == "Staff",
       expression: "profile.type == 'Staff'"
     }]
-  }, [_vm._v("S" + _vm._s(_vm._f("invoiceDate")(_vm.invoice.created_at)))]), _c("br"), _vm._v("\n                                    " + _vm._s(_vm.invoice.phone)), _c("br"), _vm._v("\n                                    " + _vm._s(_vm._f("myDate")(_vm.invoice.date)) + "\n                                ")])]), _vm._v(" "), _vm._m(2)]), _vm._v(" "), _c("br"), _vm._v(" "), _c("br"), _vm._v(" "), _c("h6", [_vm._v("Payment Due : " + _vm._s(_vm._f("date")(_vm.invoice.date)))]), _vm._v(" "), _c("br"), _vm._v(" "), _vm._m(3), _vm._v(" "), _vm._m(4), _vm._v(" "), _c("p", {
+  }, [_vm._v("S" + _vm._s(_vm._f("invoiceDate")(_vm.invoice.created_at)))]), _c("br"), _vm._v("\n                                    " + _vm._s(_vm.invoice.phone)), _c("br"), _vm._v("\n                                    " + _vm._s(_vm._f("myDate")(_vm.invoice.date)) + "\n                                ")])]), _vm._v(" "), _vm._m(2)]), _vm._v(" "), _c("br"), _vm._v(" "), _c("br"), _vm._v(" "), _c("h6", [_vm._v("Payment Due : " + _vm._s(_vm._f("date")(_vm.invoice.date)))]), _vm._v(" "), _c("br"), _vm._v(" "), _c("table", {
+    staticClass: "table table-striped"
+  }, [_vm._m(3), _vm._v(" "), _c("tbody", [_c("tr", [_c("td", [_vm._v("Drop Off")]), _vm._v(" "), _c("td", [_vm._v(_vm._s(_vm.invoice.weight))]), _vm._v(" "), _c("td", [_vm._v(_vm._s(_vm.invoice.height))]), _vm._v(" "), _c("td", [_vm._v(_vm._s(_vm.invoice.width))]), _vm._v(" "), _c("td", [_vm._v(_vm._s(_vm.invoice.length))]), _vm._v(" "), _c("td", [_vm._v(_vm._s(_vm.invoice.price))])])])]), _vm._v(" "), _c("div", {
+    staticClass: "row"
+  }, [_c("div", {
+    staticClass: "col-8"
+  }), _vm._v(" "), _c("div", {
+    staticClass: "col-4"
+  }, [_c("table", {
+    staticClass: "table table-sm text-right"
+  }, [_c("tr", [_vm._m(4), _vm._v(" "), _c("td", {
+    staticClass: "text-right"
+  }, [_vm._v("\n                                            " + _vm._s(_vm.invoice.price * 2.7))])]), _vm._v(" "), _c("tr", [_c("td", [_vm._v("Transportation Fees")]), _vm._v(" "), _c("td", {
+    staticClass: "text-right"
+  }, [_vm._v("\n                                            " + _vm._s(_vm.invoice.price * 0.3))])]), _vm._v(" "), _c("tr", [_c("td", [_vm._v("Service Fees")]), _vm._v(" "), _c("td", {
+    staticClass: "text-right"
+  }, [_vm._v("\n                                            " + _vm._s(_vm.invoice.price * 0.8))])]), _vm._v(" "), _c("tr", [_c("td", [_vm._v("Service Fees")]), _vm._v(" "), _c("td", {
+    staticClass: "text-right"
+  }, [_vm._v("\n                                            " + _vm._s(_vm.invoice.price * 0.6))])])])])]), _vm._v(" "), _c("p", {
     staticClass: "conditions"
   }, [_vm._v("\n                            For your kind settlement\n                            "), _c("br"), _vm._v("\n                            And with our thanks.\n                            "), _c("br"), _c("br"), _vm._v("\n                            Terms of payment: payment upon receipt of invoice, before " + _vm._s(_vm._f("date")(_vm.invoice.date)) + ".\n                            "), _c("br"), _vm._v("\n                            No discount granted for early payment.\n                            "), _c("br"), _vm._v("\n                            Payment by credit card only.\n                            "), _c("br"), _c("br"), _vm._v("\n                            In the event of late payment, fixed compensation for recovery costs: MYR40\n                            (Act 1986s)\n                        ")]), _vm._v(" "), _c("br"), _vm._v(" "), _c("br"), _vm._v(" "), _c("br"), _vm._v(" "), _c("br"), _vm._v(" "), _c("div", {
     staticClass: "blue-tag"
@@ -4616,35 +4679,11 @@ var staticRenderFns = [function () {
 }, function () {
   var _vm = this,
     _c = _vm._self._c;
-  return _c("table", {
-    staticClass: "table table-striped"
-  }, [_c("thead", [_c("tr", [_c("th", [_vm._v("Description")]), _vm._v(" "), _c("th", [_vm._v("Quantité")]), _vm._v(" "), _c("th", [_vm._v("Unité")]), _vm._v(" "), _c("th", [_vm._v("PU HT")]), _vm._v(" "), _c("th", [_vm._v("TVA")]), _vm._v(" "), _c("th", [_vm._v("Total HT")])])]), _vm._v(" "), _c("tbody", [_c("tr", [_c("td", [_vm._v("Audits et rapports mensuels")]), _vm._v(" "), _c("td", [_vm._v("1")]), _vm._v(" "), _c("td", [_vm._v("Jour")]), _vm._v(" "), _c("td", {
-    staticClass: "text-right"
-  }, [_vm._v("500,00€")]), _vm._v(" "), _c("td", [_vm._v("20%")]), _vm._v(" "), _c("td", {
-    staticClass: "text-right"
-  }, [_vm._v("500,00€")])]), _vm._v(" "), _c("tr", [_c("td", [_vm._v("Génération des rapports d'activité")]), _vm._v(" "), _c("td", [_vm._v("4")]), _vm._v(" "), _c("td", [_vm._v("Rapport")]), _vm._v(" "), _c("td", {
-    staticClass: "text-right"
-  }, [_vm._v("800,00€")]), _vm._v(" "), _c("td", [_vm._v("20%")]), _vm._v(" "), _c("td", {
-    staticClass: "text-right"
-  }, [_vm._v("3 200,00€")])])])]);
+  return _c("thead", [_c("tr", [_c("th", [_vm._v("Type")]), _vm._v(" "), _c("th", [_vm._v("Weight")]), _vm._v(" "), _c("th", [_vm._v("Height")]), _vm._v(" "), _c("th", [_vm._v("Width")]), _vm._v(" "), _c("th", [_vm._v("length")]), _vm._v(" "), _c("th", [_vm._v("Sub Total (RM)")])])]);
 }, function () {
   var _vm = this,
     _c = _vm._self._c;
-  return _c("div", {
-    staticClass: "row"
-  }, [_c("div", {
-    staticClass: "col-8"
-  }), _vm._v(" "), _c("div", {
-    staticClass: "col-4"
-  }, [_c("table", {
-    staticClass: "table table-sm text-right"
-  }, [_c("tr", [_c("td", [_c("strong", [_vm._v("Total HT")])]), _vm._v(" "), _c("td", {
-    staticClass: "text-right"
-  }, [_vm._v("3 700,00€")])]), _vm._v(" "), _c("tr", [_c("td", [_vm._v("TVA 20%")]), _vm._v(" "), _c("td", {
-    staticClass: "text-right"
-  }, [_vm._v("740,00€")])]), _vm._v(" "), _c("tr", [_c("td", [_c("strong", [_vm._v("Total TTC")])]), _vm._v(" "), _c("td", {
-    staticClass: "text-right"
-  }, [_vm._v("4 440,00€")])])])])]);
+  return _c("td", [_c("strong", [_vm._v("Total HT")])]);
 }];
 render._withStripped = true;
 
@@ -4683,170 +4722,6 @@ var staticRenderFns = [function () {
   }, [_vm._v("Example Component")]), _vm._v(" "), _c("div", {
     staticClass: "card-body"
   }, [_vm._v("\n                    I'm an example component.\n                ")])])])])]);
-}];
-render._withStripped = true;
-
-
-/***/ }),
-
-/***/ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/History.vue?vue&type=template&id=270eb80e&":
-/*!****************************************************************************************************************************************************************************************************************************************!*\
-  !*** ./node_modules/babel-loader/lib??ref--4-0!./node_modules/vue-loader/lib/loaders/templateLoader.js??ref--6!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/History.vue?vue&type=template&id=270eb80e& ***!
-  \****************************************************************************************************************************************************************************************************************************************/
-/*! exports provided: render, staticRenderFns */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "render", function() { return render; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return staticRenderFns; });
-var render = function render() {
-  var _vm = this,
-    _c = _vm._self._c;
-  return _c("div", [_vm._m(0), _vm._v(" "), _c("div", {
-    staticClass: "row d-flex justify-content-around",
-    staticStyle: {
-      "margin-left": "0",
-      "margin-right": "0"
-    }
-  }, [_c("div", {
-    staticClass: "col-md-12"
-  }, [_c("div", {
-    staticClass: "card"
-  }, [_vm._m(1), _vm._v(" "), _c("div", {
-    staticClass: "card-body"
-  }, [_c("div", {
-    staticClass: "tab-content"
-  }, [_c("div", {
-    staticClass: "active tab-pane",
-    attrs: {
-      id: "dropOff"
-    }
-  }, [_c("div", {
-    staticClass: "post"
-  }, [_c("table", {
-    staticClass: "table table-hover text-nowrap"
-  }, [_vm._m(2), _vm._v(" "), _c("tbody", _vm._l(_vm.dropOffs.data, function (dropOff) {
-    return _c("tr", {
-      directives: [{
-        name: "show",
-        rawName: "v-show",
-        value: dropOff.status,
-        expression: "dropOff.status"
-      }],
-      key: dropOff.id,
-      attrs: {
-        "data-widget": "expandable-table",
-        "aria-expanded": "false"
-      }
-    }, [_c("td", [_vm._v("\n                                                " + _vm._s(dropOff.date) + "\n                                            ")]), _vm._v(" "), _c("td", [_vm._v("\n                                                " + _vm._s(dropOff.name) + "\n                                            ")]), _vm._v(" "), _c("td", [_vm._v("\n                                                " + _vm._s(dropOff.toname) + "\n                                            ")]), _vm._v(" "), _c("td", [_vm._v("\n                                                " + _vm._s(dropOff.toaddress1) + ", " + _vm._s(dropOff.toaddress2) + ", " + _vm._s(dropOff.topostcode) + " " + _vm._s(dropOff.tocity) + ", " + _vm._s(dropOff.toprovince) + ", " + _vm._s(dropOff.tocountry) + "\n                                            ")]), _vm._v(" "), _vm._m(3, true)]);
-  }), 0)])])]), _vm._v(" "), _c("div", {
-    staticClass: "tab-pane",
-    attrs: {
-      id: "pickUp"
-    }
-  }, [_c("div", {
-    staticClass: "post"
-  }, [_c("div", {
-    staticClass: "table-responsive p-0"
-  }, [_c("table", {
-    staticClass: "table table-hover text-nowrap"
-  }, [_vm._m(4), _vm._v(" "), _c("tbody", _vm._l(_vm.pickUps.data, function (pickUP) {
-    return _c("tr", {
-      directives: [{
-        name: "show",
-        rawName: "v-show",
-        value: pickUP.status,
-        expression: "pickUP.status"
-      }],
-      key: pickUP.id
-    }, [_c("td", [_vm._v(_vm._s(pickUP.date))]), _vm._v(" "), _c("td", [_vm._v(_vm._s(pickUP.name))]), _vm._v(" "), _c("td", [_vm._v("\n                                                    " + _vm._s(pickUP.toname) + "\n                                                ")]), _vm._v(" "), _c("td", [_vm._v("\n                                                    " + _vm._s(pickUP.toaddress1) + "," + _vm._s(pickUP.toaddress2) + "," + _vm._s(pickUP.topostcode) + " " + _vm._s(pickUP.tocity) + ", " + _vm._s(pickUP.toprovince) + "," + _vm._s(pickUP.tocountry) + "\n                                                ")]), _vm._v(" "), _vm._m(5, true)]);
-  }), 0)])])])])])])])])])]);
-};
-var staticRenderFns = [function () {
-  var _vm = this,
-    _c = _vm._self._c;
-  return _c("section", {
-    staticClass: "content-header"
-  }, [_c("div", {
-    staticClass: "container-fluid"
-  }, [_c("div", {
-    staticClass: "row mb-2"
-  }, [_c("div", {
-    staticClass: "col-sm-6"
-  }, [_c("h1", [_vm._v("Shipment")])])])])]);
-}, function () {
-  var _vm = this,
-    _c = _vm._self._c;
-  return _c("div", {
-    staticClass: "card-header p-2"
-  }, [_c("ul", {
-    staticClass: "nav nav-pills"
-  }, [_c("li", {
-    staticClass: "nav-item"
-  }, [_c("a", {
-    staticClass: "nav-link",
-    attrs: {
-      href: "#pickUp",
-      "data-toggle": "tab"
-    }
-  }, [_vm._v("Pick Up")])]), _vm._v(" "), _c("li", {
-    staticClass: "nav-item"
-  }, [_c("a", {
-    staticClass: "nav-link active",
-    attrs: {
-      href: "#dropOff",
-      "data-toggle": "tab"
-    }
-  }, [_vm._v("Drop Off")])])])]);
-}, function () {
-  var _vm = this,
-    _c = _vm._self._c;
-  return _c("thead", [_c("tr", [_c("th", [_vm._v("Date")]), _vm._v(" "), _c("th", [_vm._v("Sender")]), _vm._v(" "), _c("th", [_vm._v("Receiver")]), _vm._v(" "), _c("th", [_vm._v("Address")]), _vm._v(" "), _c("th", [_vm._v("Action")])])]);
-}, function () {
-  var _vm = this,
-    _c = _vm._self._c;
-  return _c("td", [_c("button", {
-    staticClass: "btn bg-blue",
-    attrs: {
-      toggle: "tooltip",
-      title: "Edit"
-    }
-  }, [_c("i", {
-    staticClass: "fa-solid fa-file-invoice-dollar text-white"
-  })]), _vm._v(" "), _c("button", {
-    staticClass: "btn bg-green",
-    attrs: {
-      toggle: "tooltip",
-      title: "Delete"
-    }
-  }, [_c("i", {
-    staticClass: "fa-solid fa-file-invoice text-white"
-  })])]);
-}, function () {
-  var _vm = this,
-    _c = _vm._self._c;
-  return _c("thead", [_c("tr", [_c("th", [_vm._v("Date")]), _vm._v(" "), _c("th", [_vm._v("Sender")]), _vm._v(" "), _c("th", [_vm._v("Receiver")]), _vm._v(" "), _c("th", [_vm._v("Address")]), _vm._v(" "), _c("th", [_vm._v("Action")])])]);
-}, function () {
-  var _vm = this,
-    _c = _vm._self._c;
-  return _c("td", [_c("button", {
-    staticClass: "btn bg-blue",
-    attrs: {
-      toggle: "tooltip",
-      title: "invoice"
-    }
-  }, [_c("i", {
-    staticClass: "fa-solid fa-file-invoice-dollar text-white"
-  })]), _vm._v(" "), _c("button", {
-    staticClass: "btn bg-green",
-    attrs: {
-      toggle: "tooltip",
-      title: "Consignment"
-    }
-  }, [_c("i", {
-    staticClass: "fa-solid fa-file-invoice text-white"
-  })])]);
 }];
 render._withStripped = true;
 
@@ -5118,15 +4993,155 @@ var render = function render() {
     domProps: {
       innerHTML: _vm._s(_vm.form.errors.get("branch"))
     }
+  }) : _vm._e()])]), _vm._v(" "), _c("div", {
+    staticClass: "form-group row"
+  }, [_vm._m(8), _vm._v(" "), _c("div", {
+    staticClass: "col-lg-10 col-md-9"
+  }, [_c("input", {
+    directives: [{
+      name: "model",
+      rawName: "v-model",
+      value: _vm.form.height,
+      expression: "form.height"
+    }],
+    staticClass: "form-control",
+    "class": {
+      "is-invalid": _vm.form.errors.has("height")
+    },
+    attrs: {
+      id: "height",
+      type: "number",
+      step: "0.01",
+      name: "height",
+      placeholder: "height"
+    },
+    domProps: {
+      value: _vm.form.height
+    },
+    on: {
+      input: function input($event) {
+        if ($event.target.composing) return;
+        _vm.$set(_vm.form, "height", $event.target.value);
+      }
+    }
+  }), _vm._v(" "), _vm.form.errors.has("height") ? _c("div", {
+    domProps: {
+      innerHTML: _vm._s(_vm.form.errors.get("height"))
+    }
+  }) : _vm._e()])]), _vm._v(" "), _c("div", {
+    staticClass: "form-group row"
+  }, [_vm._m(9), _vm._v(" "), _c("div", {
+    staticClass: "col-lg-10 col-md-9"
+  }, [_c("input", {
+    directives: [{
+      name: "model",
+      rawName: "v-model",
+      value: _vm.form.width,
+      expression: "form.width"
+    }],
+    staticClass: "form-control",
+    "class": {
+      "is-invalid": _vm.form.errors.has("width")
+    },
+    attrs: {
+      id: "width",
+      type: "number",
+      step: "0.01",
+      name: "width",
+      placeholder: "width"
+    },
+    domProps: {
+      value: _vm.form.width
+    },
+    on: {
+      input: function input($event) {
+        if ($event.target.composing) return;
+        _vm.$set(_vm.form, "width", $event.target.value);
+      }
+    }
+  }), _vm._v(" "), _vm.form.errors.has("width") ? _c("div", {
+    domProps: {
+      innerHTML: _vm._s(_vm.form.errors.get("width"))
+    }
+  }) : _vm._e()])]), _vm._v(" "), _c("div", {
+    staticClass: "form-group row"
+  }, [_vm._m(10), _vm._v(" "), _c("div", {
+    staticClass: "col-lg-10 col-md-9"
+  }, [_c("input", {
+    directives: [{
+      name: "model",
+      rawName: "v-model",
+      value: _vm.form.length,
+      expression: "form.length"
+    }],
+    staticClass: "form-control",
+    "class": {
+      "is-invalid": _vm.form.errors.has("length")
+    },
+    attrs: {
+      id: "length",
+      type: "number",
+      step: "0.01",
+      name: "length",
+      placeholder: "length"
+    },
+    domProps: {
+      value: _vm.form.length
+    },
+    on: {
+      input: function input($event) {
+        if ($event.target.composing) return;
+        _vm.$set(_vm.form, "length", $event.target.value);
+      }
+    }
+  }), _vm._v(" "), _vm.form.errors.has("length") ? _c("div", {
+    domProps: {
+      innerHTML: _vm._s(_vm.form.errors.get("length"))
+    }
+  }) : _vm._e()])]), _vm._v(" "), _c("div", {
+    staticClass: "form-group row"
+  }, [_vm._m(11), _vm._v(" "), _c("div", {
+    staticClass: "col-lg-10 col-md-9"
+  }, [_c("input", {
+    directives: [{
+      name: "model",
+      rawName: "v-model",
+      value: _vm.form.weight,
+      expression: "form.weight"
+    }],
+    staticClass: "form-control",
+    "class": {
+      "is-invalid": _vm.form.errors.has("weight")
+    },
+    attrs: {
+      id: "weight",
+      type: "number",
+      step: "0.01",
+      name: "weight",
+      placeholder: "weight"
+    },
+    domProps: {
+      value: _vm.form.weight
+    },
+    on: {
+      input: function input($event) {
+        if ($event.target.composing) return;
+        _vm.$set(_vm.form, "weight", $event.target.value);
+      }
+    }
+  }), _vm._v(" "), _vm.form.errors.has("weight") ? _c("div", {
+    domProps: {
+      innerHTML: _vm._s(_vm.form.errors.get("weight"))
+    }
   }) : _vm._e()])])])])]), _vm._v(" "), _c("div", {
     staticClass: "col-lg-6 col-md-6 form-group"
   }, [_c("div", {
     staticClass: "card"
-  }, [_vm._m(8), _vm._v(" "), _c("div", {
+  }, [_vm._m(12), _vm._v(" "), _c("div", {
     staticClass: "card-body"
   }, [_c("div", {
     staticClass: "form-group row"
-  }, [_vm._m(9), _vm._v(" "), _c("div", {
+  }, [_vm._m(13), _vm._v(" "), _c("div", {
     staticClass: "col-lg-10 col-md-9"
   }, [_c("input", {
     directives: [{
@@ -5160,7 +5175,7 @@ var render = function render() {
     }
   }) : _vm._e()])]), _vm._v(" "), _c("div", {
     staticClass: "form-group row"
-  }, [_vm._m(10), _vm._v(" "), _c("div", {
+  }, [_vm._m(14), _vm._v(" "), _c("div", {
     staticClass: "col-lg-10 col-md-9"
   }, [_c("input", {
     directives: [{
@@ -5194,7 +5209,7 @@ var render = function render() {
     }
   }) : _vm._e()])]), _vm._v(" "), _c("div", {
     staticClass: "form-group row"
-  }, [_vm._m(11), _vm._v(" "), _c("div", {
+  }, [_vm._m(15), _vm._v(" "), _c("div", {
     staticClass: "col-lg-10 col-md-9"
   }, [_c("input", {
     directives: [{
@@ -5264,7 +5279,7 @@ var render = function render() {
     }
   }) : _vm._e()])]), _vm._v(" "), _c("div", {
     staticClass: "form-group row"
-  }, [_vm._m(12), _vm._v(" "), _c("div", {
+  }, [_vm._m(16), _vm._v(" "), _c("div", {
     staticClass: "col-lg-10 col-md-9"
   }, [_c("input", {
     directives: [{
@@ -5298,7 +5313,7 @@ var render = function render() {
     }
   }) : _vm._e()])]), _vm._v(" "), _c("div", {
     staticClass: "form-group row"
-  }, [_vm._m(13), _vm._v(" "), _c("div", {
+  }, [_vm._m(17), _vm._v(" "), _c("div", {
     staticClass: "col-lg-10 col-md-9"
   }, [_c("input", {
     directives: [{
@@ -5332,7 +5347,7 @@ var render = function render() {
     }
   }) : _vm._e()])]), _vm._v(" "), _c("div", {
     staticClass: "form-group row"
-  }, [_vm._m(14), _vm._v(" "), _c("div", {
+  }, [_vm._m(18), _vm._v(" "), _c("div", {
     staticClass: "col-lg-10 col-md-9"
   }, [_c("input", {
     directives: [{
@@ -5366,7 +5381,7 @@ var render = function render() {
     }
   }) : _vm._e()])]), _vm._v(" "), _c("div", {
     staticClass: "form-group row"
-  }, [_vm._m(15), _vm._v(" "), _c("div", {
+  }, [_vm._m(19), _vm._v(" "), _c("div", {
     staticClass: "col-lg-10 col-md-9"
   }, [_c("select", {
     directives: [{
@@ -5402,7 +5417,7 @@ var render = function render() {
     domProps: {
       innerHTML: _vm._s(_vm.form.errors.get("toCountry"))
     }
-  }) : _vm._e()])])]), _vm._v(" "), _vm._m(16)])])])]), _vm._v(" "), _c("form", {
+  }) : _vm._e()])])]), _vm._v(" "), _vm._m(20)])])])]), _vm._v(" "), _c("form", {
     directives: [{
       name: "show",
       rawName: "v-show",
@@ -5421,7 +5436,7 @@ var render = function render() {
     staticClass: "card card-body col-5 col-md-5"
   }, [_c("div", {
     staticClass: "row"
-  }, [_vm._m(17), _vm._v(" "), _c("div", {
+  }, [_vm._m(21), _vm._v(" "), _c("div", {
     staticClass: "col-lg-10 col-md-9"
   }, [_c("input", {
     directives: [{
@@ -5459,11 +5474,11 @@ var render = function render() {
     staticClass: "col-lg-6 col-md-6"
   }, [_c("div", {
     staticClass: "card"
-  }, [_vm._m(18), _vm._v(" "), _c("div", {
+  }, [_vm._m(22), _vm._v(" "), _c("div", {
     staticClass: "card-body"
   }, [_c("div", {
     staticClass: "form-group row"
-  }, [_vm._m(19), _vm._v(" "), _c("div", {
+  }, [_vm._m(23), _vm._v(" "), _c("div", {
     staticClass: "col-lg-10 col-md-9"
   }, [_c("input", {
     directives: [{
@@ -5497,7 +5512,7 @@ var render = function render() {
     }
   }) : _vm._e()])]), _vm._v(" "), _c("div", {
     staticClass: "form-group row"
-  }, [_vm._m(20), _vm._v(" "), _c("div", {
+  }, [_vm._m(24), _vm._v(" "), _c("div", {
     staticClass: "col-lg-10 col-md-9"
   }, [_c("input", {
     directives: [{
@@ -5531,7 +5546,7 @@ var render = function render() {
     }
   }) : _vm._e()])]), _vm._v(" "), _c("div", {
     staticClass: "form-group row"
-  }, [_vm._m(21), _vm._v(" "), _c("div", {
+  }, [_vm._m(25), _vm._v(" "), _c("div", {
     staticClass: "col-lg-10 col-md-9"
   }, [_c("input", {
     directives: [{
@@ -5565,7 +5580,7 @@ var render = function render() {
     }
   }) : _vm._e()])]), _vm._v(" "), _c("div", {
     staticClass: "form-group row"
-  }, [_vm._m(22), _vm._v(" "), _c("div", {
+  }, [_vm._m(26), _vm._v(" "), _c("div", {
     staticClass: "col-lg-10 col-md-9"
   }, [_c("input", {
     directives: [{
@@ -5635,7 +5650,7 @@ var render = function render() {
     }
   }) : _vm._e()])]), _vm._v(" "), _c("div", {
     staticClass: "form-group row"
-  }, [_vm._m(23), _vm._v(" "), _c("div", {
+  }, [_vm._m(27), _vm._v(" "), _c("div", {
     staticClass: "col-lg-10 col-md-9"
   }, [_c("input", {
     directives: [{
@@ -5669,7 +5684,7 @@ var render = function render() {
     }
   }) : _vm._e()])]), _vm._v(" "), _c("div", {
     staticClass: "form-group row"
-  }, [_vm._m(24), _vm._v(" "), _c("div", {
+  }, [_vm._m(28), _vm._v(" "), _c("div", {
     staticClass: "col-lg-10 col-md-9"
   }, [_c("input", {
     directives: [{
@@ -5703,7 +5718,7 @@ var render = function render() {
     }
   }) : _vm._e()])]), _vm._v(" "), _c("div", {
     staticClass: "form-group row"
-  }, [_vm._m(25), _vm._v(" "), _c("div", {
+  }, [_vm._m(29), _vm._v(" "), _c("div", {
     staticClass: "col-lg-10 col-md-9"
   }, [_c("input", {
     directives: [{
@@ -5735,15 +5750,155 @@ var render = function render() {
     domProps: {
       innerHTML: _vm._s(_vm.form.errors.get("province"))
     }
+  }) : _vm._e()])]), _vm._v(" "), _c("div", {
+    staticClass: "form-group row"
+  }, [_vm._m(30), _vm._v(" "), _c("div", {
+    staticClass: "col-lg-10 col-md-9"
+  }, [_c("input", {
+    directives: [{
+      name: "model",
+      rawName: "v-model",
+      value: _vm.form.height,
+      expression: "form.height"
+    }],
+    staticClass: "form-control",
+    "class": {
+      "is-invalid": _vm.form.errors.has("height")
+    },
+    attrs: {
+      id: "height",
+      type: "number",
+      step: "0.01",
+      name: "height",
+      placeholder: "height"
+    },
+    domProps: {
+      value: _vm.form.height
+    },
+    on: {
+      input: function input($event) {
+        if ($event.target.composing) return;
+        _vm.$set(_vm.form, "height", $event.target.value);
+      }
+    }
+  }), _vm._v(" "), _vm.form.errors.has("height") ? _c("div", {
+    domProps: {
+      innerHTML: _vm._s(_vm.form.errors.get("height"))
+    }
+  }) : _vm._e()])]), _vm._v(" "), _c("div", {
+    staticClass: "form-group row"
+  }, [_vm._m(31), _vm._v(" "), _c("div", {
+    staticClass: "col-lg-10 col-md-9"
+  }, [_c("input", {
+    directives: [{
+      name: "model",
+      rawName: "v-model",
+      value: _vm.form.width,
+      expression: "form.width"
+    }],
+    staticClass: "form-control",
+    "class": {
+      "is-invalid": _vm.form.errors.has("width")
+    },
+    attrs: {
+      id: "width",
+      type: "number",
+      step: "0.01",
+      name: "width",
+      placeholder: "width"
+    },
+    domProps: {
+      value: _vm.form.width
+    },
+    on: {
+      input: function input($event) {
+        if ($event.target.composing) return;
+        _vm.$set(_vm.form, "width", $event.target.value);
+      }
+    }
+  }), _vm._v(" "), _vm.form.errors.has("width") ? _c("div", {
+    domProps: {
+      innerHTML: _vm._s(_vm.form.errors.get("width"))
+    }
+  }) : _vm._e()])]), _vm._v(" "), _c("div", {
+    staticClass: "form-group row"
+  }, [_vm._m(32), _vm._v(" "), _c("div", {
+    staticClass: "col-lg-10 col-md-9"
+  }, [_c("input", {
+    directives: [{
+      name: "model",
+      rawName: "v-model",
+      value: _vm.form.length,
+      expression: "form.length"
+    }],
+    staticClass: "form-control",
+    "class": {
+      "is-invalid": _vm.form.errors.has("length")
+    },
+    attrs: {
+      id: "length",
+      type: "number",
+      step: "0.01",
+      name: "length",
+      placeholder: "length"
+    },
+    domProps: {
+      value: _vm.form.length
+    },
+    on: {
+      input: function input($event) {
+        if ($event.target.composing) return;
+        _vm.$set(_vm.form, "length", $event.target.value);
+      }
+    }
+  }), _vm._v(" "), _vm.form.errors.has("length") ? _c("div", {
+    domProps: {
+      innerHTML: _vm._s(_vm.form.errors.get("length"))
+    }
+  }) : _vm._e()])]), _vm._v(" "), _c("div", {
+    staticClass: "form-group row"
+  }, [_vm._m(33), _vm._v(" "), _c("div", {
+    staticClass: "col-lg-10 col-md-9"
+  }, [_c("input", {
+    directives: [{
+      name: "model",
+      rawName: "v-model",
+      value: _vm.form.weight,
+      expression: "form.weight"
+    }],
+    staticClass: "form-control",
+    "class": {
+      "is-invalid": _vm.form.errors.has("weight")
+    },
+    attrs: {
+      id: "weight",
+      type: "number",
+      step: "0.01",
+      name: "weight",
+      placeholder: "weight"
+    },
+    domProps: {
+      value: _vm.form.weight
+    },
+    on: {
+      input: function input($event) {
+        if ($event.target.composing) return;
+        _vm.$set(_vm.form, "weight", $event.target.value);
+      }
+    }
+  }), _vm._v(" "), _vm.form.errors.has("weight") ? _c("div", {
+    domProps: {
+      innerHTML: _vm._s(_vm.form.errors.get("weight"))
+    }
   }) : _vm._e()])])])])]), _vm._v(" "), _c("div", {
     staticClass: "col-lg-6 col-md-6 form-group"
   }, [_c("div", {
     staticClass: "card"
-  }, [_vm._m(26), _vm._v(" "), _c("div", {
+  }, [_vm._m(34), _vm._v(" "), _c("div", {
     staticClass: "card-body"
   }, [_c("div", {
     staticClass: "form-group row"
-  }, [_vm._m(27), _vm._v(" "), _c("div", {
+  }, [_vm._m(35), _vm._v(" "), _c("div", {
     staticClass: "col-lg-10 col-md-9"
   }, [_c("input", {
     directives: [{
@@ -5777,7 +5932,7 @@ var render = function render() {
     }
   }) : _vm._e()])]), _vm._v(" "), _c("div", {
     staticClass: "form-group row"
-  }, [_vm._m(28), _vm._v(" "), _c("div", {
+  }, [_vm._m(36), _vm._v(" "), _c("div", {
     staticClass: "col-lg-10 col-md-9"
   }, [_c("input", {
     directives: [{
@@ -5811,7 +5966,7 @@ var render = function render() {
     }
   }) : _vm._e()])]), _vm._v(" "), _c("div", {
     staticClass: "form-group row"
-  }, [_vm._m(29), _vm._v(" "), _c("div", {
+  }, [_vm._m(37), _vm._v(" "), _c("div", {
     staticClass: "col-lg-10 col-md-9"
   }, [_c("input", {
     directives: [{
@@ -5881,7 +6036,7 @@ var render = function render() {
     }
   }) : _vm._e()])]), _vm._v(" "), _c("div", {
     staticClass: "form-group row"
-  }, [_vm._m(30), _vm._v(" "), _c("div", {
+  }, [_vm._m(38), _vm._v(" "), _c("div", {
     staticClass: "col-lg-10 col-md-9"
   }, [_c("input", {
     directives: [{
@@ -5915,7 +6070,7 @@ var render = function render() {
     }
   }) : _vm._e()])]), _vm._v(" "), _c("div", {
     staticClass: "form-group row"
-  }, [_vm._m(31), _vm._v(" "), _c("div", {
+  }, [_vm._m(39), _vm._v(" "), _c("div", {
     staticClass: "col-lg-10 col-md-9"
   }, [_c("input", {
     directives: [{
@@ -5949,7 +6104,7 @@ var render = function render() {
     }
   }) : _vm._e()])]), _vm._v(" "), _c("div", {
     staticClass: "form-group row"
-  }, [_vm._m(32), _vm._v(" "), _c("div", {
+  }, [_vm._m(40), _vm._v(" "), _c("div", {
     staticClass: "col-lg-10 col-md-9"
   }, [_c("input", {
     directives: [{
@@ -5983,7 +6138,7 @@ var render = function render() {
     }
   }) : _vm._e()])]), _vm._v(" "), _c("div", {
     staticClass: "form-group row"
-  }, [_vm._m(33), _vm._v(" "), _c("div", {
+  }, [_vm._m(41), _vm._v(" "), _c("div", {
     staticClass: "col-lg-10 col-md-9"
   }, [_c("select", {
     directives: [{
@@ -6020,8 +6175,8 @@ var render = function render() {
         expression: "branch.country == form.country"
       }],
       key: branch.id
-    }, [_vm._v(_vm._s(branch.country))]);
-  }), 0)])])]), _vm._v(" "), _vm._m(34)])])])])])])])])]);
+    }, [_vm._v(_vm._s(branch.country) + "\n                                                    ")]);
+  }), 0)])])]), _vm._v(" "), _vm._m(42)])])])])])])])])]);
 };
 var staticRenderFns = [function () {
   var _vm = this,
@@ -6108,6 +6263,50 @@ var staticRenderFns = [function () {
       "for": "branch"
     }
   }, [_vm._v("Branch ")])]);
+}, function () {
+  var _vm = this,
+    _c = _vm._self._c;
+  return _c("div", {
+    staticClass: "col-lg-2 col-md-3"
+  }, [_c("label", {
+    staticClass: "pt-2",
+    attrs: {
+      "for": "phone"
+    }
+  }, [_vm._v("Height(CM) ")])]);
+}, function () {
+  var _vm = this,
+    _c = _vm._self._c;
+  return _c("div", {
+    staticClass: "col-lg-2 col-md-3"
+  }, [_c("label", {
+    staticClass: "pt-2",
+    attrs: {
+      "for": "width"
+    }
+  }, [_vm._v("Width(CM) ")])]);
+}, function () {
+  var _vm = this,
+    _c = _vm._self._c;
+  return _c("div", {
+    staticClass: "col-lg-2 col-md-3"
+  }, [_c("label", {
+    staticClass: "pt-2",
+    attrs: {
+      "for": "length"
+    }
+  }, [_vm._v("Length(CM) ")])]);
+}, function () {
+  var _vm = this,
+    _c = _vm._self._c;
+  return _c("div", {
+    staticClass: "col-lg-2 col-md-3"
+  }, [_c("label", {
+    staticClass: "pt-2",
+    attrs: {
+      "for": "weigth"
+    }
+  }, [_vm._v("Weigth(KG) ")])]);
 }, function () {
   var _vm = this,
     _c = _vm._self._c;
@@ -6296,6 +6495,50 @@ var staticRenderFns = [function () {
       "for": "country"
     }
   }, [_vm._v("Province ")])]);
+}, function () {
+  var _vm = this,
+    _c = _vm._self._c;
+  return _c("div", {
+    staticClass: "col-lg-2 col-md-3"
+  }, [_c("label", {
+    staticClass: "pt-2",
+    attrs: {
+      "for": "phone"
+    }
+  }, [_vm._v("Height(CM) ")])]);
+}, function () {
+  var _vm = this,
+    _c = _vm._self._c;
+  return _c("div", {
+    staticClass: "col-lg-2 col-md-3"
+  }, [_c("label", {
+    staticClass: "pt-2",
+    attrs: {
+      "for": "width"
+    }
+  }, [_vm._v("Width(CM) ")])]);
+}, function () {
+  var _vm = this,
+    _c = _vm._self._c;
+  return _c("div", {
+    staticClass: "col-lg-2 col-md-3"
+  }, [_c("label", {
+    staticClass: "pt-2",
+    attrs: {
+      "for": "length"
+    }
+  }, [_vm._v("Length(CM) ")])]);
+}, function () {
+  var _vm = this,
+    _c = _vm._self._c;
+  return _c("div", {
+    staticClass: "col-lg-2 col-md-3"
+  }, [_c("label", {
+    staticClass: "pt-2",
+    attrs: {
+      "for": "weigth"
+    }
+  }, [_vm._v("Weigth(KG) ")])]);
 }, function () {
   var _vm = this,
     _c = _vm._self._c;
@@ -6841,7 +7084,7 @@ var staticRenderFns = [function () {
     _c = _vm._self._c;
   return _c("table", {
     staticClass: "table table-striped"
-  }, [_c("thead", [_c("tr", [_c("th", [_vm._v("Description")]), _vm._v(" "), _c("th", [_vm._v("Quantité")]), _vm._v(" "), _c("th", [_vm._v("Unité")]), _vm._v(" "), _c("th", [_vm._v("PU HT")]), _vm._v(" "), _c("th", [_vm._v("TVA")]), _vm._v(" "), _c("th", [_vm._v("Total HT")])])]), _vm._v(" "), _c("tbody", [_c("tr", [_c("td", [_vm._v("Audits et rapports mensuels")]), _vm._v(" "), _c("td", [_vm._v("1")]), _vm._v(" "), _c("td", [_vm._v("Jour")]), _vm._v(" "), _c("td", {
+  }, [_c("thead", [_c("tr", [_c("th", [_vm._v("Type")]), _vm._v(" "), _c("th", [_vm._v("Weight")]), _vm._v(" "), _c("th", [_vm._v("Height")]), _vm._v(" "), _c("th", [_vm._v("Width")]), _vm._v(" "), _c("th", [_vm._v("length")]), _vm._v(" "), _c("th", [_vm._v("Total (RM)")])])]), _vm._v(" "), _c("tbody", [_c("tr", [_c("td", [_vm._v("Audits et rapports mensuels")]), _vm._v(" "), _c("td", [_vm._v("1")]), _vm._v(" "), _c("td", [_vm._v("Jour")]), _vm._v(" "), _c("td", {
     staticClass: "text-right"
   }, [_vm._v("500,00€")]), _vm._v(" "), _c("td", [_vm._v("20%")]), _vm._v(" "), _c("td", {
     staticClass: "text-right"
@@ -8158,25 +8401,7 @@ var render = function render() {
     staticClass: "col-6"
   }, [_c("div", {
     staticClass: "card"
-  }, [_c("div", {
-    staticClass: "card-header"
-  }, [_c("h3", {
-    staticClass: "card-title"
-  }, [_vm._v("Asssign vehicle (Pick Up)")]), _vm._v(" "), _c("div", {
-    staticClass: "card-tools"
-  }, [_vm._m(5), _vm._v(" "), _c("button", {
-    staticClass: "btn btn-tool",
-    attrs: {
-      type: "button"
-    },
-    on: {
-      click: function click($event) {
-        return _vm.csv();
-      }
-    }
-  }, [_c("i", {
-    staticClass: "fa-solid fa-file-excel text-dark"
-  })])])]), _vm._v(" "), _c("div", {
+  }, [_vm._m(5), _vm._v(" "), _c("div", {
     staticClass: "card-body table-responsive p-0"
   }, [_c("table", {
     staticClass: "table table-hover text-nowrap"
@@ -8764,7 +8989,13 @@ var staticRenderFns = [function () {
 }, function () {
   var _vm = this,
     _c = _vm._self._c;
-  return _c("button", {
+  return _c("div", {
+    staticClass: "card-header"
+  }, [_c("h3", {
+    staticClass: "card-title"
+  }, [_vm._v("Asssign vehicle (Pick Up)")]), _vm._v(" "), _c("div", {
+    staticClass: "card-tools"
+  }, [_c("button", {
     staticClass: "btn btn-tool",
     attrs: {
       type: "button",
@@ -8772,7 +9003,7 @@ var staticRenderFns = [function () {
     }
   }, [_c("i", {
     staticClass: "fas fa-minus text-dark"
-  })]);
+  })])])]);
 }, function () {
   var _vm = this,
     _c = _vm._self._c;
@@ -8857,7 +9088,23 @@ var render = function render() {
     staticClass: "card-title"
   }, [_vm._v("Warehouse")]), _vm._v(" "), _c("div", {
     staticClass: "card-tools"
+  }, [_c("div", {
+    staticClass: "card-tools"
   }, [_c("button", {
+    staticClass: "btn btn-tool bg-green",
+    attrs: {
+      type: "button",
+      toggle: "tooltip",
+      title: "Generate CSV"
+    },
+    on: {
+      click: function click($event) {
+        return _vm.generateCSV();
+      }
+    }
+  }, [_c("i", {
+    staticClass: "fa-solid fa-file-excel text-white"
+  })])]), _vm._v(" "), _c("button", {
     directives: [{
       name: "show",
       rawName: "v-show",
@@ -8888,7 +9135,7 @@ var render = function render() {
       name: "show",
       rawName: "v-show",
       value: _vm.user.type != "Merchant",
-      expression: "user.type!='Merchant'"
+      expression: "user.type != 'Merchant'"
     }]
   }, [_vm._v("Merchant")]), _vm._v(" "), _c("th", [_vm._v("Action")])])]), _vm._v(" "), _c("tbody", _vm._l(_vm.items.data, function (item) {
     return _c("tr", {
@@ -8898,7 +9145,7 @@ var render = function render() {
         name: "show",
         rawName: "v-show",
         value: _vm.user.type != "Merchant",
-        expression: "user.type!='Merchant'"
+        expression: "user.type != 'Merchant'"
       }]
     }, [_vm._v(_vm._s(item.user))]), _vm._v(" "), _c("td", [_c("button", {
       directives: [{
@@ -14602,6 +14849,18958 @@ render._withStripped = true;
 
 }));
 //# sourceMappingURL=bootstrap.js.map
+
+
+/***/ }),
+
+/***/ "./node_modules/chart.js/dist/chart.js":
+/*!*********************************************!*\
+  !*** ./node_modules/chart.js/dist/chart.js ***!
+  \*********************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+/*!
+ * Chart.js v2.9.4
+ * https://www.chartjs.org
+ * (c) 2020 Chart.js Contributors
+ * Released under the MIT License
+ */
+(function (global, factory) {
+ true ? module.exports = factory(function() { try { return __webpack_require__(/*! moment */ "./node_modules/moment/moment.js"); } catch(e) { } }()) :
+undefined;
+}(this, (function (moment) { 'use strict';
+
+moment = moment && moment.hasOwnProperty('default') ? moment['default'] : moment;
+
+function createCommonjsModule(fn, module) {
+	return module = { exports: {} }, fn(module, module.exports), module.exports;
+}
+
+function getCjsExportFromNamespace (n) {
+	return n && n['default'] || n;
+}
+
+var colorName = {
+	"aliceblue": [240, 248, 255],
+	"antiquewhite": [250, 235, 215],
+	"aqua": [0, 255, 255],
+	"aquamarine": [127, 255, 212],
+	"azure": [240, 255, 255],
+	"beige": [245, 245, 220],
+	"bisque": [255, 228, 196],
+	"black": [0, 0, 0],
+	"blanchedalmond": [255, 235, 205],
+	"blue": [0, 0, 255],
+	"blueviolet": [138, 43, 226],
+	"brown": [165, 42, 42],
+	"burlywood": [222, 184, 135],
+	"cadetblue": [95, 158, 160],
+	"chartreuse": [127, 255, 0],
+	"chocolate": [210, 105, 30],
+	"coral": [255, 127, 80],
+	"cornflowerblue": [100, 149, 237],
+	"cornsilk": [255, 248, 220],
+	"crimson": [220, 20, 60],
+	"cyan": [0, 255, 255],
+	"darkblue": [0, 0, 139],
+	"darkcyan": [0, 139, 139],
+	"darkgoldenrod": [184, 134, 11],
+	"darkgray": [169, 169, 169],
+	"darkgreen": [0, 100, 0],
+	"darkgrey": [169, 169, 169],
+	"darkkhaki": [189, 183, 107],
+	"darkmagenta": [139, 0, 139],
+	"darkolivegreen": [85, 107, 47],
+	"darkorange": [255, 140, 0],
+	"darkorchid": [153, 50, 204],
+	"darkred": [139, 0, 0],
+	"darksalmon": [233, 150, 122],
+	"darkseagreen": [143, 188, 143],
+	"darkslateblue": [72, 61, 139],
+	"darkslategray": [47, 79, 79],
+	"darkslategrey": [47, 79, 79],
+	"darkturquoise": [0, 206, 209],
+	"darkviolet": [148, 0, 211],
+	"deeppink": [255, 20, 147],
+	"deepskyblue": [0, 191, 255],
+	"dimgray": [105, 105, 105],
+	"dimgrey": [105, 105, 105],
+	"dodgerblue": [30, 144, 255],
+	"firebrick": [178, 34, 34],
+	"floralwhite": [255, 250, 240],
+	"forestgreen": [34, 139, 34],
+	"fuchsia": [255, 0, 255],
+	"gainsboro": [220, 220, 220],
+	"ghostwhite": [248, 248, 255],
+	"gold": [255, 215, 0],
+	"goldenrod": [218, 165, 32],
+	"gray": [128, 128, 128],
+	"green": [0, 128, 0],
+	"greenyellow": [173, 255, 47],
+	"grey": [128, 128, 128],
+	"honeydew": [240, 255, 240],
+	"hotpink": [255, 105, 180],
+	"indianred": [205, 92, 92],
+	"indigo": [75, 0, 130],
+	"ivory": [255, 255, 240],
+	"khaki": [240, 230, 140],
+	"lavender": [230, 230, 250],
+	"lavenderblush": [255, 240, 245],
+	"lawngreen": [124, 252, 0],
+	"lemonchiffon": [255, 250, 205],
+	"lightblue": [173, 216, 230],
+	"lightcoral": [240, 128, 128],
+	"lightcyan": [224, 255, 255],
+	"lightgoldenrodyellow": [250, 250, 210],
+	"lightgray": [211, 211, 211],
+	"lightgreen": [144, 238, 144],
+	"lightgrey": [211, 211, 211],
+	"lightpink": [255, 182, 193],
+	"lightsalmon": [255, 160, 122],
+	"lightseagreen": [32, 178, 170],
+	"lightskyblue": [135, 206, 250],
+	"lightslategray": [119, 136, 153],
+	"lightslategrey": [119, 136, 153],
+	"lightsteelblue": [176, 196, 222],
+	"lightyellow": [255, 255, 224],
+	"lime": [0, 255, 0],
+	"limegreen": [50, 205, 50],
+	"linen": [250, 240, 230],
+	"magenta": [255, 0, 255],
+	"maroon": [128, 0, 0],
+	"mediumaquamarine": [102, 205, 170],
+	"mediumblue": [0, 0, 205],
+	"mediumorchid": [186, 85, 211],
+	"mediumpurple": [147, 112, 219],
+	"mediumseagreen": [60, 179, 113],
+	"mediumslateblue": [123, 104, 238],
+	"mediumspringgreen": [0, 250, 154],
+	"mediumturquoise": [72, 209, 204],
+	"mediumvioletred": [199, 21, 133],
+	"midnightblue": [25, 25, 112],
+	"mintcream": [245, 255, 250],
+	"mistyrose": [255, 228, 225],
+	"moccasin": [255, 228, 181],
+	"navajowhite": [255, 222, 173],
+	"navy": [0, 0, 128],
+	"oldlace": [253, 245, 230],
+	"olive": [128, 128, 0],
+	"olivedrab": [107, 142, 35],
+	"orange": [255, 165, 0],
+	"orangered": [255, 69, 0],
+	"orchid": [218, 112, 214],
+	"palegoldenrod": [238, 232, 170],
+	"palegreen": [152, 251, 152],
+	"paleturquoise": [175, 238, 238],
+	"palevioletred": [219, 112, 147],
+	"papayawhip": [255, 239, 213],
+	"peachpuff": [255, 218, 185],
+	"peru": [205, 133, 63],
+	"pink": [255, 192, 203],
+	"plum": [221, 160, 221],
+	"powderblue": [176, 224, 230],
+	"purple": [128, 0, 128],
+	"rebeccapurple": [102, 51, 153],
+	"red": [255, 0, 0],
+	"rosybrown": [188, 143, 143],
+	"royalblue": [65, 105, 225],
+	"saddlebrown": [139, 69, 19],
+	"salmon": [250, 128, 114],
+	"sandybrown": [244, 164, 96],
+	"seagreen": [46, 139, 87],
+	"seashell": [255, 245, 238],
+	"sienna": [160, 82, 45],
+	"silver": [192, 192, 192],
+	"skyblue": [135, 206, 235],
+	"slateblue": [106, 90, 205],
+	"slategray": [112, 128, 144],
+	"slategrey": [112, 128, 144],
+	"snow": [255, 250, 250],
+	"springgreen": [0, 255, 127],
+	"steelblue": [70, 130, 180],
+	"tan": [210, 180, 140],
+	"teal": [0, 128, 128],
+	"thistle": [216, 191, 216],
+	"tomato": [255, 99, 71],
+	"turquoise": [64, 224, 208],
+	"violet": [238, 130, 238],
+	"wheat": [245, 222, 179],
+	"white": [255, 255, 255],
+	"whitesmoke": [245, 245, 245],
+	"yellow": [255, 255, 0],
+	"yellowgreen": [154, 205, 50]
+};
+
+var conversions = createCommonjsModule(function (module) {
+/* MIT license */
+
+
+// NOTE: conversions should only return primitive values (i.e. arrays, or
+//       values that give correct `typeof` results).
+//       do not use box values types (i.e. Number(), String(), etc.)
+
+var reverseKeywords = {};
+for (var key in colorName) {
+	if (colorName.hasOwnProperty(key)) {
+		reverseKeywords[colorName[key]] = key;
+	}
+}
+
+var convert = module.exports = {
+	rgb: {channels: 3, labels: 'rgb'},
+	hsl: {channels: 3, labels: 'hsl'},
+	hsv: {channels: 3, labels: 'hsv'},
+	hwb: {channels: 3, labels: 'hwb'},
+	cmyk: {channels: 4, labels: 'cmyk'},
+	xyz: {channels: 3, labels: 'xyz'},
+	lab: {channels: 3, labels: 'lab'},
+	lch: {channels: 3, labels: 'lch'},
+	hex: {channels: 1, labels: ['hex']},
+	keyword: {channels: 1, labels: ['keyword']},
+	ansi16: {channels: 1, labels: ['ansi16']},
+	ansi256: {channels: 1, labels: ['ansi256']},
+	hcg: {channels: 3, labels: ['h', 'c', 'g']},
+	apple: {channels: 3, labels: ['r16', 'g16', 'b16']},
+	gray: {channels: 1, labels: ['gray']}
+};
+
+// hide .channels and .labels properties
+for (var model in convert) {
+	if (convert.hasOwnProperty(model)) {
+		if (!('channels' in convert[model])) {
+			throw new Error('missing channels property: ' + model);
+		}
+
+		if (!('labels' in convert[model])) {
+			throw new Error('missing channel labels property: ' + model);
+		}
+
+		if (convert[model].labels.length !== convert[model].channels) {
+			throw new Error('channel and label counts mismatch: ' + model);
+		}
+
+		var channels = convert[model].channels;
+		var labels = convert[model].labels;
+		delete convert[model].channels;
+		delete convert[model].labels;
+		Object.defineProperty(convert[model], 'channels', {value: channels});
+		Object.defineProperty(convert[model], 'labels', {value: labels});
+	}
+}
+
+convert.rgb.hsl = function (rgb) {
+	var r = rgb[0] / 255;
+	var g = rgb[1] / 255;
+	var b = rgb[2] / 255;
+	var min = Math.min(r, g, b);
+	var max = Math.max(r, g, b);
+	var delta = max - min;
+	var h;
+	var s;
+	var l;
+
+	if (max === min) {
+		h = 0;
+	} else if (r === max) {
+		h = (g - b) / delta;
+	} else if (g === max) {
+		h = 2 + (b - r) / delta;
+	} else if (b === max) {
+		h = 4 + (r - g) / delta;
+	}
+
+	h = Math.min(h * 60, 360);
+
+	if (h < 0) {
+		h += 360;
+	}
+
+	l = (min + max) / 2;
+
+	if (max === min) {
+		s = 0;
+	} else if (l <= 0.5) {
+		s = delta / (max + min);
+	} else {
+		s = delta / (2 - max - min);
+	}
+
+	return [h, s * 100, l * 100];
+};
+
+convert.rgb.hsv = function (rgb) {
+	var rdif;
+	var gdif;
+	var bdif;
+	var h;
+	var s;
+
+	var r = rgb[0] / 255;
+	var g = rgb[1] / 255;
+	var b = rgb[2] / 255;
+	var v = Math.max(r, g, b);
+	var diff = v - Math.min(r, g, b);
+	var diffc = function (c) {
+		return (v - c) / 6 / diff + 1 / 2;
+	};
+
+	if (diff === 0) {
+		h = s = 0;
+	} else {
+		s = diff / v;
+		rdif = diffc(r);
+		gdif = diffc(g);
+		bdif = diffc(b);
+
+		if (r === v) {
+			h = bdif - gdif;
+		} else if (g === v) {
+			h = (1 / 3) + rdif - bdif;
+		} else if (b === v) {
+			h = (2 / 3) + gdif - rdif;
+		}
+		if (h < 0) {
+			h += 1;
+		} else if (h > 1) {
+			h -= 1;
+		}
+	}
+
+	return [
+		h * 360,
+		s * 100,
+		v * 100
+	];
+};
+
+convert.rgb.hwb = function (rgb) {
+	var r = rgb[0];
+	var g = rgb[1];
+	var b = rgb[2];
+	var h = convert.rgb.hsl(rgb)[0];
+	var w = 1 / 255 * Math.min(r, Math.min(g, b));
+
+	b = 1 - 1 / 255 * Math.max(r, Math.max(g, b));
+
+	return [h, w * 100, b * 100];
+};
+
+convert.rgb.cmyk = function (rgb) {
+	var r = rgb[0] / 255;
+	var g = rgb[1] / 255;
+	var b = rgb[2] / 255;
+	var c;
+	var m;
+	var y;
+	var k;
+
+	k = Math.min(1 - r, 1 - g, 1 - b);
+	c = (1 - r - k) / (1 - k) || 0;
+	m = (1 - g - k) / (1 - k) || 0;
+	y = (1 - b - k) / (1 - k) || 0;
+
+	return [c * 100, m * 100, y * 100, k * 100];
+};
+
+/**
+ * See https://en.m.wikipedia.org/wiki/Euclidean_distance#Squared_Euclidean_distance
+ * */
+function comparativeDistance(x, y) {
+	return (
+		Math.pow(x[0] - y[0], 2) +
+		Math.pow(x[1] - y[1], 2) +
+		Math.pow(x[2] - y[2], 2)
+	);
+}
+
+convert.rgb.keyword = function (rgb) {
+	var reversed = reverseKeywords[rgb];
+	if (reversed) {
+		return reversed;
+	}
+
+	var currentClosestDistance = Infinity;
+	var currentClosestKeyword;
+
+	for (var keyword in colorName) {
+		if (colorName.hasOwnProperty(keyword)) {
+			var value = colorName[keyword];
+
+			// Compute comparative distance
+			var distance = comparativeDistance(rgb, value);
+
+			// Check if its less, if so set as closest
+			if (distance < currentClosestDistance) {
+				currentClosestDistance = distance;
+				currentClosestKeyword = keyword;
+			}
+		}
+	}
+
+	return currentClosestKeyword;
+};
+
+convert.keyword.rgb = function (keyword) {
+	return colorName[keyword];
+};
+
+convert.rgb.xyz = function (rgb) {
+	var r = rgb[0] / 255;
+	var g = rgb[1] / 255;
+	var b = rgb[2] / 255;
+
+	// assume sRGB
+	r = r > 0.04045 ? Math.pow(((r + 0.055) / 1.055), 2.4) : (r / 12.92);
+	g = g > 0.04045 ? Math.pow(((g + 0.055) / 1.055), 2.4) : (g / 12.92);
+	b = b > 0.04045 ? Math.pow(((b + 0.055) / 1.055), 2.4) : (b / 12.92);
+
+	var x = (r * 0.4124) + (g * 0.3576) + (b * 0.1805);
+	var y = (r * 0.2126) + (g * 0.7152) + (b * 0.0722);
+	var z = (r * 0.0193) + (g * 0.1192) + (b * 0.9505);
+
+	return [x * 100, y * 100, z * 100];
+};
+
+convert.rgb.lab = function (rgb) {
+	var xyz = convert.rgb.xyz(rgb);
+	var x = xyz[0];
+	var y = xyz[1];
+	var z = xyz[2];
+	var l;
+	var a;
+	var b;
+
+	x /= 95.047;
+	y /= 100;
+	z /= 108.883;
+
+	x = x > 0.008856 ? Math.pow(x, 1 / 3) : (7.787 * x) + (16 / 116);
+	y = y > 0.008856 ? Math.pow(y, 1 / 3) : (7.787 * y) + (16 / 116);
+	z = z > 0.008856 ? Math.pow(z, 1 / 3) : (7.787 * z) + (16 / 116);
+
+	l = (116 * y) - 16;
+	a = 500 * (x - y);
+	b = 200 * (y - z);
+
+	return [l, a, b];
+};
+
+convert.hsl.rgb = function (hsl) {
+	var h = hsl[0] / 360;
+	var s = hsl[1] / 100;
+	var l = hsl[2] / 100;
+	var t1;
+	var t2;
+	var t3;
+	var rgb;
+	var val;
+
+	if (s === 0) {
+		val = l * 255;
+		return [val, val, val];
+	}
+
+	if (l < 0.5) {
+		t2 = l * (1 + s);
+	} else {
+		t2 = l + s - l * s;
+	}
+
+	t1 = 2 * l - t2;
+
+	rgb = [0, 0, 0];
+	for (var i = 0; i < 3; i++) {
+		t3 = h + 1 / 3 * -(i - 1);
+		if (t3 < 0) {
+			t3++;
+		}
+		if (t3 > 1) {
+			t3--;
+		}
+
+		if (6 * t3 < 1) {
+			val = t1 + (t2 - t1) * 6 * t3;
+		} else if (2 * t3 < 1) {
+			val = t2;
+		} else if (3 * t3 < 2) {
+			val = t1 + (t2 - t1) * (2 / 3 - t3) * 6;
+		} else {
+			val = t1;
+		}
+
+		rgb[i] = val * 255;
+	}
+
+	return rgb;
+};
+
+convert.hsl.hsv = function (hsl) {
+	var h = hsl[0];
+	var s = hsl[1] / 100;
+	var l = hsl[2] / 100;
+	var smin = s;
+	var lmin = Math.max(l, 0.01);
+	var sv;
+	var v;
+
+	l *= 2;
+	s *= (l <= 1) ? l : 2 - l;
+	smin *= lmin <= 1 ? lmin : 2 - lmin;
+	v = (l + s) / 2;
+	sv = l === 0 ? (2 * smin) / (lmin + smin) : (2 * s) / (l + s);
+
+	return [h, sv * 100, v * 100];
+};
+
+convert.hsv.rgb = function (hsv) {
+	var h = hsv[0] / 60;
+	var s = hsv[1] / 100;
+	var v = hsv[2] / 100;
+	var hi = Math.floor(h) % 6;
+
+	var f = h - Math.floor(h);
+	var p = 255 * v * (1 - s);
+	var q = 255 * v * (1 - (s * f));
+	var t = 255 * v * (1 - (s * (1 - f)));
+	v *= 255;
+
+	switch (hi) {
+		case 0:
+			return [v, t, p];
+		case 1:
+			return [q, v, p];
+		case 2:
+			return [p, v, t];
+		case 3:
+			return [p, q, v];
+		case 4:
+			return [t, p, v];
+		case 5:
+			return [v, p, q];
+	}
+};
+
+convert.hsv.hsl = function (hsv) {
+	var h = hsv[0];
+	var s = hsv[1] / 100;
+	var v = hsv[2] / 100;
+	var vmin = Math.max(v, 0.01);
+	var lmin;
+	var sl;
+	var l;
+
+	l = (2 - s) * v;
+	lmin = (2 - s) * vmin;
+	sl = s * vmin;
+	sl /= (lmin <= 1) ? lmin : 2 - lmin;
+	sl = sl || 0;
+	l /= 2;
+
+	return [h, sl * 100, l * 100];
+};
+
+// http://dev.w3.org/csswg/css-color/#hwb-to-rgb
+convert.hwb.rgb = function (hwb) {
+	var h = hwb[0] / 360;
+	var wh = hwb[1] / 100;
+	var bl = hwb[2] / 100;
+	var ratio = wh + bl;
+	var i;
+	var v;
+	var f;
+	var n;
+
+	// wh + bl cant be > 1
+	if (ratio > 1) {
+		wh /= ratio;
+		bl /= ratio;
+	}
+
+	i = Math.floor(6 * h);
+	v = 1 - bl;
+	f = 6 * h - i;
+
+	if ((i & 0x01) !== 0) {
+		f = 1 - f;
+	}
+
+	n = wh + f * (v - wh); // linear interpolation
+
+	var r;
+	var g;
+	var b;
+	switch (i) {
+		default:
+		case 6:
+		case 0: r = v; g = n; b = wh; break;
+		case 1: r = n; g = v; b = wh; break;
+		case 2: r = wh; g = v; b = n; break;
+		case 3: r = wh; g = n; b = v; break;
+		case 4: r = n; g = wh; b = v; break;
+		case 5: r = v; g = wh; b = n; break;
+	}
+
+	return [r * 255, g * 255, b * 255];
+};
+
+convert.cmyk.rgb = function (cmyk) {
+	var c = cmyk[0] / 100;
+	var m = cmyk[1] / 100;
+	var y = cmyk[2] / 100;
+	var k = cmyk[3] / 100;
+	var r;
+	var g;
+	var b;
+
+	r = 1 - Math.min(1, c * (1 - k) + k);
+	g = 1 - Math.min(1, m * (1 - k) + k);
+	b = 1 - Math.min(1, y * (1 - k) + k);
+
+	return [r * 255, g * 255, b * 255];
+};
+
+convert.xyz.rgb = function (xyz) {
+	var x = xyz[0] / 100;
+	var y = xyz[1] / 100;
+	var z = xyz[2] / 100;
+	var r;
+	var g;
+	var b;
+
+	r = (x * 3.2406) + (y * -1.5372) + (z * -0.4986);
+	g = (x * -0.9689) + (y * 1.8758) + (z * 0.0415);
+	b = (x * 0.0557) + (y * -0.2040) + (z * 1.0570);
+
+	// assume sRGB
+	r = r > 0.0031308
+		? ((1.055 * Math.pow(r, 1.0 / 2.4)) - 0.055)
+		: r * 12.92;
+
+	g = g > 0.0031308
+		? ((1.055 * Math.pow(g, 1.0 / 2.4)) - 0.055)
+		: g * 12.92;
+
+	b = b > 0.0031308
+		? ((1.055 * Math.pow(b, 1.0 / 2.4)) - 0.055)
+		: b * 12.92;
+
+	r = Math.min(Math.max(0, r), 1);
+	g = Math.min(Math.max(0, g), 1);
+	b = Math.min(Math.max(0, b), 1);
+
+	return [r * 255, g * 255, b * 255];
+};
+
+convert.xyz.lab = function (xyz) {
+	var x = xyz[0];
+	var y = xyz[1];
+	var z = xyz[2];
+	var l;
+	var a;
+	var b;
+
+	x /= 95.047;
+	y /= 100;
+	z /= 108.883;
+
+	x = x > 0.008856 ? Math.pow(x, 1 / 3) : (7.787 * x) + (16 / 116);
+	y = y > 0.008856 ? Math.pow(y, 1 / 3) : (7.787 * y) + (16 / 116);
+	z = z > 0.008856 ? Math.pow(z, 1 / 3) : (7.787 * z) + (16 / 116);
+
+	l = (116 * y) - 16;
+	a = 500 * (x - y);
+	b = 200 * (y - z);
+
+	return [l, a, b];
+};
+
+convert.lab.xyz = function (lab) {
+	var l = lab[0];
+	var a = lab[1];
+	var b = lab[2];
+	var x;
+	var y;
+	var z;
+
+	y = (l + 16) / 116;
+	x = a / 500 + y;
+	z = y - b / 200;
+
+	var y2 = Math.pow(y, 3);
+	var x2 = Math.pow(x, 3);
+	var z2 = Math.pow(z, 3);
+	y = y2 > 0.008856 ? y2 : (y - 16 / 116) / 7.787;
+	x = x2 > 0.008856 ? x2 : (x - 16 / 116) / 7.787;
+	z = z2 > 0.008856 ? z2 : (z - 16 / 116) / 7.787;
+
+	x *= 95.047;
+	y *= 100;
+	z *= 108.883;
+
+	return [x, y, z];
+};
+
+convert.lab.lch = function (lab) {
+	var l = lab[0];
+	var a = lab[1];
+	var b = lab[2];
+	var hr;
+	var h;
+	var c;
+
+	hr = Math.atan2(b, a);
+	h = hr * 360 / 2 / Math.PI;
+
+	if (h < 0) {
+		h += 360;
+	}
+
+	c = Math.sqrt(a * a + b * b);
+
+	return [l, c, h];
+};
+
+convert.lch.lab = function (lch) {
+	var l = lch[0];
+	var c = lch[1];
+	var h = lch[2];
+	var a;
+	var b;
+	var hr;
+
+	hr = h / 360 * 2 * Math.PI;
+	a = c * Math.cos(hr);
+	b = c * Math.sin(hr);
+
+	return [l, a, b];
+};
+
+convert.rgb.ansi16 = function (args) {
+	var r = args[0];
+	var g = args[1];
+	var b = args[2];
+	var value = 1 in arguments ? arguments[1] : convert.rgb.hsv(args)[2]; // hsv -> ansi16 optimization
+
+	value = Math.round(value / 50);
+
+	if (value === 0) {
+		return 30;
+	}
+
+	var ansi = 30
+		+ ((Math.round(b / 255) << 2)
+		| (Math.round(g / 255) << 1)
+		| Math.round(r / 255));
+
+	if (value === 2) {
+		ansi += 60;
+	}
+
+	return ansi;
+};
+
+convert.hsv.ansi16 = function (args) {
+	// optimization here; we already know the value and don't need to get
+	// it converted for us.
+	return convert.rgb.ansi16(convert.hsv.rgb(args), args[2]);
+};
+
+convert.rgb.ansi256 = function (args) {
+	var r = args[0];
+	var g = args[1];
+	var b = args[2];
+
+	// we use the extended greyscale palette here, with the exception of
+	// black and white. normal palette only has 4 greyscale shades.
+	if (r === g && g === b) {
+		if (r < 8) {
+			return 16;
+		}
+
+		if (r > 248) {
+			return 231;
+		}
+
+		return Math.round(((r - 8) / 247) * 24) + 232;
+	}
+
+	var ansi = 16
+		+ (36 * Math.round(r / 255 * 5))
+		+ (6 * Math.round(g / 255 * 5))
+		+ Math.round(b / 255 * 5);
+
+	return ansi;
+};
+
+convert.ansi16.rgb = function (args) {
+	var color = args % 10;
+
+	// handle greyscale
+	if (color === 0 || color === 7) {
+		if (args > 50) {
+			color += 3.5;
+		}
+
+		color = color / 10.5 * 255;
+
+		return [color, color, color];
+	}
+
+	var mult = (~~(args > 50) + 1) * 0.5;
+	var r = ((color & 1) * mult) * 255;
+	var g = (((color >> 1) & 1) * mult) * 255;
+	var b = (((color >> 2) & 1) * mult) * 255;
+
+	return [r, g, b];
+};
+
+convert.ansi256.rgb = function (args) {
+	// handle greyscale
+	if (args >= 232) {
+		var c = (args - 232) * 10 + 8;
+		return [c, c, c];
+	}
+
+	args -= 16;
+
+	var rem;
+	var r = Math.floor(args / 36) / 5 * 255;
+	var g = Math.floor((rem = args % 36) / 6) / 5 * 255;
+	var b = (rem % 6) / 5 * 255;
+
+	return [r, g, b];
+};
+
+convert.rgb.hex = function (args) {
+	var integer = ((Math.round(args[0]) & 0xFF) << 16)
+		+ ((Math.round(args[1]) & 0xFF) << 8)
+		+ (Math.round(args[2]) & 0xFF);
+
+	var string = integer.toString(16).toUpperCase();
+	return '000000'.substring(string.length) + string;
+};
+
+convert.hex.rgb = function (args) {
+	var match = args.toString(16).match(/[a-f0-9]{6}|[a-f0-9]{3}/i);
+	if (!match) {
+		return [0, 0, 0];
+	}
+
+	var colorString = match[0];
+
+	if (match[0].length === 3) {
+		colorString = colorString.split('').map(function (char) {
+			return char + char;
+		}).join('');
+	}
+
+	var integer = parseInt(colorString, 16);
+	var r = (integer >> 16) & 0xFF;
+	var g = (integer >> 8) & 0xFF;
+	var b = integer & 0xFF;
+
+	return [r, g, b];
+};
+
+convert.rgb.hcg = function (rgb) {
+	var r = rgb[0] / 255;
+	var g = rgb[1] / 255;
+	var b = rgb[2] / 255;
+	var max = Math.max(Math.max(r, g), b);
+	var min = Math.min(Math.min(r, g), b);
+	var chroma = (max - min);
+	var grayscale;
+	var hue;
+
+	if (chroma < 1) {
+		grayscale = min / (1 - chroma);
+	} else {
+		grayscale = 0;
+	}
+
+	if (chroma <= 0) {
+		hue = 0;
+	} else
+	if (max === r) {
+		hue = ((g - b) / chroma) % 6;
+	} else
+	if (max === g) {
+		hue = 2 + (b - r) / chroma;
+	} else {
+		hue = 4 + (r - g) / chroma + 4;
+	}
+
+	hue /= 6;
+	hue %= 1;
+
+	return [hue * 360, chroma * 100, grayscale * 100];
+};
+
+convert.hsl.hcg = function (hsl) {
+	var s = hsl[1] / 100;
+	var l = hsl[2] / 100;
+	var c = 1;
+	var f = 0;
+
+	if (l < 0.5) {
+		c = 2.0 * s * l;
+	} else {
+		c = 2.0 * s * (1.0 - l);
+	}
+
+	if (c < 1.0) {
+		f = (l - 0.5 * c) / (1.0 - c);
+	}
+
+	return [hsl[0], c * 100, f * 100];
+};
+
+convert.hsv.hcg = function (hsv) {
+	var s = hsv[1] / 100;
+	var v = hsv[2] / 100;
+
+	var c = s * v;
+	var f = 0;
+
+	if (c < 1.0) {
+		f = (v - c) / (1 - c);
+	}
+
+	return [hsv[0], c * 100, f * 100];
+};
+
+convert.hcg.rgb = function (hcg) {
+	var h = hcg[0] / 360;
+	var c = hcg[1] / 100;
+	var g = hcg[2] / 100;
+
+	if (c === 0.0) {
+		return [g * 255, g * 255, g * 255];
+	}
+
+	var pure = [0, 0, 0];
+	var hi = (h % 1) * 6;
+	var v = hi % 1;
+	var w = 1 - v;
+	var mg = 0;
+
+	switch (Math.floor(hi)) {
+		case 0:
+			pure[0] = 1; pure[1] = v; pure[2] = 0; break;
+		case 1:
+			pure[0] = w; pure[1] = 1; pure[2] = 0; break;
+		case 2:
+			pure[0] = 0; pure[1] = 1; pure[2] = v; break;
+		case 3:
+			pure[0] = 0; pure[1] = w; pure[2] = 1; break;
+		case 4:
+			pure[0] = v; pure[1] = 0; pure[2] = 1; break;
+		default:
+			pure[0] = 1; pure[1] = 0; pure[2] = w;
+	}
+
+	mg = (1.0 - c) * g;
+
+	return [
+		(c * pure[0] + mg) * 255,
+		(c * pure[1] + mg) * 255,
+		(c * pure[2] + mg) * 255
+	];
+};
+
+convert.hcg.hsv = function (hcg) {
+	var c = hcg[1] / 100;
+	var g = hcg[2] / 100;
+
+	var v = c + g * (1.0 - c);
+	var f = 0;
+
+	if (v > 0.0) {
+		f = c / v;
+	}
+
+	return [hcg[0], f * 100, v * 100];
+};
+
+convert.hcg.hsl = function (hcg) {
+	var c = hcg[1] / 100;
+	var g = hcg[2] / 100;
+
+	var l = g * (1.0 - c) + 0.5 * c;
+	var s = 0;
+
+	if (l > 0.0 && l < 0.5) {
+		s = c / (2 * l);
+	} else
+	if (l >= 0.5 && l < 1.0) {
+		s = c / (2 * (1 - l));
+	}
+
+	return [hcg[0], s * 100, l * 100];
+};
+
+convert.hcg.hwb = function (hcg) {
+	var c = hcg[1] / 100;
+	var g = hcg[2] / 100;
+	var v = c + g * (1.0 - c);
+	return [hcg[0], (v - c) * 100, (1 - v) * 100];
+};
+
+convert.hwb.hcg = function (hwb) {
+	var w = hwb[1] / 100;
+	var b = hwb[2] / 100;
+	var v = 1 - b;
+	var c = v - w;
+	var g = 0;
+
+	if (c < 1) {
+		g = (v - c) / (1 - c);
+	}
+
+	return [hwb[0], c * 100, g * 100];
+};
+
+convert.apple.rgb = function (apple) {
+	return [(apple[0] / 65535) * 255, (apple[1] / 65535) * 255, (apple[2] / 65535) * 255];
+};
+
+convert.rgb.apple = function (rgb) {
+	return [(rgb[0] / 255) * 65535, (rgb[1] / 255) * 65535, (rgb[2] / 255) * 65535];
+};
+
+convert.gray.rgb = function (args) {
+	return [args[0] / 100 * 255, args[0] / 100 * 255, args[0] / 100 * 255];
+};
+
+convert.gray.hsl = convert.gray.hsv = function (args) {
+	return [0, 0, args[0]];
+};
+
+convert.gray.hwb = function (gray) {
+	return [0, 100, gray[0]];
+};
+
+convert.gray.cmyk = function (gray) {
+	return [0, 0, 0, gray[0]];
+};
+
+convert.gray.lab = function (gray) {
+	return [gray[0], 0, 0];
+};
+
+convert.gray.hex = function (gray) {
+	var val = Math.round(gray[0] / 100 * 255) & 0xFF;
+	var integer = (val << 16) + (val << 8) + val;
+
+	var string = integer.toString(16).toUpperCase();
+	return '000000'.substring(string.length) + string;
+};
+
+convert.rgb.gray = function (rgb) {
+	var val = (rgb[0] + rgb[1] + rgb[2]) / 3;
+	return [val / 255 * 100];
+};
+});
+var conversions_1 = conversions.rgb;
+var conversions_2 = conversions.hsl;
+var conversions_3 = conversions.hsv;
+var conversions_4 = conversions.hwb;
+var conversions_5 = conversions.cmyk;
+var conversions_6 = conversions.xyz;
+var conversions_7 = conversions.lab;
+var conversions_8 = conversions.lch;
+var conversions_9 = conversions.hex;
+var conversions_10 = conversions.keyword;
+var conversions_11 = conversions.ansi16;
+var conversions_12 = conversions.ansi256;
+var conversions_13 = conversions.hcg;
+var conversions_14 = conversions.apple;
+var conversions_15 = conversions.gray;
+
+/*
+	this function routes a model to all other models.
+
+	all functions that are routed have a property `.conversion` attached
+	to the returned synthetic function. This property is an array
+	of strings, each with the steps in between the 'from' and 'to'
+	color models (inclusive).
+
+	conversions that are not possible simply are not included.
+*/
+
+function buildGraph() {
+	var graph = {};
+	// https://jsperf.com/object-keys-vs-for-in-with-closure/3
+	var models = Object.keys(conversions);
+
+	for (var len = models.length, i = 0; i < len; i++) {
+		graph[models[i]] = {
+			// http://jsperf.com/1-vs-infinity
+			// micro-opt, but this is simple.
+			distance: -1,
+			parent: null
+		};
+	}
+
+	return graph;
+}
+
+// https://en.wikipedia.org/wiki/Breadth-first_search
+function deriveBFS(fromModel) {
+	var graph = buildGraph();
+	var queue = [fromModel]; // unshift -> queue -> pop
+
+	graph[fromModel].distance = 0;
+
+	while (queue.length) {
+		var current = queue.pop();
+		var adjacents = Object.keys(conversions[current]);
+
+		for (var len = adjacents.length, i = 0; i < len; i++) {
+			var adjacent = adjacents[i];
+			var node = graph[adjacent];
+
+			if (node.distance === -1) {
+				node.distance = graph[current].distance + 1;
+				node.parent = current;
+				queue.unshift(adjacent);
+			}
+		}
+	}
+
+	return graph;
+}
+
+function link(from, to) {
+	return function (args) {
+		return to(from(args));
+	};
+}
+
+function wrapConversion(toModel, graph) {
+	var path = [graph[toModel].parent, toModel];
+	var fn = conversions[graph[toModel].parent][toModel];
+
+	var cur = graph[toModel].parent;
+	while (graph[cur].parent) {
+		path.unshift(graph[cur].parent);
+		fn = link(conversions[graph[cur].parent][cur], fn);
+		cur = graph[cur].parent;
+	}
+
+	fn.conversion = path;
+	return fn;
+}
+
+var route = function (fromModel) {
+	var graph = deriveBFS(fromModel);
+	var conversion = {};
+
+	var models = Object.keys(graph);
+	for (var len = models.length, i = 0; i < len; i++) {
+		var toModel = models[i];
+		var node = graph[toModel];
+
+		if (node.parent === null) {
+			// no possible conversion, or this node is the source model.
+			continue;
+		}
+
+		conversion[toModel] = wrapConversion(toModel, graph);
+	}
+
+	return conversion;
+};
+
+var convert = {};
+
+var models = Object.keys(conversions);
+
+function wrapRaw(fn) {
+	var wrappedFn = function (args) {
+		if (args === undefined || args === null) {
+			return args;
+		}
+
+		if (arguments.length > 1) {
+			args = Array.prototype.slice.call(arguments);
+		}
+
+		return fn(args);
+	};
+
+	// preserve .conversion property if there is one
+	if ('conversion' in fn) {
+		wrappedFn.conversion = fn.conversion;
+	}
+
+	return wrappedFn;
+}
+
+function wrapRounded(fn) {
+	var wrappedFn = function (args) {
+		if (args === undefined || args === null) {
+			return args;
+		}
+
+		if (arguments.length > 1) {
+			args = Array.prototype.slice.call(arguments);
+		}
+
+		var result = fn(args);
+
+		// we're assuming the result is an array here.
+		// see notice in conversions.js; don't use box types
+		// in conversion functions.
+		if (typeof result === 'object') {
+			for (var len = result.length, i = 0; i < len; i++) {
+				result[i] = Math.round(result[i]);
+			}
+		}
+
+		return result;
+	};
+
+	// preserve .conversion property if there is one
+	if ('conversion' in fn) {
+		wrappedFn.conversion = fn.conversion;
+	}
+
+	return wrappedFn;
+}
+
+models.forEach(function (fromModel) {
+	convert[fromModel] = {};
+
+	Object.defineProperty(convert[fromModel], 'channels', {value: conversions[fromModel].channels});
+	Object.defineProperty(convert[fromModel], 'labels', {value: conversions[fromModel].labels});
+
+	var routes = route(fromModel);
+	var routeModels = Object.keys(routes);
+
+	routeModels.forEach(function (toModel) {
+		var fn = routes[toModel];
+
+		convert[fromModel][toModel] = wrapRounded(fn);
+		convert[fromModel][toModel].raw = wrapRaw(fn);
+	});
+});
+
+var colorConvert = convert;
+
+var colorName$1 = {
+	"aliceblue": [240, 248, 255],
+	"antiquewhite": [250, 235, 215],
+	"aqua": [0, 255, 255],
+	"aquamarine": [127, 255, 212],
+	"azure": [240, 255, 255],
+	"beige": [245, 245, 220],
+	"bisque": [255, 228, 196],
+	"black": [0, 0, 0],
+	"blanchedalmond": [255, 235, 205],
+	"blue": [0, 0, 255],
+	"blueviolet": [138, 43, 226],
+	"brown": [165, 42, 42],
+	"burlywood": [222, 184, 135],
+	"cadetblue": [95, 158, 160],
+	"chartreuse": [127, 255, 0],
+	"chocolate": [210, 105, 30],
+	"coral": [255, 127, 80],
+	"cornflowerblue": [100, 149, 237],
+	"cornsilk": [255, 248, 220],
+	"crimson": [220, 20, 60],
+	"cyan": [0, 255, 255],
+	"darkblue": [0, 0, 139],
+	"darkcyan": [0, 139, 139],
+	"darkgoldenrod": [184, 134, 11],
+	"darkgray": [169, 169, 169],
+	"darkgreen": [0, 100, 0],
+	"darkgrey": [169, 169, 169],
+	"darkkhaki": [189, 183, 107],
+	"darkmagenta": [139, 0, 139],
+	"darkolivegreen": [85, 107, 47],
+	"darkorange": [255, 140, 0],
+	"darkorchid": [153, 50, 204],
+	"darkred": [139, 0, 0],
+	"darksalmon": [233, 150, 122],
+	"darkseagreen": [143, 188, 143],
+	"darkslateblue": [72, 61, 139],
+	"darkslategray": [47, 79, 79],
+	"darkslategrey": [47, 79, 79],
+	"darkturquoise": [0, 206, 209],
+	"darkviolet": [148, 0, 211],
+	"deeppink": [255, 20, 147],
+	"deepskyblue": [0, 191, 255],
+	"dimgray": [105, 105, 105],
+	"dimgrey": [105, 105, 105],
+	"dodgerblue": [30, 144, 255],
+	"firebrick": [178, 34, 34],
+	"floralwhite": [255, 250, 240],
+	"forestgreen": [34, 139, 34],
+	"fuchsia": [255, 0, 255],
+	"gainsboro": [220, 220, 220],
+	"ghostwhite": [248, 248, 255],
+	"gold": [255, 215, 0],
+	"goldenrod": [218, 165, 32],
+	"gray": [128, 128, 128],
+	"green": [0, 128, 0],
+	"greenyellow": [173, 255, 47],
+	"grey": [128, 128, 128],
+	"honeydew": [240, 255, 240],
+	"hotpink": [255, 105, 180],
+	"indianred": [205, 92, 92],
+	"indigo": [75, 0, 130],
+	"ivory": [255, 255, 240],
+	"khaki": [240, 230, 140],
+	"lavender": [230, 230, 250],
+	"lavenderblush": [255, 240, 245],
+	"lawngreen": [124, 252, 0],
+	"lemonchiffon": [255, 250, 205],
+	"lightblue": [173, 216, 230],
+	"lightcoral": [240, 128, 128],
+	"lightcyan": [224, 255, 255],
+	"lightgoldenrodyellow": [250, 250, 210],
+	"lightgray": [211, 211, 211],
+	"lightgreen": [144, 238, 144],
+	"lightgrey": [211, 211, 211],
+	"lightpink": [255, 182, 193],
+	"lightsalmon": [255, 160, 122],
+	"lightseagreen": [32, 178, 170],
+	"lightskyblue": [135, 206, 250],
+	"lightslategray": [119, 136, 153],
+	"lightslategrey": [119, 136, 153],
+	"lightsteelblue": [176, 196, 222],
+	"lightyellow": [255, 255, 224],
+	"lime": [0, 255, 0],
+	"limegreen": [50, 205, 50],
+	"linen": [250, 240, 230],
+	"magenta": [255, 0, 255],
+	"maroon": [128, 0, 0],
+	"mediumaquamarine": [102, 205, 170],
+	"mediumblue": [0, 0, 205],
+	"mediumorchid": [186, 85, 211],
+	"mediumpurple": [147, 112, 219],
+	"mediumseagreen": [60, 179, 113],
+	"mediumslateblue": [123, 104, 238],
+	"mediumspringgreen": [0, 250, 154],
+	"mediumturquoise": [72, 209, 204],
+	"mediumvioletred": [199, 21, 133],
+	"midnightblue": [25, 25, 112],
+	"mintcream": [245, 255, 250],
+	"mistyrose": [255, 228, 225],
+	"moccasin": [255, 228, 181],
+	"navajowhite": [255, 222, 173],
+	"navy": [0, 0, 128],
+	"oldlace": [253, 245, 230],
+	"olive": [128, 128, 0],
+	"olivedrab": [107, 142, 35],
+	"orange": [255, 165, 0],
+	"orangered": [255, 69, 0],
+	"orchid": [218, 112, 214],
+	"palegoldenrod": [238, 232, 170],
+	"palegreen": [152, 251, 152],
+	"paleturquoise": [175, 238, 238],
+	"palevioletred": [219, 112, 147],
+	"papayawhip": [255, 239, 213],
+	"peachpuff": [255, 218, 185],
+	"peru": [205, 133, 63],
+	"pink": [255, 192, 203],
+	"plum": [221, 160, 221],
+	"powderblue": [176, 224, 230],
+	"purple": [128, 0, 128],
+	"rebeccapurple": [102, 51, 153],
+	"red": [255, 0, 0],
+	"rosybrown": [188, 143, 143],
+	"royalblue": [65, 105, 225],
+	"saddlebrown": [139, 69, 19],
+	"salmon": [250, 128, 114],
+	"sandybrown": [244, 164, 96],
+	"seagreen": [46, 139, 87],
+	"seashell": [255, 245, 238],
+	"sienna": [160, 82, 45],
+	"silver": [192, 192, 192],
+	"skyblue": [135, 206, 235],
+	"slateblue": [106, 90, 205],
+	"slategray": [112, 128, 144],
+	"slategrey": [112, 128, 144],
+	"snow": [255, 250, 250],
+	"springgreen": [0, 255, 127],
+	"steelblue": [70, 130, 180],
+	"tan": [210, 180, 140],
+	"teal": [0, 128, 128],
+	"thistle": [216, 191, 216],
+	"tomato": [255, 99, 71],
+	"turquoise": [64, 224, 208],
+	"violet": [238, 130, 238],
+	"wheat": [245, 222, 179],
+	"white": [255, 255, 255],
+	"whitesmoke": [245, 245, 245],
+	"yellow": [255, 255, 0],
+	"yellowgreen": [154, 205, 50]
+};
+
+/* MIT license */
+
+
+var colorString = {
+   getRgba: getRgba,
+   getHsla: getHsla,
+   getRgb: getRgb,
+   getHsl: getHsl,
+   getHwb: getHwb,
+   getAlpha: getAlpha,
+
+   hexString: hexString,
+   rgbString: rgbString,
+   rgbaString: rgbaString,
+   percentString: percentString,
+   percentaString: percentaString,
+   hslString: hslString,
+   hslaString: hslaString,
+   hwbString: hwbString,
+   keyword: keyword
+};
+
+function getRgba(string) {
+   if (!string) {
+      return;
+   }
+   var abbr =  /^#([a-fA-F0-9]{3,4})$/i,
+       hex =  /^#([a-fA-F0-9]{6}([a-fA-F0-9]{2})?)$/i,
+       rgba = /^rgba?\(\s*([+-]?\d+)\s*,\s*([+-]?\d+)\s*,\s*([+-]?\d+)\s*(?:,\s*([+-]?[\d\.]+)\s*)?\)$/i,
+       per = /^rgba?\(\s*([+-]?[\d\.]+)\%\s*,\s*([+-]?[\d\.]+)\%\s*,\s*([+-]?[\d\.]+)\%\s*(?:,\s*([+-]?[\d\.]+)\s*)?\)$/i,
+       keyword = /(\w+)/;
+
+   var rgb = [0, 0, 0],
+       a = 1,
+       match = string.match(abbr),
+       hexAlpha = "";
+   if (match) {
+      match = match[1];
+      hexAlpha = match[3];
+      for (var i = 0; i < rgb.length; i++) {
+         rgb[i] = parseInt(match[i] + match[i], 16);
+      }
+      if (hexAlpha) {
+         a = Math.round((parseInt(hexAlpha + hexAlpha, 16) / 255) * 100) / 100;
+      }
+   }
+   else if (match = string.match(hex)) {
+      hexAlpha = match[2];
+      match = match[1];
+      for (var i = 0; i < rgb.length; i++) {
+         rgb[i] = parseInt(match.slice(i * 2, i * 2 + 2), 16);
+      }
+      if (hexAlpha) {
+         a = Math.round((parseInt(hexAlpha, 16) / 255) * 100) / 100;
+      }
+   }
+   else if (match = string.match(rgba)) {
+      for (var i = 0; i < rgb.length; i++) {
+         rgb[i] = parseInt(match[i + 1]);
+      }
+      a = parseFloat(match[4]);
+   }
+   else if (match = string.match(per)) {
+      for (var i = 0; i < rgb.length; i++) {
+         rgb[i] = Math.round(parseFloat(match[i + 1]) * 2.55);
+      }
+      a = parseFloat(match[4]);
+   }
+   else if (match = string.match(keyword)) {
+      if (match[1] == "transparent") {
+         return [0, 0, 0, 0];
+      }
+      rgb = colorName$1[match[1]];
+      if (!rgb) {
+         return;
+      }
+   }
+
+   for (var i = 0; i < rgb.length; i++) {
+      rgb[i] = scale(rgb[i], 0, 255);
+   }
+   if (!a && a != 0) {
+      a = 1;
+   }
+   else {
+      a = scale(a, 0, 1);
+   }
+   rgb[3] = a;
+   return rgb;
+}
+
+function getHsla(string) {
+   if (!string) {
+      return;
+   }
+   var hsl = /^hsla?\(\s*([+-]?\d+)(?:deg)?\s*,\s*([+-]?[\d\.]+)%\s*,\s*([+-]?[\d\.]+)%\s*(?:,\s*([+-]?[\d\.]+)\s*)?\)/;
+   var match = string.match(hsl);
+   if (match) {
+      var alpha = parseFloat(match[4]);
+      var h = scale(parseInt(match[1]), 0, 360),
+          s = scale(parseFloat(match[2]), 0, 100),
+          l = scale(parseFloat(match[3]), 0, 100),
+          a = scale(isNaN(alpha) ? 1 : alpha, 0, 1);
+      return [h, s, l, a];
+   }
+}
+
+function getHwb(string) {
+   if (!string) {
+      return;
+   }
+   var hwb = /^hwb\(\s*([+-]?\d+)(?:deg)?\s*,\s*([+-]?[\d\.]+)%\s*,\s*([+-]?[\d\.]+)%\s*(?:,\s*([+-]?[\d\.]+)\s*)?\)/;
+   var match = string.match(hwb);
+   if (match) {
+    var alpha = parseFloat(match[4]);
+      var h = scale(parseInt(match[1]), 0, 360),
+          w = scale(parseFloat(match[2]), 0, 100),
+          b = scale(parseFloat(match[3]), 0, 100),
+          a = scale(isNaN(alpha) ? 1 : alpha, 0, 1);
+      return [h, w, b, a];
+   }
+}
+
+function getRgb(string) {
+   var rgba = getRgba(string);
+   return rgba && rgba.slice(0, 3);
+}
+
+function getHsl(string) {
+  var hsla = getHsla(string);
+  return hsla && hsla.slice(0, 3);
+}
+
+function getAlpha(string) {
+   var vals = getRgba(string);
+   if (vals) {
+      return vals[3];
+   }
+   else if (vals = getHsla(string)) {
+      return vals[3];
+   }
+   else if (vals = getHwb(string)) {
+      return vals[3];
+   }
+}
+
+// generators
+function hexString(rgba, a) {
+   var a = (a !== undefined && rgba.length === 3) ? a : rgba[3];
+   return "#" + hexDouble(rgba[0]) 
+              + hexDouble(rgba[1])
+              + hexDouble(rgba[2])
+              + (
+                 (a >= 0 && a < 1)
+                 ? hexDouble(Math.round(a * 255))
+                 : ""
+              );
+}
+
+function rgbString(rgba, alpha) {
+   if (alpha < 1 || (rgba[3] && rgba[3] < 1)) {
+      return rgbaString(rgba, alpha);
+   }
+   return "rgb(" + rgba[0] + ", " + rgba[1] + ", " + rgba[2] + ")";
+}
+
+function rgbaString(rgba, alpha) {
+   if (alpha === undefined) {
+      alpha = (rgba[3] !== undefined ? rgba[3] : 1);
+   }
+   return "rgba(" + rgba[0] + ", " + rgba[1] + ", " + rgba[2]
+           + ", " + alpha + ")";
+}
+
+function percentString(rgba, alpha) {
+   if (alpha < 1 || (rgba[3] && rgba[3] < 1)) {
+      return percentaString(rgba, alpha);
+   }
+   var r = Math.round(rgba[0]/255 * 100),
+       g = Math.round(rgba[1]/255 * 100),
+       b = Math.round(rgba[2]/255 * 100);
+
+   return "rgb(" + r + "%, " + g + "%, " + b + "%)";
+}
+
+function percentaString(rgba, alpha) {
+   var r = Math.round(rgba[0]/255 * 100),
+       g = Math.round(rgba[1]/255 * 100),
+       b = Math.round(rgba[2]/255 * 100);
+   return "rgba(" + r + "%, " + g + "%, " + b + "%, " + (alpha || rgba[3] || 1) + ")";
+}
+
+function hslString(hsla, alpha) {
+   if (alpha < 1 || (hsla[3] && hsla[3] < 1)) {
+      return hslaString(hsla, alpha);
+   }
+   return "hsl(" + hsla[0] + ", " + hsla[1] + "%, " + hsla[2] + "%)";
+}
+
+function hslaString(hsla, alpha) {
+   if (alpha === undefined) {
+      alpha = (hsla[3] !== undefined ? hsla[3] : 1);
+   }
+   return "hsla(" + hsla[0] + ", " + hsla[1] + "%, " + hsla[2] + "%, "
+           + alpha + ")";
+}
+
+// hwb is a bit different than rgb(a) & hsl(a) since there is no alpha specific syntax
+// (hwb have alpha optional & 1 is default value)
+function hwbString(hwb, alpha) {
+   if (alpha === undefined) {
+      alpha = (hwb[3] !== undefined ? hwb[3] : 1);
+   }
+   return "hwb(" + hwb[0] + ", " + hwb[1] + "%, " + hwb[2] + "%"
+           + (alpha !== undefined && alpha !== 1 ? ", " + alpha : "") + ")";
+}
+
+function keyword(rgb) {
+  return reverseNames[rgb.slice(0, 3)];
+}
+
+// helpers
+function scale(num, min, max) {
+   return Math.min(Math.max(min, num), max);
+}
+
+function hexDouble(num) {
+  var str = num.toString(16).toUpperCase();
+  return (str.length < 2) ? "0" + str : str;
+}
+
+
+//create a list of reverse color names
+var reverseNames = {};
+for (var name in colorName$1) {
+   reverseNames[colorName$1[name]] = name;
+}
+
+/* MIT license */
+
+
+
+var Color = function (obj) {
+	if (obj instanceof Color) {
+		return obj;
+	}
+	if (!(this instanceof Color)) {
+		return new Color(obj);
+	}
+
+	this.valid = false;
+	this.values = {
+		rgb: [0, 0, 0],
+		hsl: [0, 0, 0],
+		hsv: [0, 0, 0],
+		hwb: [0, 0, 0],
+		cmyk: [0, 0, 0, 0],
+		alpha: 1
+	};
+
+	// parse Color() argument
+	var vals;
+	if (typeof obj === 'string') {
+		vals = colorString.getRgba(obj);
+		if (vals) {
+			this.setValues('rgb', vals);
+		} else if (vals = colorString.getHsla(obj)) {
+			this.setValues('hsl', vals);
+		} else if (vals = colorString.getHwb(obj)) {
+			this.setValues('hwb', vals);
+		}
+	} else if (typeof obj === 'object') {
+		vals = obj;
+		if (vals.r !== undefined || vals.red !== undefined) {
+			this.setValues('rgb', vals);
+		} else if (vals.l !== undefined || vals.lightness !== undefined) {
+			this.setValues('hsl', vals);
+		} else if (vals.v !== undefined || vals.value !== undefined) {
+			this.setValues('hsv', vals);
+		} else if (vals.w !== undefined || vals.whiteness !== undefined) {
+			this.setValues('hwb', vals);
+		} else if (vals.c !== undefined || vals.cyan !== undefined) {
+			this.setValues('cmyk', vals);
+		}
+	}
+};
+
+Color.prototype = {
+	isValid: function () {
+		return this.valid;
+	},
+	rgb: function () {
+		return this.setSpace('rgb', arguments);
+	},
+	hsl: function () {
+		return this.setSpace('hsl', arguments);
+	},
+	hsv: function () {
+		return this.setSpace('hsv', arguments);
+	},
+	hwb: function () {
+		return this.setSpace('hwb', arguments);
+	},
+	cmyk: function () {
+		return this.setSpace('cmyk', arguments);
+	},
+
+	rgbArray: function () {
+		return this.values.rgb;
+	},
+	hslArray: function () {
+		return this.values.hsl;
+	},
+	hsvArray: function () {
+		return this.values.hsv;
+	},
+	hwbArray: function () {
+		var values = this.values;
+		if (values.alpha !== 1) {
+			return values.hwb.concat([values.alpha]);
+		}
+		return values.hwb;
+	},
+	cmykArray: function () {
+		return this.values.cmyk;
+	},
+	rgbaArray: function () {
+		var values = this.values;
+		return values.rgb.concat([values.alpha]);
+	},
+	hslaArray: function () {
+		var values = this.values;
+		return values.hsl.concat([values.alpha]);
+	},
+	alpha: function (val) {
+		if (val === undefined) {
+			return this.values.alpha;
+		}
+		this.setValues('alpha', val);
+		return this;
+	},
+
+	red: function (val) {
+		return this.setChannel('rgb', 0, val);
+	},
+	green: function (val) {
+		return this.setChannel('rgb', 1, val);
+	},
+	blue: function (val) {
+		return this.setChannel('rgb', 2, val);
+	},
+	hue: function (val) {
+		if (val) {
+			val %= 360;
+			val = val < 0 ? 360 + val : val;
+		}
+		return this.setChannel('hsl', 0, val);
+	},
+	saturation: function (val) {
+		return this.setChannel('hsl', 1, val);
+	},
+	lightness: function (val) {
+		return this.setChannel('hsl', 2, val);
+	},
+	saturationv: function (val) {
+		return this.setChannel('hsv', 1, val);
+	},
+	whiteness: function (val) {
+		return this.setChannel('hwb', 1, val);
+	},
+	blackness: function (val) {
+		return this.setChannel('hwb', 2, val);
+	},
+	value: function (val) {
+		return this.setChannel('hsv', 2, val);
+	},
+	cyan: function (val) {
+		return this.setChannel('cmyk', 0, val);
+	},
+	magenta: function (val) {
+		return this.setChannel('cmyk', 1, val);
+	},
+	yellow: function (val) {
+		return this.setChannel('cmyk', 2, val);
+	},
+	black: function (val) {
+		return this.setChannel('cmyk', 3, val);
+	},
+
+	hexString: function () {
+		return colorString.hexString(this.values.rgb);
+	},
+	rgbString: function () {
+		return colorString.rgbString(this.values.rgb, this.values.alpha);
+	},
+	rgbaString: function () {
+		return colorString.rgbaString(this.values.rgb, this.values.alpha);
+	},
+	percentString: function () {
+		return colorString.percentString(this.values.rgb, this.values.alpha);
+	},
+	hslString: function () {
+		return colorString.hslString(this.values.hsl, this.values.alpha);
+	},
+	hslaString: function () {
+		return colorString.hslaString(this.values.hsl, this.values.alpha);
+	},
+	hwbString: function () {
+		return colorString.hwbString(this.values.hwb, this.values.alpha);
+	},
+	keyword: function () {
+		return colorString.keyword(this.values.rgb, this.values.alpha);
+	},
+
+	rgbNumber: function () {
+		var rgb = this.values.rgb;
+		return (rgb[0] << 16) | (rgb[1] << 8) | rgb[2];
+	},
+
+	luminosity: function () {
+		// http://www.w3.org/TR/WCAG20/#relativeluminancedef
+		var rgb = this.values.rgb;
+		var lum = [];
+		for (var i = 0; i < rgb.length; i++) {
+			var chan = rgb[i] / 255;
+			lum[i] = (chan <= 0.03928) ? chan / 12.92 : Math.pow(((chan + 0.055) / 1.055), 2.4);
+		}
+		return 0.2126 * lum[0] + 0.7152 * lum[1] + 0.0722 * lum[2];
+	},
+
+	contrast: function (color2) {
+		// http://www.w3.org/TR/WCAG20/#contrast-ratiodef
+		var lum1 = this.luminosity();
+		var lum2 = color2.luminosity();
+		if (lum1 > lum2) {
+			return (lum1 + 0.05) / (lum2 + 0.05);
+		}
+		return (lum2 + 0.05) / (lum1 + 0.05);
+	},
+
+	level: function (color2) {
+		var contrastRatio = this.contrast(color2);
+		if (contrastRatio >= 7.1) {
+			return 'AAA';
+		}
+
+		return (contrastRatio >= 4.5) ? 'AA' : '';
+	},
+
+	dark: function () {
+		// YIQ equation from http://24ways.org/2010/calculating-color-contrast
+		var rgb = this.values.rgb;
+		var yiq = (rgb[0] * 299 + rgb[1] * 587 + rgb[2] * 114) / 1000;
+		return yiq < 128;
+	},
+
+	light: function () {
+		return !this.dark();
+	},
+
+	negate: function () {
+		var rgb = [];
+		for (var i = 0; i < 3; i++) {
+			rgb[i] = 255 - this.values.rgb[i];
+		}
+		this.setValues('rgb', rgb);
+		return this;
+	},
+
+	lighten: function (ratio) {
+		var hsl = this.values.hsl;
+		hsl[2] += hsl[2] * ratio;
+		this.setValues('hsl', hsl);
+		return this;
+	},
+
+	darken: function (ratio) {
+		var hsl = this.values.hsl;
+		hsl[2] -= hsl[2] * ratio;
+		this.setValues('hsl', hsl);
+		return this;
+	},
+
+	saturate: function (ratio) {
+		var hsl = this.values.hsl;
+		hsl[1] += hsl[1] * ratio;
+		this.setValues('hsl', hsl);
+		return this;
+	},
+
+	desaturate: function (ratio) {
+		var hsl = this.values.hsl;
+		hsl[1] -= hsl[1] * ratio;
+		this.setValues('hsl', hsl);
+		return this;
+	},
+
+	whiten: function (ratio) {
+		var hwb = this.values.hwb;
+		hwb[1] += hwb[1] * ratio;
+		this.setValues('hwb', hwb);
+		return this;
+	},
+
+	blacken: function (ratio) {
+		var hwb = this.values.hwb;
+		hwb[2] += hwb[2] * ratio;
+		this.setValues('hwb', hwb);
+		return this;
+	},
+
+	greyscale: function () {
+		var rgb = this.values.rgb;
+		// http://en.wikipedia.org/wiki/Grayscale#Converting_color_to_grayscale
+		var val = rgb[0] * 0.3 + rgb[1] * 0.59 + rgb[2] * 0.11;
+		this.setValues('rgb', [val, val, val]);
+		return this;
+	},
+
+	clearer: function (ratio) {
+		var alpha = this.values.alpha;
+		this.setValues('alpha', alpha - (alpha * ratio));
+		return this;
+	},
+
+	opaquer: function (ratio) {
+		var alpha = this.values.alpha;
+		this.setValues('alpha', alpha + (alpha * ratio));
+		return this;
+	},
+
+	rotate: function (degrees) {
+		var hsl = this.values.hsl;
+		var hue = (hsl[0] + degrees) % 360;
+		hsl[0] = hue < 0 ? 360 + hue : hue;
+		this.setValues('hsl', hsl);
+		return this;
+	},
+
+	/**
+	 * Ported from sass implementation in C
+	 * https://github.com/sass/libsass/blob/0e6b4a2850092356aa3ece07c6b249f0221caced/functions.cpp#L209
+	 */
+	mix: function (mixinColor, weight) {
+		var color1 = this;
+		var color2 = mixinColor;
+		var p = weight === undefined ? 0.5 : weight;
+
+		var w = 2 * p - 1;
+		var a = color1.alpha() - color2.alpha();
+
+		var w1 = (((w * a === -1) ? w : (w + a) / (1 + w * a)) + 1) / 2.0;
+		var w2 = 1 - w1;
+
+		return this
+			.rgb(
+				w1 * color1.red() + w2 * color2.red(),
+				w1 * color1.green() + w2 * color2.green(),
+				w1 * color1.blue() + w2 * color2.blue()
+			)
+			.alpha(color1.alpha() * p + color2.alpha() * (1 - p));
+	},
+
+	toJSON: function () {
+		return this.rgb();
+	},
+
+	clone: function () {
+		// NOTE(SB): using node-clone creates a dependency to Buffer when using browserify,
+		// making the final build way to big to embed in Chart.js. So let's do it manually,
+		// assuming that values to clone are 1 dimension arrays containing only numbers,
+		// except 'alpha' which is a number.
+		var result = new Color();
+		var source = this.values;
+		var target = result.values;
+		var value, type;
+
+		for (var prop in source) {
+			if (source.hasOwnProperty(prop)) {
+				value = source[prop];
+				type = ({}).toString.call(value);
+				if (type === '[object Array]') {
+					target[prop] = value.slice(0);
+				} else if (type === '[object Number]') {
+					target[prop] = value;
+				} else {
+					console.error('unexpected color value:', value);
+				}
+			}
+		}
+
+		return result;
+	}
+};
+
+Color.prototype.spaces = {
+	rgb: ['red', 'green', 'blue'],
+	hsl: ['hue', 'saturation', 'lightness'],
+	hsv: ['hue', 'saturation', 'value'],
+	hwb: ['hue', 'whiteness', 'blackness'],
+	cmyk: ['cyan', 'magenta', 'yellow', 'black']
+};
+
+Color.prototype.maxes = {
+	rgb: [255, 255, 255],
+	hsl: [360, 100, 100],
+	hsv: [360, 100, 100],
+	hwb: [360, 100, 100],
+	cmyk: [100, 100, 100, 100]
+};
+
+Color.prototype.getValues = function (space) {
+	var values = this.values;
+	var vals = {};
+
+	for (var i = 0; i < space.length; i++) {
+		vals[space.charAt(i)] = values[space][i];
+	}
+
+	if (values.alpha !== 1) {
+		vals.a = values.alpha;
+	}
+
+	// {r: 255, g: 255, b: 255, a: 0.4}
+	return vals;
+};
+
+Color.prototype.setValues = function (space, vals) {
+	var values = this.values;
+	var spaces = this.spaces;
+	var maxes = this.maxes;
+	var alpha = 1;
+	var i;
+
+	this.valid = true;
+
+	if (space === 'alpha') {
+		alpha = vals;
+	} else if (vals.length) {
+		// [10, 10, 10]
+		values[space] = vals.slice(0, space.length);
+		alpha = vals[space.length];
+	} else if (vals[space.charAt(0)] !== undefined) {
+		// {r: 10, g: 10, b: 10}
+		for (i = 0; i < space.length; i++) {
+			values[space][i] = vals[space.charAt(i)];
+		}
+
+		alpha = vals.a;
+	} else if (vals[spaces[space][0]] !== undefined) {
+		// {red: 10, green: 10, blue: 10}
+		var chans = spaces[space];
+
+		for (i = 0; i < space.length; i++) {
+			values[space][i] = vals[chans[i]];
+		}
+
+		alpha = vals.alpha;
+	}
+
+	values.alpha = Math.max(0, Math.min(1, (alpha === undefined ? values.alpha : alpha)));
+
+	if (space === 'alpha') {
+		return false;
+	}
+
+	var capped;
+
+	// cap values of the space prior converting all values
+	for (i = 0; i < space.length; i++) {
+		capped = Math.max(0, Math.min(maxes[space][i], values[space][i]));
+		values[space][i] = Math.round(capped);
+	}
+
+	// convert to all the other color spaces
+	for (var sname in spaces) {
+		if (sname !== space) {
+			values[sname] = colorConvert[space][sname](values[space]);
+		}
+	}
+
+	return true;
+};
+
+Color.prototype.setSpace = function (space, args) {
+	var vals = args[0];
+
+	if (vals === undefined) {
+		// color.rgb()
+		return this.getValues(space);
+	}
+
+	// color.rgb(10, 10, 10)
+	if (typeof vals === 'number') {
+		vals = Array.prototype.slice.call(args);
+	}
+
+	this.setValues(space, vals);
+	return this;
+};
+
+Color.prototype.setChannel = function (space, index, val) {
+	var svalues = this.values[space];
+	if (val === undefined) {
+		// color.red()
+		return svalues[index];
+	} else if (val === svalues[index]) {
+		// color.red(color.red())
+		return this;
+	}
+
+	// color.red(100)
+	svalues[index] = val;
+	this.setValues(space, svalues);
+
+	return this;
+};
+
+if (typeof window !== 'undefined') {
+	window.Color = Color;
+}
+
+var chartjsColor = Color;
+
+function isValidKey(key) {
+	return ['__proto__', 'prototype', 'constructor'].indexOf(key) === -1;
+}
+
+/**
+ * @namespace Chart.helpers
+ */
+var helpers = {
+	/**
+	 * An empty function that can be used, for example, for optional callback.
+	 */
+	noop: function() {},
+
+	/**
+	 * Returns a unique id, sequentially generated from a global variable.
+	 * @returns {number}
+	 * @function
+	 */
+	uid: (function() {
+		var id = 0;
+		return function() {
+			return id++;
+		};
+	}()),
+
+	/**
+	 * Returns true if `value` is neither null nor undefined, else returns false.
+	 * @param {*} value - The value to test.
+	 * @returns {boolean}
+	 * @since 2.7.0
+	 */
+	isNullOrUndef: function(value) {
+		return value === null || typeof value === 'undefined';
+	},
+
+	/**
+	 * Returns true if `value` is an array (including typed arrays), else returns false.
+	 * @param {*} value - The value to test.
+	 * @returns {boolean}
+	 * @function
+	 */
+	isArray: function(value) {
+		if (Array.isArray && Array.isArray(value)) {
+			return true;
+		}
+		var type = Object.prototype.toString.call(value);
+		if (type.substr(0, 7) === '[object' && type.substr(-6) === 'Array]') {
+			return true;
+		}
+		return false;
+	},
+
+	/**
+	 * Returns true if `value` is an object (excluding null), else returns false.
+	 * @param {*} value - The value to test.
+	 * @returns {boolean}
+	 * @since 2.7.0
+	 */
+	isObject: function(value) {
+		return value !== null && Object.prototype.toString.call(value) === '[object Object]';
+	},
+
+	/**
+	 * Returns true if `value` is a finite number, else returns false
+	 * @param {*} value  - The value to test.
+	 * @returns {boolean}
+	 */
+	isFinite: function(value) {
+		return (typeof value === 'number' || value instanceof Number) && isFinite(value);
+	},
+
+	/**
+	 * Returns `value` if defined, else returns `defaultValue`.
+	 * @param {*} value - The value to return if defined.
+	 * @param {*} defaultValue - The value to return if `value` is undefined.
+	 * @returns {*}
+	 */
+	valueOrDefault: function(value, defaultValue) {
+		return typeof value === 'undefined' ? defaultValue : value;
+	},
+
+	/**
+	 * Returns value at the given `index` in array if defined, else returns `defaultValue`.
+	 * @param {Array} value - The array to lookup for value at `index`.
+	 * @param {number} index - The index in `value` to lookup for value.
+	 * @param {*} defaultValue - The value to return if `value[index]` is undefined.
+	 * @returns {*}
+	 */
+	valueAtIndexOrDefault: function(value, index, defaultValue) {
+		return helpers.valueOrDefault(helpers.isArray(value) ? value[index] : value, defaultValue);
+	},
+
+	/**
+	 * Calls `fn` with the given `args` in the scope defined by `thisArg` and returns the
+	 * value returned by `fn`. If `fn` is not a function, this method returns undefined.
+	 * @param {function} fn - The function to call.
+	 * @param {Array|undefined|null} args - The arguments with which `fn` should be called.
+	 * @param {object} [thisArg] - The value of `this` provided for the call to `fn`.
+	 * @returns {*}
+	 */
+	callback: function(fn, args, thisArg) {
+		if (fn && typeof fn.call === 'function') {
+			return fn.apply(thisArg, args);
+		}
+	},
+
+	/**
+	 * Note(SB) for performance sake, this method should only be used when loopable type
+	 * is unknown or in none intensive code (not called often and small loopable). Else
+	 * it's preferable to use a regular for() loop and save extra function calls.
+	 * @param {object|Array} loopable - The object or array to be iterated.
+	 * @param {function} fn - The function to call for each item.
+	 * @param {object} [thisArg] - The value of `this` provided for the call to `fn`.
+	 * @param {boolean} [reverse] - If true, iterates backward on the loopable.
+	 */
+	each: function(loopable, fn, thisArg, reverse) {
+		var i, len, keys;
+		if (helpers.isArray(loopable)) {
+			len = loopable.length;
+			if (reverse) {
+				for (i = len - 1; i >= 0; i--) {
+					fn.call(thisArg, loopable[i], i);
+				}
+			} else {
+				for (i = 0; i < len; i++) {
+					fn.call(thisArg, loopable[i], i);
+				}
+			}
+		} else if (helpers.isObject(loopable)) {
+			keys = Object.keys(loopable);
+			len = keys.length;
+			for (i = 0; i < len; i++) {
+				fn.call(thisArg, loopable[keys[i]], keys[i]);
+			}
+		}
+	},
+
+	/**
+	 * Returns true if the `a0` and `a1` arrays have the same content, else returns false.
+	 * @see https://stackoverflow.com/a/14853974
+	 * @param {Array} a0 - The array to compare
+	 * @param {Array} a1 - The array to compare
+	 * @returns {boolean}
+	 */
+	arrayEquals: function(a0, a1) {
+		var i, ilen, v0, v1;
+
+		if (!a0 || !a1 || a0.length !== a1.length) {
+			return false;
+		}
+
+		for (i = 0, ilen = a0.length; i < ilen; ++i) {
+			v0 = a0[i];
+			v1 = a1[i];
+
+			if (v0 instanceof Array && v1 instanceof Array) {
+				if (!helpers.arrayEquals(v0, v1)) {
+					return false;
+				}
+			} else if (v0 !== v1) {
+				// NOTE: two different object instances will never be equal: {x:20} != {x:20}
+				return false;
+			}
+		}
+
+		return true;
+	},
+
+	/**
+	 * Returns a deep copy of `source` without keeping references on objects and arrays.
+	 * @param {*} source - The value to clone.
+	 * @returns {*}
+	 */
+	clone: function(source) {
+		if (helpers.isArray(source)) {
+			return source.map(helpers.clone);
+		}
+
+		if (helpers.isObject(source)) {
+			var target = Object.create(source);
+			var keys = Object.keys(source);
+			var klen = keys.length;
+			var k = 0;
+
+			for (; k < klen; ++k) {
+				target[keys[k]] = helpers.clone(source[keys[k]]);
+			}
+
+			return target;
+		}
+
+		return source;
+	},
+
+	/**
+	 * The default merger when Chart.helpers.merge is called without merger option.
+	 * Note(SB): also used by mergeConfig and mergeScaleConfig as fallback.
+	 * @private
+	 */
+	_merger: function(key, target, source, options) {
+		if (!isValidKey(key)) {
+			// We want to ensure we do not copy prototypes over
+			// as this can pollute global namespaces
+			return;
+		}
+
+		var tval = target[key];
+		var sval = source[key];
+
+		if (helpers.isObject(tval) && helpers.isObject(sval)) {
+			helpers.merge(tval, sval, options);
+		} else {
+			target[key] = helpers.clone(sval);
+		}
+	},
+
+	/**
+	 * Merges source[key] in target[key] only if target[key] is undefined.
+	 * @private
+	 */
+	_mergerIf: function(key, target, source) {
+		if (!isValidKey(key)) {
+			// We want to ensure we do not copy prototypes over
+			// as this can pollute global namespaces
+			return;
+		}
+
+		var tval = target[key];
+		var sval = source[key];
+
+		if (helpers.isObject(tval) && helpers.isObject(sval)) {
+			helpers.mergeIf(tval, sval);
+		} else if (!target.hasOwnProperty(key)) {
+			target[key] = helpers.clone(sval);
+		}
+	},
+
+	/**
+	 * Recursively deep copies `source` properties into `target` with the given `options`.
+	 * IMPORTANT: `target` is not cloned and will be updated with `source` properties.
+	 * @param {object} target - The target object in which all sources are merged into.
+	 * @param {object|object[]} source - Object(s) to merge into `target`.
+	 * @param {object} [options] - Merging options:
+	 * @param {function} [options.merger] - The merge method (key, target, source, options)
+	 * @returns {object} The `target` object.
+	 */
+	merge: function(target, source, options) {
+		var sources = helpers.isArray(source) ? source : [source];
+		var ilen = sources.length;
+		var merge, i, keys, klen, k;
+
+		if (!helpers.isObject(target)) {
+			return target;
+		}
+
+		options = options || {};
+		merge = options.merger || helpers._merger;
+
+		for (i = 0; i < ilen; ++i) {
+			source = sources[i];
+			if (!helpers.isObject(source)) {
+				continue;
+			}
+
+			keys = Object.keys(source);
+			for (k = 0, klen = keys.length; k < klen; ++k) {
+				merge(keys[k], target, source, options);
+			}
+		}
+
+		return target;
+	},
+
+	/**
+	 * Recursively deep copies `source` properties into `target` *only* if not defined in target.
+	 * IMPORTANT: `target` is not cloned and will be updated with `source` properties.
+	 * @param {object} target - The target object in which all sources are merged into.
+	 * @param {object|object[]} source - Object(s) to merge into `target`.
+	 * @returns {object} The `target` object.
+	 */
+	mergeIf: function(target, source) {
+		return helpers.merge(target, source, {merger: helpers._mergerIf});
+	},
+
+	/**
+	 * Applies the contents of two or more objects together into the first object.
+	 * @param {object} target - The target object in which all objects are merged into.
+	 * @param {object} arg1 - Object containing additional properties to merge in target.
+	 * @param {object} argN - Additional objects containing properties to merge in target.
+	 * @returns {object} The `target` object.
+	 */
+	extend: Object.assign || function(target) {
+		return helpers.merge(target, [].slice.call(arguments, 1), {
+			merger: function(key, dst, src) {
+				dst[key] = src[key];
+			}
+		});
+	},
+
+	/**
+	 * Basic javascript inheritance based on the model created in Backbone.js
+	 */
+	inherits: function(extensions) {
+		var me = this;
+		var ChartElement = (extensions && extensions.hasOwnProperty('constructor')) ? extensions.constructor : function() {
+			return me.apply(this, arguments);
+		};
+
+		var Surrogate = function() {
+			this.constructor = ChartElement;
+		};
+
+		Surrogate.prototype = me.prototype;
+		ChartElement.prototype = new Surrogate();
+		ChartElement.extend = helpers.inherits;
+
+		if (extensions) {
+			helpers.extend(ChartElement.prototype, extensions);
+		}
+
+		ChartElement.__super__ = me.prototype;
+		return ChartElement;
+	},
+
+	_deprecated: function(scope, value, previous, current) {
+		if (value !== undefined) {
+			console.warn(scope + ': "' + previous +
+				'" is deprecated. Please use "' + current + '" instead');
+		}
+	}
+};
+
+var helpers_core = helpers;
+
+// DEPRECATIONS
+
+/**
+ * Provided for backward compatibility, use Chart.helpers.callback instead.
+ * @function Chart.helpers.callCallback
+ * @deprecated since version 2.6.0
+ * @todo remove at version 3
+ * @private
+ */
+helpers.callCallback = helpers.callback;
+
+/**
+ * Provided for backward compatibility, use Array.prototype.indexOf instead.
+ * Array.prototype.indexOf compatibility: Chrome, Opera, Safari, FF1.5+, IE9+
+ * @function Chart.helpers.indexOf
+ * @deprecated since version 2.7.0
+ * @todo remove at version 3
+ * @private
+ */
+helpers.indexOf = function(array, item, fromIndex) {
+	return Array.prototype.indexOf.call(array, item, fromIndex);
+};
+
+/**
+ * Provided for backward compatibility, use Chart.helpers.valueOrDefault instead.
+ * @function Chart.helpers.getValueOrDefault
+ * @deprecated since version 2.7.0
+ * @todo remove at version 3
+ * @private
+ */
+helpers.getValueOrDefault = helpers.valueOrDefault;
+
+/**
+ * Provided for backward compatibility, use Chart.helpers.valueAtIndexOrDefault instead.
+ * @function Chart.helpers.getValueAtIndexOrDefault
+ * @deprecated since version 2.7.0
+ * @todo remove at version 3
+ * @private
+ */
+helpers.getValueAtIndexOrDefault = helpers.valueAtIndexOrDefault;
+
+/**
+ * Easing functions adapted from Robert Penner's easing equations.
+ * @namespace Chart.helpers.easingEffects
+ * @see http://www.robertpenner.com/easing/
+ */
+var effects = {
+	linear: function(t) {
+		return t;
+	},
+
+	easeInQuad: function(t) {
+		return t * t;
+	},
+
+	easeOutQuad: function(t) {
+		return -t * (t - 2);
+	},
+
+	easeInOutQuad: function(t) {
+		if ((t /= 0.5) < 1) {
+			return 0.5 * t * t;
+		}
+		return -0.5 * ((--t) * (t - 2) - 1);
+	},
+
+	easeInCubic: function(t) {
+		return t * t * t;
+	},
+
+	easeOutCubic: function(t) {
+		return (t = t - 1) * t * t + 1;
+	},
+
+	easeInOutCubic: function(t) {
+		if ((t /= 0.5) < 1) {
+			return 0.5 * t * t * t;
+		}
+		return 0.5 * ((t -= 2) * t * t + 2);
+	},
+
+	easeInQuart: function(t) {
+		return t * t * t * t;
+	},
+
+	easeOutQuart: function(t) {
+		return -((t = t - 1) * t * t * t - 1);
+	},
+
+	easeInOutQuart: function(t) {
+		if ((t /= 0.5) < 1) {
+			return 0.5 * t * t * t * t;
+		}
+		return -0.5 * ((t -= 2) * t * t * t - 2);
+	},
+
+	easeInQuint: function(t) {
+		return t * t * t * t * t;
+	},
+
+	easeOutQuint: function(t) {
+		return (t = t - 1) * t * t * t * t + 1;
+	},
+
+	easeInOutQuint: function(t) {
+		if ((t /= 0.5) < 1) {
+			return 0.5 * t * t * t * t * t;
+		}
+		return 0.5 * ((t -= 2) * t * t * t * t + 2);
+	},
+
+	easeInSine: function(t) {
+		return -Math.cos(t * (Math.PI / 2)) + 1;
+	},
+
+	easeOutSine: function(t) {
+		return Math.sin(t * (Math.PI / 2));
+	},
+
+	easeInOutSine: function(t) {
+		return -0.5 * (Math.cos(Math.PI * t) - 1);
+	},
+
+	easeInExpo: function(t) {
+		return (t === 0) ? 0 : Math.pow(2, 10 * (t - 1));
+	},
+
+	easeOutExpo: function(t) {
+		return (t === 1) ? 1 : -Math.pow(2, -10 * t) + 1;
+	},
+
+	easeInOutExpo: function(t) {
+		if (t === 0) {
+			return 0;
+		}
+		if (t === 1) {
+			return 1;
+		}
+		if ((t /= 0.5) < 1) {
+			return 0.5 * Math.pow(2, 10 * (t - 1));
+		}
+		return 0.5 * (-Math.pow(2, -10 * --t) + 2);
+	},
+
+	easeInCirc: function(t) {
+		if (t >= 1) {
+			return t;
+		}
+		return -(Math.sqrt(1 - t * t) - 1);
+	},
+
+	easeOutCirc: function(t) {
+		return Math.sqrt(1 - (t = t - 1) * t);
+	},
+
+	easeInOutCirc: function(t) {
+		if ((t /= 0.5) < 1) {
+			return -0.5 * (Math.sqrt(1 - t * t) - 1);
+		}
+		return 0.5 * (Math.sqrt(1 - (t -= 2) * t) + 1);
+	},
+
+	easeInElastic: function(t) {
+		var s = 1.70158;
+		var p = 0;
+		var a = 1;
+		if (t === 0) {
+			return 0;
+		}
+		if (t === 1) {
+			return 1;
+		}
+		if (!p) {
+			p = 0.3;
+		}
+		if (a < 1) {
+			a = 1;
+			s = p / 4;
+		} else {
+			s = p / (2 * Math.PI) * Math.asin(1 / a);
+		}
+		return -(a * Math.pow(2, 10 * (t -= 1)) * Math.sin((t - s) * (2 * Math.PI) / p));
+	},
+
+	easeOutElastic: function(t) {
+		var s = 1.70158;
+		var p = 0;
+		var a = 1;
+		if (t === 0) {
+			return 0;
+		}
+		if (t === 1) {
+			return 1;
+		}
+		if (!p) {
+			p = 0.3;
+		}
+		if (a < 1) {
+			a = 1;
+			s = p / 4;
+		} else {
+			s = p / (2 * Math.PI) * Math.asin(1 / a);
+		}
+		return a * Math.pow(2, -10 * t) * Math.sin((t - s) * (2 * Math.PI) / p) + 1;
+	},
+
+	easeInOutElastic: function(t) {
+		var s = 1.70158;
+		var p = 0;
+		var a = 1;
+		if (t === 0) {
+			return 0;
+		}
+		if ((t /= 0.5) === 2) {
+			return 1;
+		}
+		if (!p) {
+			p = 0.45;
+		}
+		if (a < 1) {
+			a = 1;
+			s = p / 4;
+		} else {
+			s = p / (2 * Math.PI) * Math.asin(1 / a);
+		}
+		if (t < 1) {
+			return -0.5 * (a * Math.pow(2, 10 * (t -= 1)) * Math.sin((t - s) * (2 * Math.PI) / p));
+		}
+		return a * Math.pow(2, -10 * (t -= 1)) * Math.sin((t - s) * (2 * Math.PI) / p) * 0.5 + 1;
+	},
+	easeInBack: function(t) {
+		var s = 1.70158;
+		return t * t * ((s + 1) * t - s);
+	},
+
+	easeOutBack: function(t) {
+		var s = 1.70158;
+		return (t = t - 1) * t * ((s + 1) * t + s) + 1;
+	},
+
+	easeInOutBack: function(t) {
+		var s = 1.70158;
+		if ((t /= 0.5) < 1) {
+			return 0.5 * (t * t * (((s *= (1.525)) + 1) * t - s));
+		}
+		return 0.5 * ((t -= 2) * t * (((s *= (1.525)) + 1) * t + s) + 2);
+	},
+
+	easeInBounce: function(t) {
+		return 1 - effects.easeOutBounce(1 - t);
+	},
+
+	easeOutBounce: function(t) {
+		if (t < (1 / 2.75)) {
+			return 7.5625 * t * t;
+		}
+		if (t < (2 / 2.75)) {
+			return 7.5625 * (t -= (1.5 / 2.75)) * t + 0.75;
+		}
+		if (t < (2.5 / 2.75)) {
+			return 7.5625 * (t -= (2.25 / 2.75)) * t + 0.9375;
+		}
+		return 7.5625 * (t -= (2.625 / 2.75)) * t + 0.984375;
+	},
+
+	easeInOutBounce: function(t) {
+		if (t < 0.5) {
+			return effects.easeInBounce(t * 2) * 0.5;
+		}
+		return effects.easeOutBounce(t * 2 - 1) * 0.5 + 0.5;
+	}
+};
+
+var helpers_easing = {
+	effects: effects
+};
+
+// DEPRECATIONS
+
+/**
+ * Provided for backward compatibility, use Chart.helpers.easing.effects instead.
+ * @function Chart.helpers.easingEffects
+ * @deprecated since version 2.7.0
+ * @todo remove at version 3
+ * @private
+ */
+helpers_core.easingEffects = effects;
+
+var PI = Math.PI;
+var RAD_PER_DEG = PI / 180;
+var DOUBLE_PI = PI * 2;
+var HALF_PI = PI / 2;
+var QUARTER_PI = PI / 4;
+var TWO_THIRDS_PI = PI * 2 / 3;
+
+/**
+ * @namespace Chart.helpers.canvas
+ */
+var exports$1 = {
+	/**
+	 * Clears the entire canvas associated to the given `chart`.
+	 * @param {Chart} chart - The chart for which to clear the canvas.
+	 */
+	clear: function(chart) {
+		chart.ctx.clearRect(0, 0, chart.width, chart.height);
+	},
+
+	/**
+	 * Creates a "path" for a rectangle with rounded corners at position (x, y) with a
+	 * given size (width, height) and the same `radius` for all corners.
+	 * @param {CanvasRenderingContext2D} ctx - The canvas 2D Context.
+	 * @param {number} x - The x axis of the coordinate for the rectangle starting point.
+	 * @param {number} y - The y axis of the coordinate for the rectangle starting point.
+	 * @param {number} width - The rectangle's width.
+	 * @param {number} height - The rectangle's height.
+	 * @param {number} radius - The rounded amount (in pixels) for the four corners.
+	 * @todo handle `radius` as top-left, top-right, bottom-right, bottom-left array/object?
+	 */
+	roundedRect: function(ctx, x, y, width, height, radius) {
+		if (radius) {
+			var r = Math.min(radius, height / 2, width / 2);
+			var left = x + r;
+			var top = y + r;
+			var right = x + width - r;
+			var bottom = y + height - r;
+
+			ctx.moveTo(x, top);
+			if (left < right && top < bottom) {
+				ctx.arc(left, top, r, -PI, -HALF_PI);
+				ctx.arc(right, top, r, -HALF_PI, 0);
+				ctx.arc(right, bottom, r, 0, HALF_PI);
+				ctx.arc(left, bottom, r, HALF_PI, PI);
+			} else if (left < right) {
+				ctx.moveTo(left, y);
+				ctx.arc(right, top, r, -HALF_PI, HALF_PI);
+				ctx.arc(left, top, r, HALF_PI, PI + HALF_PI);
+			} else if (top < bottom) {
+				ctx.arc(left, top, r, -PI, 0);
+				ctx.arc(left, bottom, r, 0, PI);
+			} else {
+				ctx.arc(left, top, r, -PI, PI);
+			}
+			ctx.closePath();
+			ctx.moveTo(x, y);
+		} else {
+			ctx.rect(x, y, width, height);
+		}
+	},
+
+	drawPoint: function(ctx, style, radius, x, y, rotation) {
+		var type, xOffset, yOffset, size, cornerRadius;
+		var rad = (rotation || 0) * RAD_PER_DEG;
+
+		if (style && typeof style === 'object') {
+			type = style.toString();
+			if (type === '[object HTMLImageElement]' || type === '[object HTMLCanvasElement]') {
+				ctx.save();
+				ctx.translate(x, y);
+				ctx.rotate(rad);
+				ctx.drawImage(style, -style.width / 2, -style.height / 2, style.width, style.height);
+				ctx.restore();
+				return;
+			}
+		}
+
+		if (isNaN(radius) || radius <= 0) {
+			return;
+		}
+
+		ctx.beginPath();
+
+		switch (style) {
+		// Default includes circle
+		default:
+			ctx.arc(x, y, radius, 0, DOUBLE_PI);
+			ctx.closePath();
+			break;
+		case 'triangle':
+			ctx.moveTo(x + Math.sin(rad) * radius, y - Math.cos(rad) * radius);
+			rad += TWO_THIRDS_PI;
+			ctx.lineTo(x + Math.sin(rad) * radius, y - Math.cos(rad) * radius);
+			rad += TWO_THIRDS_PI;
+			ctx.lineTo(x + Math.sin(rad) * radius, y - Math.cos(rad) * radius);
+			ctx.closePath();
+			break;
+		case 'rectRounded':
+			// NOTE: the rounded rect implementation changed to use `arc` instead of
+			// `quadraticCurveTo` since it generates better results when rect is
+			// almost a circle. 0.516 (instead of 0.5) produces results with visually
+			// closer proportion to the previous impl and it is inscribed in the
+			// circle with `radius`. For more details, see the following PRs:
+			// https://github.com/chartjs/Chart.js/issues/5597
+			// https://github.com/chartjs/Chart.js/issues/5858
+			cornerRadius = radius * 0.516;
+			size = radius - cornerRadius;
+			xOffset = Math.cos(rad + QUARTER_PI) * size;
+			yOffset = Math.sin(rad + QUARTER_PI) * size;
+			ctx.arc(x - xOffset, y - yOffset, cornerRadius, rad - PI, rad - HALF_PI);
+			ctx.arc(x + yOffset, y - xOffset, cornerRadius, rad - HALF_PI, rad);
+			ctx.arc(x + xOffset, y + yOffset, cornerRadius, rad, rad + HALF_PI);
+			ctx.arc(x - yOffset, y + xOffset, cornerRadius, rad + HALF_PI, rad + PI);
+			ctx.closePath();
+			break;
+		case 'rect':
+			if (!rotation) {
+				size = Math.SQRT1_2 * radius;
+				ctx.rect(x - size, y - size, 2 * size, 2 * size);
+				break;
+			}
+			rad += QUARTER_PI;
+			/* falls through */
+		case 'rectRot':
+			xOffset = Math.cos(rad) * radius;
+			yOffset = Math.sin(rad) * radius;
+			ctx.moveTo(x - xOffset, y - yOffset);
+			ctx.lineTo(x + yOffset, y - xOffset);
+			ctx.lineTo(x + xOffset, y + yOffset);
+			ctx.lineTo(x - yOffset, y + xOffset);
+			ctx.closePath();
+			break;
+		case 'crossRot':
+			rad += QUARTER_PI;
+			/* falls through */
+		case 'cross':
+			xOffset = Math.cos(rad) * radius;
+			yOffset = Math.sin(rad) * radius;
+			ctx.moveTo(x - xOffset, y - yOffset);
+			ctx.lineTo(x + xOffset, y + yOffset);
+			ctx.moveTo(x + yOffset, y - xOffset);
+			ctx.lineTo(x - yOffset, y + xOffset);
+			break;
+		case 'star':
+			xOffset = Math.cos(rad) * radius;
+			yOffset = Math.sin(rad) * radius;
+			ctx.moveTo(x - xOffset, y - yOffset);
+			ctx.lineTo(x + xOffset, y + yOffset);
+			ctx.moveTo(x + yOffset, y - xOffset);
+			ctx.lineTo(x - yOffset, y + xOffset);
+			rad += QUARTER_PI;
+			xOffset = Math.cos(rad) * radius;
+			yOffset = Math.sin(rad) * radius;
+			ctx.moveTo(x - xOffset, y - yOffset);
+			ctx.lineTo(x + xOffset, y + yOffset);
+			ctx.moveTo(x + yOffset, y - xOffset);
+			ctx.lineTo(x - yOffset, y + xOffset);
+			break;
+		case 'line':
+			xOffset = Math.cos(rad) * radius;
+			yOffset = Math.sin(rad) * radius;
+			ctx.moveTo(x - xOffset, y - yOffset);
+			ctx.lineTo(x + xOffset, y + yOffset);
+			break;
+		case 'dash':
+			ctx.moveTo(x, y);
+			ctx.lineTo(x + Math.cos(rad) * radius, y + Math.sin(rad) * radius);
+			break;
+		}
+
+		ctx.fill();
+		ctx.stroke();
+	},
+
+	/**
+	 * Returns true if the point is inside the rectangle
+	 * @param {object} point - The point to test
+	 * @param {object} area - The rectangle
+	 * @returns {boolean}
+	 * @private
+	 */
+	_isPointInArea: function(point, area) {
+		var epsilon = 1e-6; // 1e-6 is margin in pixels for accumulated error.
+
+		return point.x > area.left - epsilon && point.x < area.right + epsilon &&
+			point.y > area.top - epsilon && point.y < area.bottom + epsilon;
+	},
+
+	clipArea: function(ctx, area) {
+		ctx.save();
+		ctx.beginPath();
+		ctx.rect(area.left, area.top, area.right - area.left, area.bottom - area.top);
+		ctx.clip();
+	},
+
+	unclipArea: function(ctx) {
+		ctx.restore();
+	},
+
+	lineTo: function(ctx, previous, target, flip) {
+		var stepped = target.steppedLine;
+		if (stepped) {
+			if (stepped === 'middle') {
+				var midpoint = (previous.x + target.x) / 2.0;
+				ctx.lineTo(midpoint, flip ? target.y : previous.y);
+				ctx.lineTo(midpoint, flip ? previous.y : target.y);
+			} else if ((stepped === 'after' && !flip) || (stepped !== 'after' && flip)) {
+				ctx.lineTo(previous.x, target.y);
+			} else {
+				ctx.lineTo(target.x, previous.y);
+			}
+			ctx.lineTo(target.x, target.y);
+			return;
+		}
+
+		if (!target.tension) {
+			ctx.lineTo(target.x, target.y);
+			return;
+		}
+
+		ctx.bezierCurveTo(
+			flip ? previous.controlPointPreviousX : previous.controlPointNextX,
+			flip ? previous.controlPointPreviousY : previous.controlPointNextY,
+			flip ? target.controlPointNextX : target.controlPointPreviousX,
+			flip ? target.controlPointNextY : target.controlPointPreviousY,
+			target.x,
+			target.y);
+	}
+};
+
+var helpers_canvas = exports$1;
+
+// DEPRECATIONS
+
+/**
+ * Provided for backward compatibility, use Chart.helpers.canvas.clear instead.
+ * @namespace Chart.helpers.clear
+ * @deprecated since version 2.7.0
+ * @todo remove at version 3
+ * @private
+ */
+helpers_core.clear = exports$1.clear;
+
+/**
+ * Provided for backward compatibility, use Chart.helpers.canvas.roundedRect instead.
+ * @namespace Chart.helpers.drawRoundedRectangle
+ * @deprecated since version 2.7.0
+ * @todo remove at version 3
+ * @private
+ */
+helpers_core.drawRoundedRectangle = function(ctx) {
+	ctx.beginPath();
+	exports$1.roundedRect.apply(exports$1, arguments);
+};
+
+var defaults = {
+	/**
+	 * @private
+	 */
+	_set: function(scope, values) {
+		return helpers_core.merge(this[scope] || (this[scope] = {}), values);
+	}
+};
+
+// TODO(v3): remove 'global' from namespace.  all default are global and
+// there's inconsistency around which options are under 'global'
+defaults._set('global', {
+	defaultColor: 'rgba(0,0,0,0.1)',
+	defaultFontColor: '#666',
+	defaultFontFamily: "'Helvetica Neue', 'Helvetica', 'Arial', sans-serif",
+	defaultFontSize: 12,
+	defaultFontStyle: 'normal',
+	defaultLineHeight: 1.2,
+	showLines: true
+});
+
+var core_defaults = defaults;
+
+var valueOrDefault = helpers_core.valueOrDefault;
+
+/**
+ * Converts the given font object into a CSS font string.
+ * @param {object} font - A font object.
+ * @return {string} The CSS font string. See https://developer.mozilla.org/en-US/docs/Web/CSS/font
+ * @private
+ */
+function toFontString(font) {
+	if (!font || helpers_core.isNullOrUndef(font.size) || helpers_core.isNullOrUndef(font.family)) {
+		return null;
+	}
+
+	return (font.style ? font.style + ' ' : '')
+		+ (font.weight ? font.weight + ' ' : '')
+		+ font.size + 'px '
+		+ font.family;
+}
+
+/**
+ * @alias Chart.helpers.options
+ * @namespace
+ */
+var helpers_options = {
+	/**
+	 * Converts the given line height `value` in pixels for a specific font `size`.
+	 * @param {number|string} value - The lineHeight to parse (eg. 1.6, '14px', '75%', '1.6em').
+	 * @param {number} size - The font size (in pixels) used to resolve relative `value`.
+	 * @returns {number} The effective line height in pixels (size * 1.2 if value is invalid).
+	 * @see https://developer.mozilla.org/en-US/docs/Web/CSS/line-height
+	 * @since 2.7.0
+	 */
+	toLineHeight: function(value, size) {
+		var matches = ('' + value).match(/^(normal|(\d+(?:\.\d+)?)(px|em|%)?)$/);
+		if (!matches || matches[1] === 'normal') {
+			return size * 1.2;
+		}
+
+		value = +matches[2];
+
+		switch (matches[3]) {
+		case 'px':
+			return value;
+		case '%':
+			value /= 100;
+			break;
+		}
+
+		return size * value;
+	},
+
+	/**
+	 * Converts the given value into a padding object with pre-computed width/height.
+	 * @param {number|object} value - If a number, set the value to all TRBL component,
+	 *  else, if and object, use defined properties and sets undefined ones to 0.
+	 * @returns {object} The padding values (top, right, bottom, left, width, height)
+	 * @since 2.7.0
+	 */
+	toPadding: function(value) {
+		var t, r, b, l;
+
+		if (helpers_core.isObject(value)) {
+			t = +value.top || 0;
+			r = +value.right || 0;
+			b = +value.bottom || 0;
+			l = +value.left || 0;
+		} else {
+			t = r = b = l = +value || 0;
+		}
+
+		return {
+			top: t,
+			right: r,
+			bottom: b,
+			left: l,
+			height: t + b,
+			width: l + r
+		};
+	},
+
+	/**
+	 * Parses font options and returns the font object.
+	 * @param {object} options - A object that contains font options to be parsed.
+	 * @return {object} The font object.
+	 * @todo Support font.* options and renamed to toFont().
+	 * @private
+	 */
+	_parseFont: function(options) {
+		var globalDefaults = core_defaults.global;
+		var size = valueOrDefault(options.fontSize, globalDefaults.defaultFontSize);
+		var font = {
+			family: valueOrDefault(options.fontFamily, globalDefaults.defaultFontFamily),
+			lineHeight: helpers_core.options.toLineHeight(valueOrDefault(options.lineHeight, globalDefaults.defaultLineHeight), size),
+			size: size,
+			style: valueOrDefault(options.fontStyle, globalDefaults.defaultFontStyle),
+			weight: null,
+			string: ''
+		};
+
+		font.string = toFontString(font);
+		return font;
+	},
+
+	/**
+	 * Evaluates the given `inputs` sequentially and returns the first defined value.
+	 * @param {Array} inputs - An array of values, falling back to the last value.
+	 * @param {object} [context] - If defined and the current value is a function, the value
+	 * is called with `context` as first argument and the result becomes the new input.
+	 * @param {number} [index] - If defined and the current value is an array, the value
+	 * at `index` become the new input.
+	 * @param {object} [info] - object to return information about resolution in
+	 * @param {boolean} [info.cacheable] - Will be set to `false` if option is not cacheable.
+	 * @since 2.7.0
+	 */
+	resolve: function(inputs, context, index, info) {
+		var cacheable = true;
+		var i, ilen, value;
+
+		for (i = 0, ilen = inputs.length; i < ilen; ++i) {
+			value = inputs[i];
+			if (value === undefined) {
+				continue;
+			}
+			if (context !== undefined && typeof value === 'function') {
+				value = value(context);
+				cacheable = false;
+			}
+			if (index !== undefined && helpers_core.isArray(value)) {
+				value = value[index];
+				cacheable = false;
+			}
+			if (value !== undefined) {
+				if (info && !cacheable) {
+					info.cacheable = false;
+				}
+				return value;
+			}
+		}
+	}
+};
+
+/**
+ * @alias Chart.helpers.math
+ * @namespace
+ */
+var exports$2 = {
+	/**
+	 * Returns an array of factors sorted from 1 to sqrt(value)
+	 * @private
+	 */
+	_factorize: function(value) {
+		var result = [];
+		var sqrt = Math.sqrt(value);
+		var i;
+
+		for (i = 1; i < sqrt; i++) {
+			if (value % i === 0) {
+				result.push(i);
+				result.push(value / i);
+			}
+		}
+		if (sqrt === (sqrt | 0)) { // if value is a square number
+			result.push(sqrt);
+		}
+
+		result.sort(function(a, b) {
+			return a - b;
+		}).pop();
+		return result;
+	},
+
+	log10: Math.log10 || function(x) {
+		var exponent = Math.log(x) * Math.LOG10E; // Math.LOG10E = 1 / Math.LN10.
+		// Check for whole powers of 10,
+		// which due to floating point rounding error should be corrected.
+		var powerOf10 = Math.round(exponent);
+		var isPowerOf10 = x === Math.pow(10, powerOf10);
+
+		return isPowerOf10 ? powerOf10 : exponent;
+	}
+};
+
+var helpers_math = exports$2;
+
+// DEPRECATIONS
+
+/**
+ * Provided for backward compatibility, use Chart.helpers.math.log10 instead.
+ * @namespace Chart.helpers.log10
+ * @deprecated since version 2.9.0
+ * @todo remove at version 3
+ * @private
+ */
+helpers_core.log10 = exports$2.log10;
+
+var getRtlAdapter = function(rectX, width) {
+	return {
+		x: function(x) {
+			return rectX + rectX + width - x;
+		},
+		setWidth: function(w) {
+			width = w;
+		},
+		textAlign: function(align) {
+			if (align === 'center') {
+				return align;
+			}
+			return align === 'right' ? 'left' : 'right';
+		},
+		xPlus: function(x, value) {
+			return x - value;
+		},
+		leftForLtr: function(x, itemWidth) {
+			return x - itemWidth;
+		},
+	};
+};
+
+var getLtrAdapter = function() {
+	return {
+		x: function(x) {
+			return x;
+		},
+		setWidth: function(w) { // eslint-disable-line no-unused-vars
+		},
+		textAlign: function(align) {
+			return align;
+		},
+		xPlus: function(x, value) {
+			return x + value;
+		},
+		leftForLtr: function(x, _itemWidth) { // eslint-disable-line no-unused-vars
+			return x;
+		},
+	};
+};
+
+var getAdapter = function(rtl, rectX, width) {
+	return rtl ? getRtlAdapter(rectX, width) : getLtrAdapter();
+};
+
+var overrideTextDirection = function(ctx, direction) {
+	var style, original;
+	if (direction === 'ltr' || direction === 'rtl') {
+		style = ctx.canvas.style;
+		original = [
+			style.getPropertyValue('direction'),
+			style.getPropertyPriority('direction'),
+		];
+
+		style.setProperty('direction', direction, 'important');
+		ctx.prevTextDirection = original;
+	}
+};
+
+var restoreTextDirection = function(ctx) {
+	var original = ctx.prevTextDirection;
+	if (original !== undefined) {
+		delete ctx.prevTextDirection;
+		ctx.canvas.style.setProperty('direction', original[0], original[1]);
+	}
+};
+
+var helpers_rtl = {
+	getRtlAdapter: getAdapter,
+	overrideTextDirection: overrideTextDirection,
+	restoreTextDirection: restoreTextDirection,
+};
+
+var helpers$1 = helpers_core;
+var easing = helpers_easing;
+var canvas = helpers_canvas;
+var options = helpers_options;
+var math = helpers_math;
+var rtl = helpers_rtl;
+helpers$1.easing = easing;
+helpers$1.canvas = canvas;
+helpers$1.options = options;
+helpers$1.math = math;
+helpers$1.rtl = rtl;
+
+function interpolate(start, view, model, ease) {
+	var keys = Object.keys(model);
+	var i, ilen, key, actual, origin, target, type, c0, c1;
+
+	for (i = 0, ilen = keys.length; i < ilen; ++i) {
+		key = keys[i];
+
+		target = model[key];
+
+		// if a value is added to the model after pivot() has been called, the view
+		// doesn't contain it, so let's initialize the view to the target value.
+		if (!view.hasOwnProperty(key)) {
+			view[key] = target;
+		}
+
+		actual = view[key];
+
+		if (actual === target || key[0] === '_') {
+			continue;
+		}
+
+		if (!start.hasOwnProperty(key)) {
+			start[key] = actual;
+		}
+
+		origin = start[key];
+
+		type = typeof target;
+
+		if (type === typeof origin) {
+			if (type === 'string') {
+				c0 = chartjsColor(origin);
+				if (c0.valid) {
+					c1 = chartjsColor(target);
+					if (c1.valid) {
+						view[key] = c1.mix(c0, ease).rgbString();
+						continue;
+					}
+				}
+			} else if (helpers$1.isFinite(origin) && helpers$1.isFinite(target)) {
+				view[key] = origin + (target - origin) * ease;
+				continue;
+			}
+		}
+
+		view[key] = target;
+	}
+}
+
+var Element = function(configuration) {
+	helpers$1.extend(this, configuration);
+	this.initialize.apply(this, arguments);
+};
+
+helpers$1.extend(Element.prototype, {
+	_type: undefined,
+
+	initialize: function() {
+		this.hidden = false;
+	},
+
+	pivot: function() {
+		var me = this;
+		if (!me._view) {
+			me._view = helpers$1.extend({}, me._model);
+		}
+		me._start = {};
+		return me;
+	},
+
+	transition: function(ease) {
+		var me = this;
+		var model = me._model;
+		var start = me._start;
+		var view = me._view;
+
+		// No animation -> No Transition
+		if (!model || ease === 1) {
+			me._view = helpers$1.extend({}, model);
+			me._start = null;
+			return me;
+		}
+
+		if (!view) {
+			view = me._view = {};
+		}
+
+		if (!start) {
+			start = me._start = {};
+		}
+
+		interpolate(start, view, model, ease);
+
+		return me;
+	},
+
+	tooltipPosition: function() {
+		return {
+			x: this._model.x,
+			y: this._model.y
+		};
+	},
+
+	hasValue: function() {
+		return helpers$1.isNumber(this._model.x) && helpers$1.isNumber(this._model.y);
+	}
+});
+
+Element.extend = helpers$1.inherits;
+
+var core_element = Element;
+
+var exports$3 = core_element.extend({
+	chart: null, // the animation associated chart instance
+	currentStep: 0, // the current animation step
+	numSteps: 60, // default number of steps
+	easing: '', // the easing to use for this animation
+	render: null, // render function used by the animation service
+
+	onAnimationProgress: null, // user specified callback to fire on each step of the animation
+	onAnimationComplete: null, // user specified callback to fire when the animation finishes
+});
+
+var core_animation = exports$3;
+
+// DEPRECATIONS
+
+/**
+ * Provided for backward compatibility, use Chart.Animation instead
+ * @prop Chart.Animation#animationObject
+ * @deprecated since version 2.6.0
+ * @todo remove at version 3
+ */
+Object.defineProperty(exports$3.prototype, 'animationObject', {
+	get: function() {
+		return this;
+	}
+});
+
+/**
+ * Provided for backward compatibility, use Chart.Animation#chart instead
+ * @prop Chart.Animation#chartInstance
+ * @deprecated since version 2.6.0
+ * @todo remove at version 3
+ */
+Object.defineProperty(exports$3.prototype, 'chartInstance', {
+	get: function() {
+		return this.chart;
+	},
+	set: function(value) {
+		this.chart = value;
+	}
+});
+
+core_defaults._set('global', {
+	animation: {
+		duration: 1000,
+		easing: 'easeOutQuart',
+		onProgress: helpers$1.noop,
+		onComplete: helpers$1.noop
+	}
+});
+
+var core_animations = {
+	animations: [],
+	request: null,
+
+	/**
+	 * @param {Chart} chart - The chart to animate.
+	 * @param {Chart.Animation} animation - The animation that we will animate.
+	 * @param {number} duration - The animation duration in ms.
+	 * @param {boolean} lazy - if true, the chart is not marked as animating to enable more responsive interactions
+	 */
+	addAnimation: function(chart, animation, duration, lazy) {
+		var animations = this.animations;
+		var i, ilen;
+
+		animation.chart = chart;
+		animation.startTime = Date.now();
+		animation.duration = duration;
+
+		if (!lazy) {
+			chart.animating = true;
+		}
+
+		for (i = 0, ilen = animations.length; i < ilen; ++i) {
+			if (animations[i].chart === chart) {
+				animations[i] = animation;
+				return;
+			}
+		}
+
+		animations.push(animation);
+
+		// If there are no animations queued, manually kickstart a digest, for lack of a better word
+		if (animations.length === 1) {
+			this.requestAnimationFrame();
+		}
+	},
+
+	cancelAnimation: function(chart) {
+		var index = helpers$1.findIndex(this.animations, function(animation) {
+			return animation.chart === chart;
+		});
+
+		if (index !== -1) {
+			this.animations.splice(index, 1);
+			chart.animating = false;
+		}
+	},
+
+	requestAnimationFrame: function() {
+		var me = this;
+		if (me.request === null) {
+			// Skip animation frame requests until the active one is executed.
+			// This can happen when processing mouse events, e.g. 'mousemove'
+			// and 'mouseout' events will trigger multiple renders.
+			me.request = helpers$1.requestAnimFrame.call(window, function() {
+				me.request = null;
+				me.startDigest();
+			});
+		}
+	},
+
+	/**
+	 * @private
+	 */
+	startDigest: function() {
+		var me = this;
+
+		me.advance();
+
+		// Do we have more stuff to animate?
+		if (me.animations.length > 0) {
+			me.requestAnimationFrame();
+		}
+	},
+
+	/**
+	 * @private
+	 */
+	advance: function() {
+		var animations = this.animations;
+		var animation, chart, numSteps, nextStep;
+		var i = 0;
+
+		// 1 animation per chart, so we are looping charts here
+		while (i < animations.length) {
+			animation = animations[i];
+			chart = animation.chart;
+			numSteps = animation.numSteps;
+
+			// Make sure that currentStep starts at 1
+			// https://github.com/chartjs/Chart.js/issues/6104
+			nextStep = Math.floor((Date.now() - animation.startTime) / animation.duration * numSteps) + 1;
+			animation.currentStep = Math.min(nextStep, numSteps);
+
+			helpers$1.callback(animation.render, [chart, animation], chart);
+			helpers$1.callback(animation.onAnimationProgress, [animation], chart);
+
+			if (animation.currentStep >= numSteps) {
+				helpers$1.callback(animation.onAnimationComplete, [animation], chart);
+				chart.animating = false;
+				animations.splice(i, 1);
+			} else {
+				++i;
+			}
+		}
+	}
+};
+
+var resolve = helpers$1.options.resolve;
+
+var arrayEvents = ['push', 'pop', 'shift', 'splice', 'unshift'];
+
+/**
+ * Hooks the array methods that add or remove values ('push', pop', 'shift', 'splice',
+ * 'unshift') and notify the listener AFTER the array has been altered. Listeners are
+ * called on the 'onData*' callbacks (e.g. onDataPush, etc.) with same arguments.
+ */
+function listenArrayEvents(array, listener) {
+	if (array._chartjs) {
+		array._chartjs.listeners.push(listener);
+		return;
+	}
+
+	Object.defineProperty(array, '_chartjs', {
+		configurable: true,
+		enumerable: false,
+		value: {
+			listeners: [listener]
+		}
+	});
+
+	arrayEvents.forEach(function(key) {
+		var method = 'onData' + key.charAt(0).toUpperCase() + key.slice(1);
+		var base = array[key];
+
+		Object.defineProperty(array, key, {
+			configurable: true,
+			enumerable: false,
+			value: function() {
+				var args = Array.prototype.slice.call(arguments);
+				var res = base.apply(this, args);
+
+				helpers$1.each(array._chartjs.listeners, function(object) {
+					if (typeof object[method] === 'function') {
+						object[method].apply(object, args);
+					}
+				});
+
+				return res;
+			}
+		});
+	});
+}
+
+/**
+ * Removes the given array event listener and cleanup extra attached properties (such as
+ * the _chartjs stub and overridden methods) if array doesn't have any more listeners.
+ */
+function unlistenArrayEvents(array, listener) {
+	var stub = array._chartjs;
+	if (!stub) {
+		return;
+	}
+
+	var listeners = stub.listeners;
+	var index = listeners.indexOf(listener);
+	if (index !== -1) {
+		listeners.splice(index, 1);
+	}
+
+	if (listeners.length > 0) {
+		return;
+	}
+
+	arrayEvents.forEach(function(key) {
+		delete array[key];
+	});
+
+	delete array._chartjs;
+}
+
+// Base class for all dataset controllers (line, bar, etc)
+var DatasetController = function(chart, datasetIndex) {
+	this.initialize(chart, datasetIndex);
+};
+
+helpers$1.extend(DatasetController.prototype, {
+
+	/**
+	 * Element type used to generate a meta dataset (e.g. Chart.element.Line).
+	 * @type {Chart.core.element}
+	 */
+	datasetElementType: null,
+
+	/**
+	 * Element type used to generate a meta data (e.g. Chart.element.Point).
+	 * @type {Chart.core.element}
+	 */
+	dataElementType: null,
+
+	/**
+	 * Dataset element option keys to be resolved in _resolveDatasetElementOptions.
+	 * A derived controller may override this to resolve controller-specific options.
+	 * The keys defined here are for backward compatibility for legend styles.
+	 * @private
+	 */
+	_datasetElementOptions: [
+		'backgroundColor',
+		'borderCapStyle',
+		'borderColor',
+		'borderDash',
+		'borderDashOffset',
+		'borderJoinStyle',
+		'borderWidth'
+	],
+
+	/**
+	 * Data element option keys to be resolved in _resolveDataElementOptions.
+	 * A derived controller may override this to resolve controller-specific options.
+	 * The keys defined here are for backward compatibility for legend styles.
+	 * @private
+	 */
+	_dataElementOptions: [
+		'backgroundColor',
+		'borderColor',
+		'borderWidth',
+		'pointStyle'
+	],
+
+	initialize: function(chart, datasetIndex) {
+		var me = this;
+		me.chart = chart;
+		me.index = datasetIndex;
+		me.linkScales();
+		me.addElements();
+		me._type = me.getMeta().type;
+	},
+
+	updateIndex: function(datasetIndex) {
+		this.index = datasetIndex;
+	},
+
+	linkScales: function() {
+		var me = this;
+		var meta = me.getMeta();
+		var chart = me.chart;
+		var scales = chart.scales;
+		var dataset = me.getDataset();
+		var scalesOpts = chart.options.scales;
+
+		if (meta.xAxisID === null || !(meta.xAxisID in scales) || dataset.xAxisID) {
+			meta.xAxisID = dataset.xAxisID || scalesOpts.xAxes[0].id;
+		}
+		if (meta.yAxisID === null || !(meta.yAxisID in scales) || dataset.yAxisID) {
+			meta.yAxisID = dataset.yAxisID || scalesOpts.yAxes[0].id;
+		}
+	},
+
+	getDataset: function() {
+		return this.chart.data.datasets[this.index];
+	},
+
+	getMeta: function() {
+		return this.chart.getDatasetMeta(this.index);
+	},
+
+	getScaleForId: function(scaleID) {
+		return this.chart.scales[scaleID];
+	},
+
+	/**
+	 * @private
+	 */
+	_getValueScaleId: function() {
+		return this.getMeta().yAxisID;
+	},
+
+	/**
+	 * @private
+	 */
+	_getIndexScaleId: function() {
+		return this.getMeta().xAxisID;
+	},
+
+	/**
+	 * @private
+	 */
+	_getValueScale: function() {
+		return this.getScaleForId(this._getValueScaleId());
+	},
+
+	/**
+	 * @private
+	 */
+	_getIndexScale: function() {
+		return this.getScaleForId(this._getIndexScaleId());
+	},
+
+	reset: function() {
+		this._update(true);
+	},
+
+	/**
+	 * @private
+	 */
+	destroy: function() {
+		if (this._data) {
+			unlistenArrayEvents(this._data, this);
+		}
+	},
+
+	createMetaDataset: function() {
+		var me = this;
+		var type = me.datasetElementType;
+		return type && new type({
+			_chart: me.chart,
+			_datasetIndex: me.index
+		});
+	},
+
+	createMetaData: function(index) {
+		var me = this;
+		var type = me.dataElementType;
+		return type && new type({
+			_chart: me.chart,
+			_datasetIndex: me.index,
+			_index: index
+		});
+	},
+
+	addElements: function() {
+		var me = this;
+		var meta = me.getMeta();
+		var data = me.getDataset().data || [];
+		var metaData = meta.data;
+		var i, ilen;
+
+		for (i = 0, ilen = data.length; i < ilen; ++i) {
+			metaData[i] = metaData[i] || me.createMetaData(i);
+		}
+
+		meta.dataset = meta.dataset || me.createMetaDataset();
+	},
+
+	addElementAndReset: function(index) {
+		var element = this.createMetaData(index);
+		this.getMeta().data.splice(index, 0, element);
+		this.updateElement(element, index, true);
+	},
+
+	buildOrUpdateElements: function() {
+		var me = this;
+		var dataset = me.getDataset();
+		var data = dataset.data || (dataset.data = []);
+
+		// In order to correctly handle data addition/deletion animation (an thus simulate
+		// real-time charts), we need to monitor these data modifications and synchronize
+		// the internal meta data accordingly.
+		if (me._data !== data) {
+			if (me._data) {
+				// This case happens when the user replaced the data array instance.
+				unlistenArrayEvents(me._data, me);
+			}
+
+			if (data && Object.isExtensible(data)) {
+				listenArrayEvents(data, me);
+			}
+			me._data = data;
+		}
+
+		// Re-sync meta data in case the user replaced the data array or if we missed
+		// any updates and so make sure that we handle number of datapoints changing.
+		me.resyncElements();
+	},
+
+	/**
+	 * Returns the merged user-supplied and default dataset-level options
+	 * @private
+	 */
+	_configure: function() {
+		var me = this;
+		me._config = helpers$1.merge(Object.create(null), [
+			me.chart.options.datasets[me._type],
+			me.getDataset(),
+		], {
+			merger: function(key, target, source) {
+				if (key !== '_meta' && key !== 'data') {
+					helpers$1._merger(key, target, source);
+				}
+			}
+		});
+	},
+
+	_update: function(reset) {
+		var me = this;
+		me._configure();
+		me._cachedDataOpts = null;
+		me.update(reset);
+	},
+
+	update: helpers$1.noop,
+
+	transition: function(easingValue) {
+		var meta = this.getMeta();
+		var elements = meta.data || [];
+		var ilen = elements.length;
+		var i = 0;
+
+		for (; i < ilen; ++i) {
+			elements[i].transition(easingValue);
+		}
+
+		if (meta.dataset) {
+			meta.dataset.transition(easingValue);
+		}
+	},
+
+	draw: function() {
+		var meta = this.getMeta();
+		var elements = meta.data || [];
+		var ilen = elements.length;
+		var i = 0;
+
+		if (meta.dataset) {
+			meta.dataset.draw();
+		}
+
+		for (; i < ilen; ++i) {
+			elements[i].draw();
+		}
+	},
+
+	/**
+	 * Returns a set of predefined style properties that should be used to represent the dataset
+	 * or the data if the index is specified
+	 * @param {number} index - data index
+	 * @return {IStyleInterface} style object
+	 */
+	getStyle: function(index) {
+		var me = this;
+		var meta = me.getMeta();
+		var dataset = meta.dataset;
+		var style;
+
+		me._configure();
+		if (dataset && index === undefined) {
+			style = me._resolveDatasetElementOptions(dataset || {});
+		} else {
+			index = index || 0;
+			style = me._resolveDataElementOptions(meta.data[index] || {}, index);
+		}
+
+		if (style.fill === false || style.fill === null) {
+			style.backgroundColor = style.borderColor;
+		}
+
+		return style;
+	},
+
+	/**
+	 * @private
+	 */
+	_resolveDatasetElementOptions: function(element, hover) {
+		var me = this;
+		var chart = me.chart;
+		var datasetOpts = me._config;
+		var custom = element.custom || {};
+		var options = chart.options.elements[me.datasetElementType.prototype._type] || {};
+		var elementOptions = me._datasetElementOptions;
+		var values = {};
+		var i, ilen, key, readKey;
+
+		// Scriptable options
+		var context = {
+			chart: chart,
+			dataset: me.getDataset(),
+			datasetIndex: me.index,
+			hover: hover
+		};
+
+		for (i = 0, ilen = elementOptions.length; i < ilen; ++i) {
+			key = elementOptions[i];
+			readKey = hover ? 'hover' + key.charAt(0).toUpperCase() + key.slice(1) : key;
+			values[key] = resolve([
+				custom[readKey],
+				datasetOpts[readKey],
+				options[readKey]
+			], context);
+		}
+
+		return values;
+	},
+
+	/**
+	 * @private
+	 */
+	_resolveDataElementOptions: function(element, index) {
+		var me = this;
+		var custom = element && element.custom;
+		var cached = me._cachedDataOpts;
+		if (cached && !custom) {
+			return cached;
+		}
+		var chart = me.chart;
+		var datasetOpts = me._config;
+		var options = chart.options.elements[me.dataElementType.prototype._type] || {};
+		var elementOptions = me._dataElementOptions;
+		var values = {};
+
+		// Scriptable options
+		var context = {
+			chart: chart,
+			dataIndex: index,
+			dataset: me.getDataset(),
+			datasetIndex: me.index
+		};
+
+		// `resolve` sets cacheable to `false` if any option is indexed or scripted
+		var info = {cacheable: !custom};
+
+		var keys, i, ilen, key;
+
+		custom = custom || {};
+
+		if (helpers$1.isArray(elementOptions)) {
+			for (i = 0, ilen = elementOptions.length; i < ilen; ++i) {
+				key = elementOptions[i];
+				values[key] = resolve([
+					custom[key],
+					datasetOpts[key],
+					options[key]
+				], context, index, info);
+			}
+		} else {
+			keys = Object.keys(elementOptions);
+			for (i = 0, ilen = keys.length; i < ilen; ++i) {
+				key = keys[i];
+				values[key] = resolve([
+					custom[key],
+					datasetOpts[elementOptions[key]],
+					datasetOpts[key],
+					options[key]
+				], context, index, info);
+			}
+		}
+
+		if (info.cacheable) {
+			me._cachedDataOpts = Object.freeze(values);
+		}
+
+		return values;
+	},
+
+	removeHoverStyle: function(element) {
+		helpers$1.merge(element._model, element.$previousStyle || {});
+		delete element.$previousStyle;
+	},
+
+	setHoverStyle: function(element) {
+		var dataset = this.chart.data.datasets[element._datasetIndex];
+		var index = element._index;
+		var custom = element.custom || {};
+		var model = element._model;
+		var getHoverColor = helpers$1.getHoverColor;
+
+		element.$previousStyle = {
+			backgroundColor: model.backgroundColor,
+			borderColor: model.borderColor,
+			borderWidth: model.borderWidth
+		};
+
+		model.backgroundColor = resolve([custom.hoverBackgroundColor, dataset.hoverBackgroundColor, getHoverColor(model.backgroundColor)], undefined, index);
+		model.borderColor = resolve([custom.hoverBorderColor, dataset.hoverBorderColor, getHoverColor(model.borderColor)], undefined, index);
+		model.borderWidth = resolve([custom.hoverBorderWidth, dataset.hoverBorderWidth, model.borderWidth], undefined, index);
+	},
+
+	/**
+	 * @private
+	 */
+	_removeDatasetHoverStyle: function() {
+		var element = this.getMeta().dataset;
+
+		if (element) {
+			this.removeHoverStyle(element);
+		}
+	},
+
+	/**
+	 * @private
+	 */
+	_setDatasetHoverStyle: function() {
+		var element = this.getMeta().dataset;
+		var prev = {};
+		var i, ilen, key, keys, hoverOptions, model;
+
+		if (!element) {
+			return;
+		}
+
+		model = element._model;
+		hoverOptions = this._resolveDatasetElementOptions(element, true);
+
+		keys = Object.keys(hoverOptions);
+		for (i = 0, ilen = keys.length; i < ilen; ++i) {
+			key = keys[i];
+			prev[key] = model[key];
+			model[key] = hoverOptions[key];
+		}
+
+		element.$previousStyle = prev;
+	},
+
+	/**
+	 * @private
+	 */
+	resyncElements: function() {
+		var me = this;
+		var meta = me.getMeta();
+		var data = me.getDataset().data;
+		var numMeta = meta.data.length;
+		var numData = data.length;
+
+		if (numData < numMeta) {
+			meta.data.splice(numData, numMeta - numData);
+		} else if (numData > numMeta) {
+			me.insertElements(numMeta, numData - numMeta);
+		}
+	},
+
+	/**
+	 * @private
+	 */
+	insertElements: function(start, count) {
+		for (var i = 0; i < count; ++i) {
+			this.addElementAndReset(start + i);
+		}
+	},
+
+	/**
+	 * @private
+	 */
+	onDataPush: function() {
+		var count = arguments.length;
+		this.insertElements(this.getDataset().data.length - count, count);
+	},
+
+	/**
+	 * @private
+	 */
+	onDataPop: function() {
+		this.getMeta().data.pop();
+	},
+
+	/**
+	 * @private
+	 */
+	onDataShift: function() {
+		this.getMeta().data.shift();
+	},
+
+	/**
+	 * @private
+	 */
+	onDataSplice: function(start, count) {
+		this.getMeta().data.splice(start, count);
+		this.insertElements(start, arguments.length - 2);
+	},
+
+	/**
+	 * @private
+	 */
+	onDataUnshift: function() {
+		this.insertElements(0, arguments.length);
+	}
+});
+
+DatasetController.extend = helpers$1.inherits;
+
+var core_datasetController = DatasetController;
+
+var TAU = Math.PI * 2;
+
+core_defaults._set('global', {
+	elements: {
+		arc: {
+			backgroundColor: core_defaults.global.defaultColor,
+			borderColor: '#fff',
+			borderWidth: 2,
+			borderAlign: 'center'
+		}
+	}
+});
+
+function clipArc(ctx, arc) {
+	var startAngle = arc.startAngle;
+	var endAngle = arc.endAngle;
+	var pixelMargin = arc.pixelMargin;
+	var angleMargin = pixelMargin / arc.outerRadius;
+	var x = arc.x;
+	var y = arc.y;
+
+	// Draw an inner border by cliping the arc and drawing a double-width border
+	// Enlarge the clipping arc by 0.33 pixels to eliminate glitches between borders
+	ctx.beginPath();
+	ctx.arc(x, y, arc.outerRadius, startAngle - angleMargin, endAngle + angleMargin);
+	if (arc.innerRadius > pixelMargin) {
+		angleMargin = pixelMargin / arc.innerRadius;
+		ctx.arc(x, y, arc.innerRadius - pixelMargin, endAngle + angleMargin, startAngle - angleMargin, true);
+	} else {
+		ctx.arc(x, y, pixelMargin, endAngle + Math.PI / 2, startAngle - Math.PI / 2);
+	}
+	ctx.closePath();
+	ctx.clip();
+}
+
+function drawFullCircleBorders(ctx, vm, arc, inner) {
+	var endAngle = arc.endAngle;
+	var i;
+
+	if (inner) {
+		arc.endAngle = arc.startAngle + TAU;
+		clipArc(ctx, arc);
+		arc.endAngle = endAngle;
+		if (arc.endAngle === arc.startAngle && arc.fullCircles) {
+			arc.endAngle += TAU;
+			arc.fullCircles--;
+		}
+	}
+
+	ctx.beginPath();
+	ctx.arc(arc.x, arc.y, arc.innerRadius, arc.startAngle + TAU, arc.startAngle, true);
+	for (i = 0; i < arc.fullCircles; ++i) {
+		ctx.stroke();
+	}
+
+	ctx.beginPath();
+	ctx.arc(arc.x, arc.y, vm.outerRadius, arc.startAngle, arc.startAngle + TAU);
+	for (i = 0; i < arc.fullCircles; ++i) {
+		ctx.stroke();
+	}
+}
+
+function drawBorder(ctx, vm, arc) {
+	var inner = vm.borderAlign === 'inner';
+
+	if (inner) {
+		ctx.lineWidth = vm.borderWidth * 2;
+		ctx.lineJoin = 'round';
+	} else {
+		ctx.lineWidth = vm.borderWidth;
+		ctx.lineJoin = 'bevel';
+	}
+
+	if (arc.fullCircles) {
+		drawFullCircleBorders(ctx, vm, arc, inner);
+	}
+
+	if (inner) {
+		clipArc(ctx, arc);
+	}
+
+	ctx.beginPath();
+	ctx.arc(arc.x, arc.y, vm.outerRadius, arc.startAngle, arc.endAngle);
+	ctx.arc(arc.x, arc.y, arc.innerRadius, arc.endAngle, arc.startAngle, true);
+	ctx.closePath();
+	ctx.stroke();
+}
+
+var element_arc = core_element.extend({
+	_type: 'arc',
+
+	inLabelRange: function(mouseX) {
+		var vm = this._view;
+
+		if (vm) {
+			return (Math.pow(mouseX - vm.x, 2) < Math.pow(vm.radius + vm.hoverRadius, 2));
+		}
+		return false;
+	},
+
+	inRange: function(chartX, chartY) {
+		var vm = this._view;
+
+		if (vm) {
+			var pointRelativePosition = helpers$1.getAngleFromPoint(vm, {x: chartX, y: chartY});
+			var angle = pointRelativePosition.angle;
+			var distance = pointRelativePosition.distance;
+
+			// Sanitise angle range
+			var startAngle = vm.startAngle;
+			var endAngle = vm.endAngle;
+			while (endAngle < startAngle) {
+				endAngle += TAU;
+			}
+			while (angle > endAngle) {
+				angle -= TAU;
+			}
+			while (angle < startAngle) {
+				angle += TAU;
+			}
+
+			// Check if within the range of the open/close angle
+			var betweenAngles = (angle >= startAngle && angle <= endAngle);
+			var withinRadius = (distance >= vm.innerRadius && distance <= vm.outerRadius);
+
+			return (betweenAngles && withinRadius);
+		}
+		return false;
+	},
+
+	getCenterPoint: function() {
+		var vm = this._view;
+		var halfAngle = (vm.startAngle + vm.endAngle) / 2;
+		var halfRadius = (vm.innerRadius + vm.outerRadius) / 2;
+		return {
+			x: vm.x + Math.cos(halfAngle) * halfRadius,
+			y: vm.y + Math.sin(halfAngle) * halfRadius
+		};
+	},
+
+	getArea: function() {
+		var vm = this._view;
+		return Math.PI * ((vm.endAngle - vm.startAngle) / (2 * Math.PI)) * (Math.pow(vm.outerRadius, 2) - Math.pow(vm.innerRadius, 2));
+	},
+
+	tooltipPosition: function() {
+		var vm = this._view;
+		var centreAngle = vm.startAngle + ((vm.endAngle - vm.startAngle) / 2);
+		var rangeFromCentre = (vm.outerRadius - vm.innerRadius) / 2 + vm.innerRadius;
+
+		return {
+			x: vm.x + (Math.cos(centreAngle) * rangeFromCentre),
+			y: vm.y + (Math.sin(centreAngle) * rangeFromCentre)
+		};
+	},
+
+	draw: function() {
+		var ctx = this._chart.ctx;
+		var vm = this._view;
+		var pixelMargin = (vm.borderAlign === 'inner') ? 0.33 : 0;
+		var arc = {
+			x: vm.x,
+			y: vm.y,
+			innerRadius: vm.innerRadius,
+			outerRadius: Math.max(vm.outerRadius - pixelMargin, 0),
+			pixelMargin: pixelMargin,
+			startAngle: vm.startAngle,
+			endAngle: vm.endAngle,
+			fullCircles: Math.floor(vm.circumference / TAU)
+		};
+		var i;
+
+		ctx.save();
+
+		ctx.fillStyle = vm.backgroundColor;
+		ctx.strokeStyle = vm.borderColor;
+
+		if (arc.fullCircles) {
+			arc.endAngle = arc.startAngle + TAU;
+			ctx.beginPath();
+			ctx.arc(arc.x, arc.y, arc.outerRadius, arc.startAngle, arc.endAngle);
+			ctx.arc(arc.x, arc.y, arc.innerRadius, arc.endAngle, arc.startAngle, true);
+			ctx.closePath();
+			for (i = 0; i < arc.fullCircles; ++i) {
+				ctx.fill();
+			}
+			arc.endAngle = arc.startAngle + vm.circumference % TAU;
+		}
+
+		ctx.beginPath();
+		ctx.arc(arc.x, arc.y, arc.outerRadius, arc.startAngle, arc.endAngle);
+		ctx.arc(arc.x, arc.y, arc.innerRadius, arc.endAngle, arc.startAngle, true);
+		ctx.closePath();
+		ctx.fill();
+
+		if (vm.borderWidth) {
+			drawBorder(ctx, vm, arc);
+		}
+
+		ctx.restore();
+	}
+});
+
+var valueOrDefault$1 = helpers$1.valueOrDefault;
+
+var defaultColor = core_defaults.global.defaultColor;
+
+core_defaults._set('global', {
+	elements: {
+		line: {
+			tension: 0.4,
+			backgroundColor: defaultColor,
+			borderWidth: 3,
+			borderColor: defaultColor,
+			borderCapStyle: 'butt',
+			borderDash: [],
+			borderDashOffset: 0.0,
+			borderJoinStyle: 'miter',
+			capBezierPoints: true,
+			fill: true, // do we fill in the area between the line and its base axis
+		}
+	}
+});
+
+var element_line = core_element.extend({
+	_type: 'line',
+
+	draw: function() {
+		var me = this;
+		var vm = me._view;
+		var ctx = me._chart.ctx;
+		var spanGaps = vm.spanGaps;
+		var points = me._children.slice(); // clone array
+		var globalDefaults = core_defaults.global;
+		var globalOptionLineElements = globalDefaults.elements.line;
+		var lastDrawnIndex = -1;
+		var closePath = me._loop;
+		var index, previous, currentVM;
+
+		if (!points.length) {
+			return;
+		}
+
+		if (me._loop) {
+			for (index = 0; index < points.length; ++index) {
+				previous = helpers$1.previousItem(points, index);
+				// If the line has an open path, shift the point array
+				if (!points[index]._view.skip && previous._view.skip) {
+					points = points.slice(index).concat(points.slice(0, index));
+					closePath = spanGaps;
+					break;
+				}
+			}
+			// If the line has a close path, add the first point again
+			if (closePath) {
+				points.push(points[0]);
+			}
+		}
+
+		ctx.save();
+
+		// Stroke Line Options
+		ctx.lineCap = vm.borderCapStyle || globalOptionLineElements.borderCapStyle;
+
+		// IE 9 and 10 do not support line dash
+		if (ctx.setLineDash) {
+			ctx.setLineDash(vm.borderDash || globalOptionLineElements.borderDash);
+		}
+
+		ctx.lineDashOffset = valueOrDefault$1(vm.borderDashOffset, globalOptionLineElements.borderDashOffset);
+		ctx.lineJoin = vm.borderJoinStyle || globalOptionLineElements.borderJoinStyle;
+		ctx.lineWidth = valueOrDefault$1(vm.borderWidth, globalOptionLineElements.borderWidth);
+		ctx.strokeStyle = vm.borderColor || globalDefaults.defaultColor;
+
+		// Stroke Line
+		ctx.beginPath();
+
+		// First point moves to it's starting position no matter what
+		currentVM = points[0]._view;
+		if (!currentVM.skip) {
+			ctx.moveTo(currentVM.x, currentVM.y);
+			lastDrawnIndex = 0;
+		}
+
+		for (index = 1; index < points.length; ++index) {
+			currentVM = points[index]._view;
+			previous = lastDrawnIndex === -1 ? helpers$1.previousItem(points, index) : points[lastDrawnIndex];
+
+			if (!currentVM.skip) {
+				if ((lastDrawnIndex !== (index - 1) && !spanGaps) || lastDrawnIndex === -1) {
+					// There was a gap and this is the first point after the gap
+					ctx.moveTo(currentVM.x, currentVM.y);
+				} else {
+					// Line to next point
+					helpers$1.canvas.lineTo(ctx, previous._view, currentVM);
+				}
+				lastDrawnIndex = index;
+			}
+		}
+
+		if (closePath) {
+			ctx.closePath();
+		}
+
+		ctx.stroke();
+		ctx.restore();
+	}
+});
+
+var valueOrDefault$2 = helpers$1.valueOrDefault;
+
+var defaultColor$1 = core_defaults.global.defaultColor;
+
+core_defaults._set('global', {
+	elements: {
+		point: {
+			radius: 3,
+			pointStyle: 'circle',
+			backgroundColor: defaultColor$1,
+			borderColor: defaultColor$1,
+			borderWidth: 1,
+			// Hover
+			hitRadius: 1,
+			hoverRadius: 4,
+			hoverBorderWidth: 1
+		}
+	}
+});
+
+function xRange(mouseX) {
+	var vm = this._view;
+	return vm ? (Math.abs(mouseX - vm.x) < vm.radius + vm.hitRadius) : false;
+}
+
+function yRange(mouseY) {
+	var vm = this._view;
+	return vm ? (Math.abs(mouseY - vm.y) < vm.radius + vm.hitRadius) : false;
+}
+
+var element_point = core_element.extend({
+	_type: 'point',
+
+	inRange: function(mouseX, mouseY) {
+		var vm = this._view;
+		return vm ? ((Math.pow(mouseX - vm.x, 2) + Math.pow(mouseY - vm.y, 2)) < Math.pow(vm.hitRadius + vm.radius, 2)) : false;
+	},
+
+	inLabelRange: xRange,
+	inXRange: xRange,
+	inYRange: yRange,
+
+	getCenterPoint: function() {
+		var vm = this._view;
+		return {
+			x: vm.x,
+			y: vm.y
+		};
+	},
+
+	getArea: function() {
+		return Math.PI * Math.pow(this._view.radius, 2);
+	},
+
+	tooltipPosition: function() {
+		var vm = this._view;
+		return {
+			x: vm.x,
+			y: vm.y,
+			padding: vm.radius + vm.borderWidth
+		};
+	},
+
+	draw: function(chartArea) {
+		var vm = this._view;
+		var ctx = this._chart.ctx;
+		var pointStyle = vm.pointStyle;
+		var rotation = vm.rotation;
+		var radius = vm.radius;
+		var x = vm.x;
+		var y = vm.y;
+		var globalDefaults = core_defaults.global;
+		var defaultColor = globalDefaults.defaultColor; // eslint-disable-line no-shadow
+
+		if (vm.skip) {
+			return;
+		}
+
+		// Clipping for Points.
+		if (chartArea === undefined || helpers$1.canvas._isPointInArea(vm, chartArea)) {
+			ctx.strokeStyle = vm.borderColor || defaultColor;
+			ctx.lineWidth = valueOrDefault$2(vm.borderWidth, globalDefaults.elements.point.borderWidth);
+			ctx.fillStyle = vm.backgroundColor || defaultColor;
+			helpers$1.canvas.drawPoint(ctx, pointStyle, radius, x, y, rotation);
+		}
+	}
+});
+
+var defaultColor$2 = core_defaults.global.defaultColor;
+
+core_defaults._set('global', {
+	elements: {
+		rectangle: {
+			backgroundColor: defaultColor$2,
+			borderColor: defaultColor$2,
+			borderSkipped: 'bottom',
+			borderWidth: 0
+		}
+	}
+});
+
+function isVertical(vm) {
+	return vm && vm.width !== undefined;
+}
+
+/**
+ * Helper function to get the bounds of the bar regardless of the orientation
+ * @param bar {Chart.Element.Rectangle} the bar
+ * @return {Bounds} bounds of the bar
+ * @private
+ */
+function getBarBounds(vm) {
+	var x1, x2, y1, y2, half;
+
+	if (isVertical(vm)) {
+		half = vm.width / 2;
+		x1 = vm.x - half;
+		x2 = vm.x + half;
+		y1 = Math.min(vm.y, vm.base);
+		y2 = Math.max(vm.y, vm.base);
+	} else {
+		half = vm.height / 2;
+		x1 = Math.min(vm.x, vm.base);
+		x2 = Math.max(vm.x, vm.base);
+		y1 = vm.y - half;
+		y2 = vm.y + half;
+	}
+
+	return {
+		left: x1,
+		top: y1,
+		right: x2,
+		bottom: y2
+	};
+}
+
+function swap(orig, v1, v2) {
+	return orig === v1 ? v2 : orig === v2 ? v1 : orig;
+}
+
+function parseBorderSkipped(vm) {
+	var edge = vm.borderSkipped;
+	var res = {};
+
+	if (!edge) {
+		return res;
+	}
+
+	if (vm.horizontal) {
+		if (vm.base > vm.x) {
+			edge = swap(edge, 'left', 'right');
+		}
+	} else if (vm.base < vm.y) {
+		edge = swap(edge, 'bottom', 'top');
+	}
+
+	res[edge] = true;
+	return res;
+}
+
+function parseBorderWidth(vm, maxW, maxH) {
+	var value = vm.borderWidth;
+	var skip = parseBorderSkipped(vm);
+	var t, r, b, l;
+
+	if (helpers$1.isObject(value)) {
+		t = +value.top || 0;
+		r = +value.right || 0;
+		b = +value.bottom || 0;
+		l = +value.left || 0;
+	} else {
+		t = r = b = l = +value || 0;
+	}
+
+	return {
+		t: skip.top || (t < 0) ? 0 : t > maxH ? maxH : t,
+		r: skip.right || (r < 0) ? 0 : r > maxW ? maxW : r,
+		b: skip.bottom || (b < 0) ? 0 : b > maxH ? maxH : b,
+		l: skip.left || (l < 0) ? 0 : l > maxW ? maxW : l
+	};
+}
+
+function boundingRects(vm) {
+	var bounds = getBarBounds(vm);
+	var width = bounds.right - bounds.left;
+	var height = bounds.bottom - bounds.top;
+	var border = parseBorderWidth(vm, width / 2, height / 2);
+
+	return {
+		outer: {
+			x: bounds.left,
+			y: bounds.top,
+			w: width,
+			h: height
+		},
+		inner: {
+			x: bounds.left + border.l,
+			y: bounds.top + border.t,
+			w: width - border.l - border.r,
+			h: height - border.t - border.b
+		}
+	};
+}
+
+function inRange(vm, x, y) {
+	var skipX = x === null;
+	var skipY = y === null;
+	var bounds = !vm || (skipX && skipY) ? false : getBarBounds(vm);
+
+	return bounds
+		&& (skipX || x >= bounds.left && x <= bounds.right)
+		&& (skipY || y >= bounds.top && y <= bounds.bottom);
+}
+
+var element_rectangle = core_element.extend({
+	_type: 'rectangle',
+
+	draw: function() {
+		var ctx = this._chart.ctx;
+		var vm = this._view;
+		var rects = boundingRects(vm);
+		var outer = rects.outer;
+		var inner = rects.inner;
+
+		ctx.fillStyle = vm.backgroundColor;
+		ctx.fillRect(outer.x, outer.y, outer.w, outer.h);
+
+		if (outer.w === inner.w && outer.h === inner.h) {
+			return;
+		}
+
+		ctx.save();
+		ctx.beginPath();
+		ctx.rect(outer.x, outer.y, outer.w, outer.h);
+		ctx.clip();
+		ctx.fillStyle = vm.borderColor;
+		ctx.rect(inner.x, inner.y, inner.w, inner.h);
+		ctx.fill('evenodd');
+		ctx.restore();
+	},
+
+	height: function() {
+		var vm = this._view;
+		return vm.base - vm.y;
+	},
+
+	inRange: function(mouseX, mouseY) {
+		return inRange(this._view, mouseX, mouseY);
+	},
+
+	inLabelRange: function(mouseX, mouseY) {
+		var vm = this._view;
+		return isVertical(vm)
+			? inRange(vm, mouseX, null)
+			: inRange(vm, null, mouseY);
+	},
+
+	inXRange: function(mouseX) {
+		return inRange(this._view, mouseX, null);
+	},
+
+	inYRange: function(mouseY) {
+		return inRange(this._view, null, mouseY);
+	},
+
+	getCenterPoint: function() {
+		var vm = this._view;
+		var x, y;
+		if (isVertical(vm)) {
+			x = vm.x;
+			y = (vm.y + vm.base) / 2;
+		} else {
+			x = (vm.x + vm.base) / 2;
+			y = vm.y;
+		}
+
+		return {x: x, y: y};
+	},
+
+	getArea: function() {
+		var vm = this._view;
+
+		return isVertical(vm)
+			? vm.width * Math.abs(vm.y - vm.base)
+			: vm.height * Math.abs(vm.x - vm.base);
+	},
+
+	tooltipPosition: function() {
+		var vm = this._view;
+		return {
+			x: vm.x,
+			y: vm.y
+		};
+	}
+});
+
+var elements = {};
+var Arc = element_arc;
+var Line = element_line;
+var Point = element_point;
+var Rectangle = element_rectangle;
+elements.Arc = Arc;
+elements.Line = Line;
+elements.Point = Point;
+elements.Rectangle = Rectangle;
+
+var deprecated = helpers$1._deprecated;
+var valueOrDefault$3 = helpers$1.valueOrDefault;
+
+core_defaults._set('bar', {
+	hover: {
+		mode: 'label'
+	},
+
+	scales: {
+		xAxes: [{
+			type: 'category',
+			offset: true,
+			gridLines: {
+				offsetGridLines: true
+			}
+		}],
+
+		yAxes: [{
+			type: 'linear'
+		}]
+	}
+});
+
+core_defaults._set('global', {
+	datasets: {
+		bar: {
+			categoryPercentage: 0.8,
+			barPercentage: 0.9
+		}
+	}
+});
+
+/**
+ * Computes the "optimal" sample size to maintain bars equally sized while preventing overlap.
+ * @private
+ */
+function computeMinSampleSize(scale, pixels) {
+	var min = scale._length;
+	var prev, curr, i, ilen;
+
+	for (i = 1, ilen = pixels.length; i < ilen; ++i) {
+		min = Math.min(min, Math.abs(pixels[i] - pixels[i - 1]));
+	}
+
+	for (i = 0, ilen = scale.getTicks().length; i < ilen; ++i) {
+		curr = scale.getPixelForTick(i);
+		min = i > 0 ? Math.min(min, Math.abs(curr - prev)) : min;
+		prev = curr;
+	}
+
+	return min;
+}
+
+/**
+ * Computes an "ideal" category based on the absolute bar thickness or, if undefined or null,
+ * uses the smallest interval (see computeMinSampleSize) that prevents bar overlapping. This
+ * mode currently always generates bars equally sized (until we introduce scriptable options?).
+ * @private
+ */
+function computeFitCategoryTraits(index, ruler, options) {
+	var thickness = options.barThickness;
+	var count = ruler.stackCount;
+	var curr = ruler.pixels[index];
+	var min = helpers$1.isNullOrUndef(thickness)
+		? computeMinSampleSize(ruler.scale, ruler.pixels)
+		: -1;
+	var size, ratio;
+
+	if (helpers$1.isNullOrUndef(thickness)) {
+		size = min * options.categoryPercentage;
+		ratio = options.barPercentage;
+	} else {
+		// When bar thickness is enforced, category and bar percentages are ignored.
+		// Note(SB): we could add support for relative bar thickness (e.g. barThickness: '50%')
+		// and deprecate barPercentage since this value is ignored when thickness is absolute.
+		size = thickness * count;
+		ratio = 1;
+	}
+
+	return {
+		chunk: size / count,
+		ratio: ratio,
+		start: curr - (size / 2)
+	};
+}
+
+/**
+ * Computes an "optimal" category that globally arranges bars side by side (no gap when
+ * percentage options are 1), based on the previous and following categories. This mode
+ * generates bars with different widths when data are not evenly spaced.
+ * @private
+ */
+function computeFlexCategoryTraits(index, ruler, options) {
+	var pixels = ruler.pixels;
+	var curr = pixels[index];
+	var prev = index > 0 ? pixels[index - 1] : null;
+	var next = index < pixels.length - 1 ? pixels[index + 1] : null;
+	var percent = options.categoryPercentage;
+	var start, size;
+
+	if (prev === null) {
+		// first data: its size is double based on the next point or,
+		// if it's also the last data, we use the scale size.
+		prev = curr - (next === null ? ruler.end - ruler.start : next - curr);
+	}
+
+	if (next === null) {
+		// last data: its size is also double based on the previous point.
+		next = curr + curr - prev;
+	}
+
+	start = curr - (curr - Math.min(prev, next)) / 2 * percent;
+	size = Math.abs(next - prev) / 2 * percent;
+
+	return {
+		chunk: size / ruler.stackCount,
+		ratio: options.barPercentage,
+		start: start
+	};
+}
+
+var controller_bar = core_datasetController.extend({
+
+	dataElementType: elements.Rectangle,
+
+	/**
+	 * @private
+	 */
+	_dataElementOptions: [
+		'backgroundColor',
+		'borderColor',
+		'borderSkipped',
+		'borderWidth',
+		'barPercentage',
+		'barThickness',
+		'categoryPercentage',
+		'maxBarThickness',
+		'minBarLength'
+	],
+
+	initialize: function() {
+		var me = this;
+		var meta, scaleOpts;
+
+		core_datasetController.prototype.initialize.apply(me, arguments);
+
+		meta = me.getMeta();
+		meta.stack = me.getDataset().stack;
+		meta.bar = true;
+
+		scaleOpts = me._getIndexScale().options;
+		deprecated('bar chart', scaleOpts.barPercentage, 'scales.[x/y]Axes.barPercentage', 'dataset.barPercentage');
+		deprecated('bar chart', scaleOpts.barThickness, 'scales.[x/y]Axes.barThickness', 'dataset.barThickness');
+		deprecated('bar chart', scaleOpts.categoryPercentage, 'scales.[x/y]Axes.categoryPercentage', 'dataset.categoryPercentage');
+		deprecated('bar chart', me._getValueScale().options.minBarLength, 'scales.[x/y]Axes.minBarLength', 'dataset.minBarLength');
+		deprecated('bar chart', scaleOpts.maxBarThickness, 'scales.[x/y]Axes.maxBarThickness', 'dataset.maxBarThickness');
+	},
+
+	update: function(reset) {
+		var me = this;
+		var rects = me.getMeta().data;
+		var i, ilen;
+
+		me._ruler = me.getRuler();
+
+		for (i = 0, ilen = rects.length; i < ilen; ++i) {
+			me.updateElement(rects[i], i, reset);
+		}
+	},
+
+	updateElement: function(rectangle, index, reset) {
+		var me = this;
+		var meta = me.getMeta();
+		var dataset = me.getDataset();
+		var options = me._resolveDataElementOptions(rectangle, index);
+
+		rectangle._xScale = me.getScaleForId(meta.xAxisID);
+		rectangle._yScale = me.getScaleForId(meta.yAxisID);
+		rectangle._datasetIndex = me.index;
+		rectangle._index = index;
+		rectangle._model = {
+			backgroundColor: options.backgroundColor,
+			borderColor: options.borderColor,
+			borderSkipped: options.borderSkipped,
+			borderWidth: options.borderWidth,
+			datasetLabel: dataset.label,
+			label: me.chart.data.labels[index]
+		};
+
+		if (helpers$1.isArray(dataset.data[index])) {
+			rectangle._model.borderSkipped = null;
+		}
+
+		me._updateElementGeometry(rectangle, index, reset, options);
+
+		rectangle.pivot();
+	},
+
+	/**
+	 * @private
+	 */
+	_updateElementGeometry: function(rectangle, index, reset, options) {
+		var me = this;
+		var model = rectangle._model;
+		var vscale = me._getValueScale();
+		var base = vscale.getBasePixel();
+		var horizontal = vscale.isHorizontal();
+		var ruler = me._ruler || me.getRuler();
+		var vpixels = me.calculateBarValuePixels(me.index, index, options);
+		var ipixels = me.calculateBarIndexPixels(me.index, index, ruler, options);
+
+		model.horizontal = horizontal;
+		model.base = reset ? base : vpixels.base;
+		model.x = horizontal ? reset ? base : vpixels.head : ipixels.center;
+		model.y = horizontal ? ipixels.center : reset ? base : vpixels.head;
+		model.height = horizontal ? ipixels.size : undefined;
+		model.width = horizontal ? undefined : ipixels.size;
+	},
+
+	/**
+	 * Returns the stacks based on groups and bar visibility.
+	 * @param {number} [last] - The dataset index
+	 * @returns {string[]} The list of stack IDs
+	 * @private
+	 */
+	_getStacks: function(last) {
+		var me = this;
+		var scale = me._getIndexScale();
+		var metasets = scale._getMatchingVisibleMetas(me._type);
+		var stacked = scale.options.stacked;
+		var ilen = metasets.length;
+		var stacks = [];
+		var i, meta;
+
+		for (i = 0; i < ilen; ++i) {
+			meta = metasets[i];
+			// stacked   | meta.stack
+			//           | found | not found | undefined
+			// false     |   x   |     x     |     x
+			// true      |       |     x     |
+			// undefined |       |     x     |     x
+			if (stacked === false || stacks.indexOf(meta.stack) === -1 ||
+				(stacked === undefined && meta.stack === undefined)) {
+				stacks.push(meta.stack);
+			}
+			if (meta.index === last) {
+				break;
+			}
+		}
+
+		return stacks;
+	},
+
+	/**
+	 * Returns the effective number of stacks based on groups and bar visibility.
+	 * @private
+	 */
+	getStackCount: function() {
+		return this._getStacks().length;
+	},
+
+	/**
+	 * Returns the stack index for the given dataset based on groups and bar visibility.
+	 * @param {number} [datasetIndex] - The dataset index
+	 * @param {string} [name] - The stack name to find
+	 * @returns {number} The stack index
+	 * @private
+	 */
+	getStackIndex: function(datasetIndex, name) {
+		var stacks = this._getStacks(datasetIndex);
+		var index = (name !== undefined)
+			? stacks.indexOf(name)
+			: -1; // indexOf returns -1 if element is not present
+
+		return (index === -1)
+			? stacks.length - 1
+			: index;
+	},
+
+	/**
+	 * @private
+	 */
+	getRuler: function() {
+		var me = this;
+		var scale = me._getIndexScale();
+		var pixels = [];
+		var i, ilen;
+
+		for (i = 0, ilen = me.getMeta().data.length; i < ilen; ++i) {
+			pixels.push(scale.getPixelForValue(null, i, me.index));
+		}
+
+		return {
+			pixels: pixels,
+			start: scale._startPixel,
+			end: scale._endPixel,
+			stackCount: me.getStackCount(),
+			scale: scale
+		};
+	},
+
+	/**
+	 * Note: pixel values are not clamped to the scale area.
+	 * @private
+	 */
+	calculateBarValuePixels: function(datasetIndex, index, options) {
+		var me = this;
+		var chart = me.chart;
+		var scale = me._getValueScale();
+		var isHorizontal = scale.isHorizontal();
+		var datasets = chart.data.datasets;
+		var metasets = scale._getMatchingVisibleMetas(me._type);
+		var value = scale._parseValue(datasets[datasetIndex].data[index]);
+		var minBarLength = options.minBarLength;
+		var stacked = scale.options.stacked;
+		var stack = me.getMeta().stack;
+		var start = value.start === undefined ? 0 : value.max >= 0 && value.min >= 0 ? value.min : value.max;
+		var length = value.start === undefined ? value.end : value.max >= 0 && value.min >= 0 ? value.max - value.min : value.min - value.max;
+		var ilen = metasets.length;
+		var i, imeta, ivalue, base, head, size, stackLength;
+
+		if (stacked || (stacked === undefined && stack !== undefined)) {
+			for (i = 0; i < ilen; ++i) {
+				imeta = metasets[i];
+
+				if (imeta.index === datasetIndex) {
+					break;
+				}
+
+				if (imeta.stack === stack) {
+					stackLength = scale._parseValue(datasets[imeta.index].data[index]);
+					ivalue = stackLength.start === undefined ? stackLength.end : stackLength.min >= 0 && stackLength.max >= 0 ? stackLength.max : stackLength.min;
+
+					if ((value.min < 0 && ivalue < 0) || (value.max >= 0 && ivalue > 0)) {
+						start += ivalue;
+					}
+				}
+			}
+		}
+
+		base = scale.getPixelForValue(start);
+		head = scale.getPixelForValue(start + length);
+		size = head - base;
+
+		if (minBarLength !== undefined && Math.abs(size) < minBarLength) {
+			size = minBarLength;
+			if (length >= 0 && !isHorizontal || length < 0 && isHorizontal) {
+				head = base - minBarLength;
+			} else {
+				head = base + minBarLength;
+			}
+		}
+
+		return {
+			size: size,
+			base: base,
+			head: head,
+			center: head + size / 2
+		};
+	},
+
+	/**
+	 * @private
+	 */
+	calculateBarIndexPixels: function(datasetIndex, index, ruler, options) {
+		var me = this;
+		var range = options.barThickness === 'flex'
+			? computeFlexCategoryTraits(index, ruler, options)
+			: computeFitCategoryTraits(index, ruler, options);
+
+		var stackIndex = me.getStackIndex(datasetIndex, me.getMeta().stack);
+		var center = range.start + (range.chunk * stackIndex) + (range.chunk / 2);
+		var size = Math.min(
+			valueOrDefault$3(options.maxBarThickness, Infinity),
+			range.chunk * range.ratio);
+
+		return {
+			base: center - size / 2,
+			head: center + size / 2,
+			center: center,
+			size: size
+		};
+	},
+
+	draw: function() {
+		var me = this;
+		var chart = me.chart;
+		var scale = me._getValueScale();
+		var rects = me.getMeta().data;
+		var dataset = me.getDataset();
+		var ilen = rects.length;
+		var i = 0;
+
+		helpers$1.canvas.clipArea(chart.ctx, chart.chartArea);
+
+		for (; i < ilen; ++i) {
+			var val = scale._parseValue(dataset.data[i]);
+			if (!isNaN(val.min) && !isNaN(val.max)) {
+				rects[i].draw();
+			}
+		}
+
+		helpers$1.canvas.unclipArea(chart.ctx);
+	},
+
+	/**
+	 * @private
+	 */
+	_resolveDataElementOptions: function() {
+		var me = this;
+		var values = helpers$1.extend({}, core_datasetController.prototype._resolveDataElementOptions.apply(me, arguments));
+		var indexOpts = me._getIndexScale().options;
+		var valueOpts = me._getValueScale().options;
+
+		values.barPercentage = valueOrDefault$3(indexOpts.barPercentage, values.barPercentage);
+		values.barThickness = valueOrDefault$3(indexOpts.barThickness, values.barThickness);
+		values.categoryPercentage = valueOrDefault$3(indexOpts.categoryPercentage, values.categoryPercentage);
+		values.maxBarThickness = valueOrDefault$3(indexOpts.maxBarThickness, values.maxBarThickness);
+		values.minBarLength = valueOrDefault$3(valueOpts.minBarLength, values.minBarLength);
+
+		return values;
+	}
+
+});
+
+var valueOrDefault$4 = helpers$1.valueOrDefault;
+var resolve$1 = helpers$1.options.resolve;
+
+core_defaults._set('bubble', {
+	hover: {
+		mode: 'single'
+	},
+
+	scales: {
+		xAxes: [{
+			type: 'linear', // bubble should probably use a linear scale by default
+			position: 'bottom',
+			id: 'x-axis-0' // need an ID so datasets can reference the scale
+		}],
+		yAxes: [{
+			type: 'linear',
+			position: 'left',
+			id: 'y-axis-0'
+		}]
+	},
+
+	tooltips: {
+		callbacks: {
+			title: function() {
+				// Title doesn't make sense for scatter since we format the data as a point
+				return '';
+			},
+			label: function(item, data) {
+				var datasetLabel = data.datasets[item.datasetIndex].label || '';
+				var dataPoint = data.datasets[item.datasetIndex].data[item.index];
+				return datasetLabel + ': (' + item.xLabel + ', ' + item.yLabel + ', ' + dataPoint.r + ')';
+			}
+		}
+	}
+});
+
+var controller_bubble = core_datasetController.extend({
+	/**
+	 * @protected
+	 */
+	dataElementType: elements.Point,
+
+	/**
+	 * @private
+	 */
+	_dataElementOptions: [
+		'backgroundColor',
+		'borderColor',
+		'borderWidth',
+		'hoverBackgroundColor',
+		'hoverBorderColor',
+		'hoverBorderWidth',
+		'hoverRadius',
+		'hitRadius',
+		'pointStyle',
+		'rotation'
+	],
+
+	/**
+	 * @protected
+	 */
+	update: function(reset) {
+		var me = this;
+		var meta = me.getMeta();
+		var points = meta.data;
+
+		// Update Points
+		helpers$1.each(points, function(point, index) {
+			me.updateElement(point, index, reset);
+		});
+	},
+
+	/**
+	 * @protected
+	 */
+	updateElement: function(point, index, reset) {
+		var me = this;
+		var meta = me.getMeta();
+		var custom = point.custom || {};
+		var xScale = me.getScaleForId(meta.xAxisID);
+		var yScale = me.getScaleForId(meta.yAxisID);
+		var options = me._resolveDataElementOptions(point, index);
+		var data = me.getDataset().data[index];
+		var dsIndex = me.index;
+
+		var x = reset ? xScale.getPixelForDecimal(0.5) : xScale.getPixelForValue(typeof data === 'object' ? data : NaN, index, dsIndex);
+		var y = reset ? yScale.getBasePixel() : yScale.getPixelForValue(data, index, dsIndex);
+
+		point._xScale = xScale;
+		point._yScale = yScale;
+		point._options = options;
+		point._datasetIndex = dsIndex;
+		point._index = index;
+		point._model = {
+			backgroundColor: options.backgroundColor,
+			borderColor: options.borderColor,
+			borderWidth: options.borderWidth,
+			hitRadius: options.hitRadius,
+			pointStyle: options.pointStyle,
+			rotation: options.rotation,
+			radius: reset ? 0 : options.radius,
+			skip: custom.skip || isNaN(x) || isNaN(y),
+			x: x,
+			y: y,
+		};
+
+		point.pivot();
+	},
+
+	/**
+	 * @protected
+	 */
+	setHoverStyle: function(point) {
+		var model = point._model;
+		var options = point._options;
+		var getHoverColor = helpers$1.getHoverColor;
+
+		point.$previousStyle = {
+			backgroundColor: model.backgroundColor,
+			borderColor: model.borderColor,
+			borderWidth: model.borderWidth,
+			radius: model.radius
+		};
+
+		model.backgroundColor = valueOrDefault$4(options.hoverBackgroundColor, getHoverColor(options.backgroundColor));
+		model.borderColor = valueOrDefault$4(options.hoverBorderColor, getHoverColor(options.borderColor));
+		model.borderWidth = valueOrDefault$4(options.hoverBorderWidth, options.borderWidth);
+		model.radius = options.radius + options.hoverRadius;
+	},
+
+	/**
+	 * @private
+	 */
+	_resolveDataElementOptions: function(point, index) {
+		var me = this;
+		var chart = me.chart;
+		var dataset = me.getDataset();
+		var custom = point.custom || {};
+		var data = dataset.data[index] || {};
+		var values = core_datasetController.prototype._resolveDataElementOptions.apply(me, arguments);
+
+		// Scriptable options
+		var context = {
+			chart: chart,
+			dataIndex: index,
+			dataset: dataset,
+			datasetIndex: me.index
+		};
+
+		// In case values were cached (and thus frozen), we need to clone the values
+		if (me._cachedDataOpts === values) {
+			values = helpers$1.extend({}, values);
+		}
+
+		// Custom radius resolution
+		values.radius = resolve$1([
+			custom.radius,
+			data.r,
+			me._config.radius,
+			chart.options.elements.point.radius
+		], context, index);
+
+		return values;
+	}
+});
+
+var valueOrDefault$5 = helpers$1.valueOrDefault;
+
+var PI$1 = Math.PI;
+var DOUBLE_PI$1 = PI$1 * 2;
+var HALF_PI$1 = PI$1 / 2;
+
+core_defaults._set('doughnut', {
+	animation: {
+		// Boolean - Whether we animate the rotation of the Doughnut
+		animateRotate: true,
+		// Boolean - Whether we animate scaling the Doughnut from the centre
+		animateScale: false
+	},
+	hover: {
+		mode: 'single'
+	},
+	legendCallback: function(chart) {
+		var list = document.createElement('ul');
+		var data = chart.data;
+		var datasets = data.datasets;
+		var labels = data.labels;
+		var i, ilen, listItem, listItemSpan;
+
+		list.setAttribute('class', chart.id + '-legend');
+		if (datasets.length) {
+			for (i = 0, ilen = datasets[0].data.length; i < ilen; ++i) {
+				listItem = list.appendChild(document.createElement('li'));
+				listItemSpan = listItem.appendChild(document.createElement('span'));
+				listItemSpan.style.backgroundColor = datasets[0].backgroundColor[i];
+				if (labels[i]) {
+					listItem.appendChild(document.createTextNode(labels[i]));
+				}
+			}
+		}
+
+		return list.outerHTML;
+	},
+	legend: {
+		labels: {
+			generateLabels: function(chart) {
+				var data = chart.data;
+				if (data.labels.length && data.datasets.length) {
+					return data.labels.map(function(label, i) {
+						var meta = chart.getDatasetMeta(0);
+						var style = meta.controller.getStyle(i);
+
+						return {
+							text: label,
+							fillStyle: style.backgroundColor,
+							strokeStyle: style.borderColor,
+							lineWidth: style.borderWidth,
+							hidden: isNaN(data.datasets[0].data[i]) || meta.data[i].hidden,
+
+							// Extra data used for toggling the correct item
+							index: i
+						};
+					});
+				}
+				return [];
+			}
+		},
+
+		onClick: function(e, legendItem) {
+			var index = legendItem.index;
+			var chart = this.chart;
+			var i, ilen, meta;
+
+			for (i = 0, ilen = (chart.data.datasets || []).length; i < ilen; ++i) {
+				meta = chart.getDatasetMeta(i);
+				// toggle visibility of index if exists
+				if (meta.data[index]) {
+					meta.data[index].hidden = !meta.data[index].hidden;
+				}
+			}
+
+			chart.update();
+		}
+	},
+
+	// The percentage of the chart that we cut out of the middle.
+	cutoutPercentage: 50,
+
+	// The rotation of the chart, where the first data arc begins.
+	rotation: -HALF_PI$1,
+
+	// The total circumference of the chart.
+	circumference: DOUBLE_PI$1,
+
+	// Need to override these to give a nice default
+	tooltips: {
+		callbacks: {
+			title: function() {
+				return '';
+			},
+			label: function(tooltipItem, data) {
+				var dataLabel = data.labels[tooltipItem.index];
+				var value = ': ' + data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index];
+
+				if (helpers$1.isArray(dataLabel)) {
+					// show value on first line of multiline label
+					// need to clone because we are changing the value
+					dataLabel = dataLabel.slice();
+					dataLabel[0] += value;
+				} else {
+					dataLabel += value;
+				}
+
+				return dataLabel;
+			}
+		}
+	}
+});
+
+var controller_doughnut = core_datasetController.extend({
+
+	dataElementType: elements.Arc,
+
+	linkScales: helpers$1.noop,
+
+	/**
+	 * @private
+	 */
+	_dataElementOptions: [
+		'backgroundColor',
+		'borderColor',
+		'borderWidth',
+		'borderAlign',
+		'hoverBackgroundColor',
+		'hoverBorderColor',
+		'hoverBorderWidth',
+	],
+
+	// Get index of the dataset in relation to the visible datasets. This allows determining the inner and outer radius correctly
+	getRingIndex: function(datasetIndex) {
+		var ringIndex = 0;
+
+		for (var j = 0; j < datasetIndex; ++j) {
+			if (this.chart.isDatasetVisible(j)) {
+				++ringIndex;
+			}
+		}
+
+		return ringIndex;
+	},
+
+	update: function(reset) {
+		var me = this;
+		var chart = me.chart;
+		var chartArea = chart.chartArea;
+		var opts = chart.options;
+		var ratioX = 1;
+		var ratioY = 1;
+		var offsetX = 0;
+		var offsetY = 0;
+		var meta = me.getMeta();
+		var arcs = meta.data;
+		var cutout = opts.cutoutPercentage / 100 || 0;
+		var circumference = opts.circumference;
+		var chartWeight = me._getRingWeight(me.index);
+		var maxWidth, maxHeight, i, ilen;
+
+		// If the chart's circumference isn't a full circle, calculate size as a ratio of the width/height of the arc
+		if (circumference < DOUBLE_PI$1) {
+			var startAngle = opts.rotation % DOUBLE_PI$1;
+			startAngle += startAngle >= PI$1 ? -DOUBLE_PI$1 : startAngle < -PI$1 ? DOUBLE_PI$1 : 0;
+			var endAngle = startAngle + circumference;
+			var startX = Math.cos(startAngle);
+			var startY = Math.sin(startAngle);
+			var endX = Math.cos(endAngle);
+			var endY = Math.sin(endAngle);
+			var contains0 = (startAngle <= 0 && endAngle >= 0) || endAngle >= DOUBLE_PI$1;
+			var contains90 = (startAngle <= HALF_PI$1 && endAngle >= HALF_PI$1) || endAngle >= DOUBLE_PI$1 + HALF_PI$1;
+			var contains180 = startAngle === -PI$1 || endAngle >= PI$1;
+			var contains270 = (startAngle <= -HALF_PI$1 && endAngle >= -HALF_PI$1) || endAngle >= PI$1 + HALF_PI$1;
+			var minX = contains180 ? -1 : Math.min(startX, startX * cutout, endX, endX * cutout);
+			var minY = contains270 ? -1 : Math.min(startY, startY * cutout, endY, endY * cutout);
+			var maxX = contains0 ? 1 : Math.max(startX, startX * cutout, endX, endX * cutout);
+			var maxY = contains90 ? 1 : Math.max(startY, startY * cutout, endY, endY * cutout);
+			ratioX = (maxX - minX) / 2;
+			ratioY = (maxY - minY) / 2;
+			offsetX = -(maxX + minX) / 2;
+			offsetY = -(maxY + minY) / 2;
+		}
+
+		for (i = 0, ilen = arcs.length; i < ilen; ++i) {
+			arcs[i]._options = me._resolveDataElementOptions(arcs[i], i);
+		}
+
+		chart.borderWidth = me.getMaxBorderWidth();
+		maxWidth = (chartArea.right - chartArea.left - chart.borderWidth) / ratioX;
+		maxHeight = (chartArea.bottom - chartArea.top - chart.borderWidth) / ratioY;
+		chart.outerRadius = Math.max(Math.min(maxWidth, maxHeight) / 2, 0);
+		chart.innerRadius = Math.max(chart.outerRadius * cutout, 0);
+		chart.radiusLength = (chart.outerRadius - chart.innerRadius) / (me._getVisibleDatasetWeightTotal() || 1);
+		chart.offsetX = offsetX * chart.outerRadius;
+		chart.offsetY = offsetY * chart.outerRadius;
+
+		meta.total = me.calculateTotal();
+
+		me.outerRadius = chart.outerRadius - chart.radiusLength * me._getRingWeightOffset(me.index);
+		me.innerRadius = Math.max(me.outerRadius - chart.radiusLength * chartWeight, 0);
+
+		for (i = 0, ilen = arcs.length; i < ilen; ++i) {
+			me.updateElement(arcs[i], i, reset);
+		}
+	},
+
+	updateElement: function(arc, index, reset) {
+		var me = this;
+		var chart = me.chart;
+		var chartArea = chart.chartArea;
+		var opts = chart.options;
+		var animationOpts = opts.animation;
+		var centerX = (chartArea.left + chartArea.right) / 2;
+		var centerY = (chartArea.top + chartArea.bottom) / 2;
+		var startAngle = opts.rotation; // non reset case handled later
+		var endAngle = opts.rotation; // non reset case handled later
+		var dataset = me.getDataset();
+		var circumference = reset && animationOpts.animateRotate ? 0 : arc.hidden ? 0 : me.calculateCircumference(dataset.data[index]) * (opts.circumference / DOUBLE_PI$1);
+		var innerRadius = reset && animationOpts.animateScale ? 0 : me.innerRadius;
+		var outerRadius = reset && animationOpts.animateScale ? 0 : me.outerRadius;
+		var options = arc._options || {};
+
+		helpers$1.extend(arc, {
+			// Utility
+			_datasetIndex: me.index,
+			_index: index,
+
+			// Desired view properties
+			_model: {
+				backgroundColor: options.backgroundColor,
+				borderColor: options.borderColor,
+				borderWidth: options.borderWidth,
+				borderAlign: options.borderAlign,
+				x: centerX + chart.offsetX,
+				y: centerY + chart.offsetY,
+				startAngle: startAngle,
+				endAngle: endAngle,
+				circumference: circumference,
+				outerRadius: outerRadius,
+				innerRadius: innerRadius,
+				label: helpers$1.valueAtIndexOrDefault(dataset.label, index, chart.data.labels[index])
+			}
+		});
+
+		var model = arc._model;
+
+		// Set correct angles if not resetting
+		if (!reset || !animationOpts.animateRotate) {
+			if (index === 0) {
+				model.startAngle = opts.rotation;
+			} else {
+				model.startAngle = me.getMeta().data[index - 1]._model.endAngle;
+			}
+
+			model.endAngle = model.startAngle + model.circumference;
+		}
+
+		arc.pivot();
+	},
+
+	calculateTotal: function() {
+		var dataset = this.getDataset();
+		var meta = this.getMeta();
+		var total = 0;
+		var value;
+
+		helpers$1.each(meta.data, function(element, index) {
+			value = dataset.data[index];
+			if (!isNaN(value) && !element.hidden) {
+				total += Math.abs(value);
+			}
+		});
+
+		/* if (total === 0) {
+			total = NaN;
+		}*/
+
+		return total;
+	},
+
+	calculateCircumference: function(value) {
+		var total = this.getMeta().total;
+		if (total > 0 && !isNaN(value)) {
+			return DOUBLE_PI$1 * (Math.abs(value) / total);
+		}
+		return 0;
+	},
+
+	// gets the max border or hover width to properly scale pie charts
+	getMaxBorderWidth: function(arcs) {
+		var me = this;
+		var max = 0;
+		var chart = me.chart;
+		var i, ilen, meta, arc, controller, options, borderWidth, hoverWidth;
+
+		if (!arcs) {
+			// Find the outmost visible dataset
+			for (i = 0, ilen = chart.data.datasets.length; i < ilen; ++i) {
+				if (chart.isDatasetVisible(i)) {
+					meta = chart.getDatasetMeta(i);
+					arcs = meta.data;
+					if (i !== me.index) {
+						controller = meta.controller;
+					}
+					break;
+				}
+			}
+		}
+
+		if (!arcs) {
+			return 0;
+		}
+
+		for (i = 0, ilen = arcs.length; i < ilen; ++i) {
+			arc = arcs[i];
+			if (controller) {
+				controller._configure();
+				options = controller._resolveDataElementOptions(arc, i);
+			} else {
+				options = arc._options;
+			}
+			if (options.borderAlign !== 'inner') {
+				borderWidth = options.borderWidth;
+				hoverWidth = options.hoverBorderWidth;
+
+				max = borderWidth > max ? borderWidth : max;
+				max = hoverWidth > max ? hoverWidth : max;
+			}
+		}
+		return max;
+	},
+
+	/**
+	 * @protected
+	 */
+	setHoverStyle: function(arc) {
+		var model = arc._model;
+		var options = arc._options;
+		var getHoverColor = helpers$1.getHoverColor;
+
+		arc.$previousStyle = {
+			backgroundColor: model.backgroundColor,
+			borderColor: model.borderColor,
+			borderWidth: model.borderWidth,
+		};
+
+		model.backgroundColor = valueOrDefault$5(options.hoverBackgroundColor, getHoverColor(options.backgroundColor));
+		model.borderColor = valueOrDefault$5(options.hoverBorderColor, getHoverColor(options.borderColor));
+		model.borderWidth = valueOrDefault$5(options.hoverBorderWidth, options.borderWidth);
+	},
+
+	/**
+	 * Get radius length offset of the dataset in relation to the visible datasets weights. This allows determining the inner and outer radius correctly
+	 * @private
+	 */
+	_getRingWeightOffset: function(datasetIndex) {
+		var ringWeightOffset = 0;
+
+		for (var i = 0; i < datasetIndex; ++i) {
+			if (this.chart.isDatasetVisible(i)) {
+				ringWeightOffset += this._getRingWeight(i);
+			}
+		}
+
+		return ringWeightOffset;
+	},
+
+	/**
+	 * @private
+	 */
+	_getRingWeight: function(dataSetIndex) {
+		return Math.max(valueOrDefault$5(this.chart.data.datasets[dataSetIndex].weight, 1), 0);
+	},
+
+	/**
+	 * Returns the sum of all visibile data set weights.  This value can be 0.
+	 * @private
+	 */
+	_getVisibleDatasetWeightTotal: function() {
+		return this._getRingWeightOffset(this.chart.data.datasets.length);
+	}
+});
+
+core_defaults._set('horizontalBar', {
+	hover: {
+		mode: 'index',
+		axis: 'y'
+	},
+
+	scales: {
+		xAxes: [{
+			type: 'linear',
+			position: 'bottom'
+		}],
+
+		yAxes: [{
+			type: 'category',
+			position: 'left',
+			offset: true,
+			gridLines: {
+				offsetGridLines: true
+			}
+		}]
+	},
+
+	elements: {
+		rectangle: {
+			borderSkipped: 'left'
+		}
+	},
+
+	tooltips: {
+		mode: 'index',
+		axis: 'y'
+	}
+});
+
+core_defaults._set('global', {
+	datasets: {
+		horizontalBar: {
+			categoryPercentage: 0.8,
+			barPercentage: 0.9
+		}
+	}
+});
+
+var controller_horizontalBar = controller_bar.extend({
+	/**
+	 * @private
+	 */
+	_getValueScaleId: function() {
+		return this.getMeta().xAxisID;
+	},
+
+	/**
+	 * @private
+	 */
+	_getIndexScaleId: function() {
+		return this.getMeta().yAxisID;
+	}
+});
+
+var valueOrDefault$6 = helpers$1.valueOrDefault;
+var resolve$2 = helpers$1.options.resolve;
+var isPointInArea = helpers$1.canvas._isPointInArea;
+
+core_defaults._set('line', {
+	showLines: true,
+	spanGaps: false,
+
+	hover: {
+		mode: 'label'
+	},
+
+	scales: {
+		xAxes: [{
+			type: 'category',
+			id: 'x-axis-0'
+		}],
+		yAxes: [{
+			type: 'linear',
+			id: 'y-axis-0'
+		}]
+	}
+});
+
+function scaleClip(scale, halfBorderWidth) {
+	var tickOpts = scale && scale.options.ticks || {};
+	var reverse = tickOpts.reverse;
+	var min = tickOpts.min === undefined ? halfBorderWidth : 0;
+	var max = tickOpts.max === undefined ? halfBorderWidth : 0;
+	return {
+		start: reverse ? max : min,
+		end: reverse ? min : max
+	};
+}
+
+function defaultClip(xScale, yScale, borderWidth) {
+	var halfBorderWidth = borderWidth / 2;
+	var x = scaleClip(xScale, halfBorderWidth);
+	var y = scaleClip(yScale, halfBorderWidth);
+
+	return {
+		top: y.end,
+		right: x.end,
+		bottom: y.start,
+		left: x.start
+	};
+}
+
+function toClip(value) {
+	var t, r, b, l;
+
+	if (helpers$1.isObject(value)) {
+		t = value.top;
+		r = value.right;
+		b = value.bottom;
+		l = value.left;
+	} else {
+		t = r = b = l = value;
+	}
+
+	return {
+		top: t,
+		right: r,
+		bottom: b,
+		left: l
+	};
+}
+
+
+var controller_line = core_datasetController.extend({
+
+	datasetElementType: elements.Line,
+
+	dataElementType: elements.Point,
+
+	/**
+	 * @private
+	 */
+	_datasetElementOptions: [
+		'backgroundColor',
+		'borderCapStyle',
+		'borderColor',
+		'borderDash',
+		'borderDashOffset',
+		'borderJoinStyle',
+		'borderWidth',
+		'cubicInterpolationMode',
+		'fill'
+	],
+
+	/**
+	 * @private
+	 */
+	_dataElementOptions: {
+		backgroundColor: 'pointBackgroundColor',
+		borderColor: 'pointBorderColor',
+		borderWidth: 'pointBorderWidth',
+		hitRadius: 'pointHitRadius',
+		hoverBackgroundColor: 'pointHoverBackgroundColor',
+		hoverBorderColor: 'pointHoverBorderColor',
+		hoverBorderWidth: 'pointHoverBorderWidth',
+		hoverRadius: 'pointHoverRadius',
+		pointStyle: 'pointStyle',
+		radius: 'pointRadius',
+		rotation: 'pointRotation'
+	},
+
+	update: function(reset) {
+		var me = this;
+		var meta = me.getMeta();
+		var line = meta.dataset;
+		var points = meta.data || [];
+		var options = me.chart.options;
+		var config = me._config;
+		var showLine = me._showLine = valueOrDefault$6(config.showLine, options.showLines);
+		var i, ilen;
+
+		me._xScale = me.getScaleForId(meta.xAxisID);
+		me._yScale = me.getScaleForId(meta.yAxisID);
+
+		// Update Line
+		if (showLine) {
+			// Compatibility: If the properties are defined with only the old name, use those values
+			if (config.tension !== undefined && config.lineTension === undefined) {
+				config.lineTension = config.tension;
+			}
+
+			// Utility
+			line._scale = me._yScale;
+			line._datasetIndex = me.index;
+			// Data
+			line._children = points;
+			// Model
+			line._model = me._resolveDatasetElementOptions(line);
+
+			line.pivot();
+		}
+
+		// Update Points
+		for (i = 0, ilen = points.length; i < ilen; ++i) {
+			me.updateElement(points[i], i, reset);
+		}
+
+		if (showLine && line._model.tension !== 0) {
+			me.updateBezierControlPoints();
+		}
+
+		// Now pivot the point for animation
+		for (i = 0, ilen = points.length; i < ilen; ++i) {
+			points[i].pivot();
+		}
+	},
+
+	updateElement: function(point, index, reset) {
+		var me = this;
+		var meta = me.getMeta();
+		var custom = point.custom || {};
+		var dataset = me.getDataset();
+		var datasetIndex = me.index;
+		var value = dataset.data[index];
+		var xScale = me._xScale;
+		var yScale = me._yScale;
+		var lineModel = meta.dataset._model;
+		var x, y;
+
+		var options = me._resolveDataElementOptions(point, index);
+
+		x = xScale.getPixelForValue(typeof value === 'object' ? value : NaN, index, datasetIndex);
+		y = reset ? yScale.getBasePixel() : me.calculatePointY(value, index, datasetIndex);
+
+		// Utility
+		point._xScale = xScale;
+		point._yScale = yScale;
+		point._options = options;
+		point._datasetIndex = datasetIndex;
+		point._index = index;
+
+		// Desired view properties
+		point._model = {
+			x: x,
+			y: y,
+			skip: custom.skip || isNaN(x) || isNaN(y),
+			// Appearance
+			radius: options.radius,
+			pointStyle: options.pointStyle,
+			rotation: options.rotation,
+			backgroundColor: options.backgroundColor,
+			borderColor: options.borderColor,
+			borderWidth: options.borderWidth,
+			tension: valueOrDefault$6(custom.tension, lineModel ? lineModel.tension : 0),
+			steppedLine: lineModel ? lineModel.steppedLine : false,
+			// Tooltip
+			hitRadius: options.hitRadius
+		};
+	},
+
+	/**
+	 * @private
+	 */
+	_resolveDatasetElementOptions: function(element) {
+		var me = this;
+		var config = me._config;
+		var custom = element.custom || {};
+		var options = me.chart.options;
+		var lineOptions = options.elements.line;
+		var values = core_datasetController.prototype._resolveDatasetElementOptions.apply(me, arguments);
+
+		// The default behavior of lines is to break at null values, according
+		// to https://github.com/chartjs/Chart.js/issues/2435#issuecomment-216718158
+		// This option gives lines the ability to span gaps
+		values.spanGaps = valueOrDefault$6(config.spanGaps, options.spanGaps);
+		values.tension = valueOrDefault$6(config.lineTension, lineOptions.tension);
+		values.steppedLine = resolve$2([custom.steppedLine, config.steppedLine, lineOptions.stepped]);
+		values.clip = toClip(valueOrDefault$6(config.clip, defaultClip(me._xScale, me._yScale, values.borderWidth)));
+
+		return values;
+	},
+
+	calculatePointY: function(value, index, datasetIndex) {
+		var me = this;
+		var chart = me.chart;
+		var yScale = me._yScale;
+		var sumPos = 0;
+		var sumNeg = 0;
+		var i, ds, dsMeta, stackedRightValue, rightValue, metasets, ilen;
+
+		if (yScale.options.stacked) {
+			rightValue = +yScale.getRightValue(value);
+			metasets = chart._getSortedVisibleDatasetMetas();
+			ilen = metasets.length;
+
+			for (i = 0; i < ilen; ++i) {
+				dsMeta = metasets[i];
+				if (dsMeta.index === datasetIndex) {
+					break;
+				}
+
+				ds = chart.data.datasets[dsMeta.index];
+				if (dsMeta.type === 'line' && dsMeta.yAxisID === yScale.id) {
+					stackedRightValue = +yScale.getRightValue(ds.data[index]);
+					if (stackedRightValue < 0) {
+						sumNeg += stackedRightValue || 0;
+					} else {
+						sumPos += stackedRightValue || 0;
+					}
+				}
+			}
+
+			if (rightValue < 0) {
+				return yScale.getPixelForValue(sumNeg + rightValue);
+			}
+			return yScale.getPixelForValue(sumPos + rightValue);
+		}
+		return yScale.getPixelForValue(value);
+	},
+
+	updateBezierControlPoints: function() {
+		var me = this;
+		var chart = me.chart;
+		var meta = me.getMeta();
+		var lineModel = meta.dataset._model;
+		var area = chart.chartArea;
+		var points = meta.data || [];
+		var i, ilen, model, controlPoints;
+
+		// Only consider points that are drawn in case the spanGaps option is used
+		if (lineModel.spanGaps) {
+			points = points.filter(function(pt) {
+				return !pt._model.skip;
+			});
+		}
+
+		function capControlPoint(pt, min, max) {
+			return Math.max(Math.min(pt, max), min);
+		}
+
+		if (lineModel.cubicInterpolationMode === 'monotone') {
+			helpers$1.splineCurveMonotone(points);
+		} else {
+			for (i = 0, ilen = points.length; i < ilen; ++i) {
+				model = points[i]._model;
+				controlPoints = helpers$1.splineCurve(
+					helpers$1.previousItem(points, i)._model,
+					model,
+					helpers$1.nextItem(points, i)._model,
+					lineModel.tension
+				);
+				model.controlPointPreviousX = controlPoints.previous.x;
+				model.controlPointPreviousY = controlPoints.previous.y;
+				model.controlPointNextX = controlPoints.next.x;
+				model.controlPointNextY = controlPoints.next.y;
+			}
+		}
+
+		if (chart.options.elements.line.capBezierPoints) {
+			for (i = 0, ilen = points.length; i < ilen; ++i) {
+				model = points[i]._model;
+				if (isPointInArea(model, area)) {
+					if (i > 0 && isPointInArea(points[i - 1]._model, area)) {
+						model.controlPointPreviousX = capControlPoint(model.controlPointPreviousX, area.left, area.right);
+						model.controlPointPreviousY = capControlPoint(model.controlPointPreviousY, area.top, area.bottom);
+					}
+					if (i < points.length - 1 && isPointInArea(points[i + 1]._model, area)) {
+						model.controlPointNextX = capControlPoint(model.controlPointNextX, area.left, area.right);
+						model.controlPointNextY = capControlPoint(model.controlPointNextY, area.top, area.bottom);
+					}
+				}
+			}
+		}
+	},
+
+	draw: function() {
+		var me = this;
+		var chart = me.chart;
+		var meta = me.getMeta();
+		var points = meta.data || [];
+		var area = chart.chartArea;
+		var canvas = chart.canvas;
+		var i = 0;
+		var ilen = points.length;
+		var clip;
+
+		if (me._showLine) {
+			clip = meta.dataset._model.clip;
+
+			helpers$1.canvas.clipArea(chart.ctx, {
+				left: clip.left === false ? 0 : area.left - clip.left,
+				right: clip.right === false ? canvas.width : area.right + clip.right,
+				top: clip.top === false ? 0 : area.top - clip.top,
+				bottom: clip.bottom === false ? canvas.height : area.bottom + clip.bottom
+			});
+
+			meta.dataset.draw();
+
+			helpers$1.canvas.unclipArea(chart.ctx);
+		}
+
+		// Draw the points
+		for (; i < ilen; ++i) {
+			points[i].draw(area);
+		}
+	},
+
+	/**
+	 * @protected
+	 */
+	setHoverStyle: function(point) {
+		var model = point._model;
+		var options = point._options;
+		var getHoverColor = helpers$1.getHoverColor;
+
+		point.$previousStyle = {
+			backgroundColor: model.backgroundColor,
+			borderColor: model.borderColor,
+			borderWidth: model.borderWidth,
+			radius: model.radius
+		};
+
+		model.backgroundColor = valueOrDefault$6(options.hoverBackgroundColor, getHoverColor(options.backgroundColor));
+		model.borderColor = valueOrDefault$6(options.hoverBorderColor, getHoverColor(options.borderColor));
+		model.borderWidth = valueOrDefault$6(options.hoverBorderWidth, options.borderWidth);
+		model.radius = valueOrDefault$6(options.hoverRadius, options.radius);
+	},
+});
+
+var resolve$3 = helpers$1.options.resolve;
+
+core_defaults._set('polarArea', {
+	scale: {
+		type: 'radialLinear',
+		angleLines: {
+			display: false
+		},
+		gridLines: {
+			circular: true
+		},
+		pointLabels: {
+			display: false
+		},
+		ticks: {
+			beginAtZero: true
+		}
+	},
+
+	// Boolean - Whether to animate the rotation of the chart
+	animation: {
+		animateRotate: true,
+		animateScale: true
+	},
+
+	startAngle: -0.5 * Math.PI,
+	legendCallback: function(chart) {
+		var list = document.createElement('ul');
+		var data = chart.data;
+		var datasets = data.datasets;
+		var labels = data.labels;
+		var i, ilen, listItem, listItemSpan;
+
+		list.setAttribute('class', chart.id + '-legend');
+		if (datasets.length) {
+			for (i = 0, ilen = datasets[0].data.length; i < ilen; ++i) {
+				listItem = list.appendChild(document.createElement('li'));
+				listItemSpan = listItem.appendChild(document.createElement('span'));
+				listItemSpan.style.backgroundColor = datasets[0].backgroundColor[i];
+				if (labels[i]) {
+					listItem.appendChild(document.createTextNode(labels[i]));
+				}
+			}
+		}
+
+		return list.outerHTML;
+	},
+	legend: {
+		labels: {
+			generateLabels: function(chart) {
+				var data = chart.data;
+				if (data.labels.length && data.datasets.length) {
+					return data.labels.map(function(label, i) {
+						var meta = chart.getDatasetMeta(0);
+						var style = meta.controller.getStyle(i);
+
+						return {
+							text: label,
+							fillStyle: style.backgroundColor,
+							strokeStyle: style.borderColor,
+							lineWidth: style.borderWidth,
+							hidden: isNaN(data.datasets[0].data[i]) || meta.data[i].hidden,
+
+							// Extra data used for toggling the correct item
+							index: i
+						};
+					});
+				}
+				return [];
+			}
+		},
+
+		onClick: function(e, legendItem) {
+			var index = legendItem.index;
+			var chart = this.chart;
+			var i, ilen, meta;
+
+			for (i = 0, ilen = (chart.data.datasets || []).length; i < ilen; ++i) {
+				meta = chart.getDatasetMeta(i);
+				meta.data[index].hidden = !meta.data[index].hidden;
+			}
+
+			chart.update();
+		}
+	},
+
+	// Need to override these to give a nice default
+	tooltips: {
+		callbacks: {
+			title: function() {
+				return '';
+			},
+			label: function(item, data) {
+				return data.labels[item.index] + ': ' + item.yLabel;
+			}
+		}
+	}
+});
+
+var controller_polarArea = core_datasetController.extend({
+
+	dataElementType: elements.Arc,
+
+	linkScales: helpers$1.noop,
+
+	/**
+	 * @private
+	 */
+	_dataElementOptions: [
+		'backgroundColor',
+		'borderColor',
+		'borderWidth',
+		'borderAlign',
+		'hoverBackgroundColor',
+		'hoverBorderColor',
+		'hoverBorderWidth',
+	],
+
+	/**
+	 * @private
+	 */
+	_getIndexScaleId: function() {
+		return this.chart.scale.id;
+	},
+
+	/**
+	 * @private
+	 */
+	_getValueScaleId: function() {
+		return this.chart.scale.id;
+	},
+
+	update: function(reset) {
+		var me = this;
+		var dataset = me.getDataset();
+		var meta = me.getMeta();
+		var start = me.chart.options.startAngle || 0;
+		var starts = me._starts = [];
+		var angles = me._angles = [];
+		var arcs = meta.data;
+		var i, ilen, angle;
+
+		me._updateRadius();
+
+		meta.count = me.countVisibleElements();
+
+		for (i = 0, ilen = dataset.data.length; i < ilen; i++) {
+			starts[i] = start;
+			angle = me._computeAngle(i);
+			angles[i] = angle;
+			start += angle;
+		}
+
+		for (i = 0, ilen = arcs.length; i < ilen; ++i) {
+			arcs[i]._options = me._resolveDataElementOptions(arcs[i], i);
+			me.updateElement(arcs[i], i, reset);
+		}
+	},
+
+	/**
+	 * @private
+	 */
+	_updateRadius: function() {
+		var me = this;
+		var chart = me.chart;
+		var chartArea = chart.chartArea;
+		var opts = chart.options;
+		var minSize = Math.min(chartArea.right - chartArea.left, chartArea.bottom - chartArea.top);
+
+		chart.outerRadius = Math.max(minSize / 2, 0);
+		chart.innerRadius = Math.max(opts.cutoutPercentage ? (chart.outerRadius / 100) * (opts.cutoutPercentage) : 1, 0);
+		chart.radiusLength = (chart.outerRadius - chart.innerRadius) / chart.getVisibleDatasetCount();
+
+		me.outerRadius = chart.outerRadius - (chart.radiusLength * me.index);
+		me.innerRadius = me.outerRadius - chart.radiusLength;
+	},
+
+	updateElement: function(arc, index, reset) {
+		var me = this;
+		var chart = me.chart;
+		var dataset = me.getDataset();
+		var opts = chart.options;
+		var animationOpts = opts.animation;
+		var scale = chart.scale;
+		var labels = chart.data.labels;
+
+		var centerX = scale.xCenter;
+		var centerY = scale.yCenter;
+
+		// var negHalfPI = -0.5 * Math.PI;
+		var datasetStartAngle = opts.startAngle;
+		var distance = arc.hidden ? 0 : scale.getDistanceFromCenterForValue(dataset.data[index]);
+		var startAngle = me._starts[index];
+		var endAngle = startAngle + (arc.hidden ? 0 : me._angles[index]);
+
+		var resetRadius = animationOpts.animateScale ? 0 : scale.getDistanceFromCenterForValue(dataset.data[index]);
+		var options = arc._options || {};
+
+		helpers$1.extend(arc, {
+			// Utility
+			_datasetIndex: me.index,
+			_index: index,
+			_scale: scale,
+
+			// Desired view properties
+			_model: {
+				backgroundColor: options.backgroundColor,
+				borderColor: options.borderColor,
+				borderWidth: options.borderWidth,
+				borderAlign: options.borderAlign,
+				x: centerX,
+				y: centerY,
+				innerRadius: 0,
+				outerRadius: reset ? resetRadius : distance,
+				startAngle: reset && animationOpts.animateRotate ? datasetStartAngle : startAngle,
+				endAngle: reset && animationOpts.animateRotate ? datasetStartAngle : endAngle,
+				label: helpers$1.valueAtIndexOrDefault(labels, index, labels[index])
+			}
+		});
+
+		arc.pivot();
+	},
+
+	countVisibleElements: function() {
+		var dataset = this.getDataset();
+		var meta = this.getMeta();
+		var count = 0;
+
+		helpers$1.each(meta.data, function(element, index) {
+			if (!isNaN(dataset.data[index]) && !element.hidden) {
+				count++;
+			}
+		});
+
+		return count;
+	},
+
+	/**
+	 * @protected
+	 */
+	setHoverStyle: function(arc) {
+		var model = arc._model;
+		var options = arc._options;
+		var getHoverColor = helpers$1.getHoverColor;
+		var valueOrDefault = helpers$1.valueOrDefault;
+
+		arc.$previousStyle = {
+			backgroundColor: model.backgroundColor,
+			borderColor: model.borderColor,
+			borderWidth: model.borderWidth,
+		};
+
+		model.backgroundColor = valueOrDefault(options.hoverBackgroundColor, getHoverColor(options.backgroundColor));
+		model.borderColor = valueOrDefault(options.hoverBorderColor, getHoverColor(options.borderColor));
+		model.borderWidth = valueOrDefault(options.hoverBorderWidth, options.borderWidth);
+	},
+
+	/**
+	 * @private
+	 */
+	_computeAngle: function(index) {
+		var me = this;
+		var count = this.getMeta().count;
+		var dataset = me.getDataset();
+		var meta = me.getMeta();
+
+		if (isNaN(dataset.data[index]) || meta.data[index].hidden) {
+			return 0;
+		}
+
+		// Scriptable options
+		var context = {
+			chart: me.chart,
+			dataIndex: index,
+			dataset: dataset,
+			datasetIndex: me.index
+		};
+
+		return resolve$3([
+			me.chart.options.elements.arc.angle,
+			(2 * Math.PI) / count
+		], context, index);
+	}
+});
+
+core_defaults._set('pie', helpers$1.clone(core_defaults.doughnut));
+core_defaults._set('pie', {
+	cutoutPercentage: 0
+});
+
+// Pie charts are Doughnut chart with different defaults
+var controller_pie = controller_doughnut;
+
+var valueOrDefault$7 = helpers$1.valueOrDefault;
+
+core_defaults._set('radar', {
+	spanGaps: false,
+	scale: {
+		type: 'radialLinear'
+	},
+	elements: {
+		line: {
+			fill: 'start',
+			tension: 0 // no bezier in radar
+		}
+	}
+});
+
+var controller_radar = core_datasetController.extend({
+	datasetElementType: elements.Line,
+
+	dataElementType: elements.Point,
+
+	linkScales: helpers$1.noop,
+
+	/**
+	 * @private
+	 */
+	_datasetElementOptions: [
+		'backgroundColor',
+		'borderWidth',
+		'borderColor',
+		'borderCapStyle',
+		'borderDash',
+		'borderDashOffset',
+		'borderJoinStyle',
+		'fill'
+	],
+
+	/**
+	 * @private
+	 */
+	_dataElementOptions: {
+		backgroundColor: 'pointBackgroundColor',
+		borderColor: 'pointBorderColor',
+		borderWidth: 'pointBorderWidth',
+		hitRadius: 'pointHitRadius',
+		hoverBackgroundColor: 'pointHoverBackgroundColor',
+		hoverBorderColor: 'pointHoverBorderColor',
+		hoverBorderWidth: 'pointHoverBorderWidth',
+		hoverRadius: 'pointHoverRadius',
+		pointStyle: 'pointStyle',
+		radius: 'pointRadius',
+		rotation: 'pointRotation'
+	},
+
+	/**
+	 * @private
+	 */
+	_getIndexScaleId: function() {
+		return this.chart.scale.id;
+	},
+
+	/**
+	 * @private
+	 */
+	_getValueScaleId: function() {
+		return this.chart.scale.id;
+	},
+
+	update: function(reset) {
+		var me = this;
+		var meta = me.getMeta();
+		var line = meta.dataset;
+		var points = meta.data || [];
+		var scale = me.chart.scale;
+		var config = me._config;
+		var i, ilen;
+
+		// Compatibility: If the properties are defined with only the old name, use those values
+		if (config.tension !== undefined && config.lineTension === undefined) {
+			config.lineTension = config.tension;
+		}
+
+		// Utility
+		line._scale = scale;
+		line._datasetIndex = me.index;
+		// Data
+		line._children = points;
+		line._loop = true;
+		// Model
+		line._model = me._resolveDatasetElementOptions(line);
+
+		line.pivot();
+
+		// Update Points
+		for (i = 0, ilen = points.length; i < ilen; ++i) {
+			me.updateElement(points[i], i, reset);
+		}
+
+		// Update bezier control points
+		me.updateBezierControlPoints();
+
+		// Now pivot the point for animation
+		for (i = 0, ilen = points.length; i < ilen; ++i) {
+			points[i].pivot();
+		}
+	},
+
+	updateElement: function(point, index, reset) {
+		var me = this;
+		var custom = point.custom || {};
+		var dataset = me.getDataset();
+		var scale = me.chart.scale;
+		var pointPosition = scale.getPointPositionForValue(index, dataset.data[index]);
+		var options = me._resolveDataElementOptions(point, index);
+		var lineModel = me.getMeta().dataset._model;
+		var x = reset ? scale.xCenter : pointPosition.x;
+		var y = reset ? scale.yCenter : pointPosition.y;
+
+		// Utility
+		point._scale = scale;
+		point._options = options;
+		point._datasetIndex = me.index;
+		point._index = index;
+
+		// Desired view properties
+		point._model = {
+			x: x, // value not used in dataset scale, but we want a consistent API between scales
+			y: y,
+			skip: custom.skip || isNaN(x) || isNaN(y),
+			// Appearance
+			radius: options.radius,
+			pointStyle: options.pointStyle,
+			rotation: options.rotation,
+			backgroundColor: options.backgroundColor,
+			borderColor: options.borderColor,
+			borderWidth: options.borderWidth,
+			tension: valueOrDefault$7(custom.tension, lineModel ? lineModel.tension : 0),
+
+			// Tooltip
+			hitRadius: options.hitRadius
+		};
+	},
+
+	/**
+	 * @private
+	 */
+	_resolveDatasetElementOptions: function() {
+		var me = this;
+		var config = me._config;
+		var options = me.chart.options;
+		var values = core_datasetController.prototype._resolveDatasetElementOptions.apply(me, arguments);
+
+		values.spanGaps = valueOrDefault$7(config.spanGaps, options.spanGaps);
+		values.tension = valueOrDefault$7(config.lineTension, options.elements.line.tension);
+
+		return values;
+	},
+
+	updateBezierControlPoints: function() {
+		var me = this;
+		var meta = me.getMeta();
+		var area = me.chart.chartArea;
+		var points = meta.data || [];
+		var i, ilen, model, controlPoints;
+
+		// Only consider points that are drawn in case the spanGaps option is used
+		if (meta.dataset._model.spanGaps) {
+			points = points.filter(function(pt) {
+				return !pt._model.skip;
+			});
+		}
+
+		function capControlPoint(pt, min, max) {
+			return Math.max(Math.min(pt, max), min);
+		}
+
+		for (i = 0, ilen = points.length; i < ilen; ++i) {
+			model = points[i]._model;
+			controlPoints = helpers$1.splineCurve(
+				helpers$1.previousItem(points, i, true)._model,
+				model,
+				helpers$1.nextItem(points, i, true)._model,
+				model.tension
+			);
+
+			// Prevent the bezier going outside of the bounds of the graph
+			model.controlPointPreviousX = capControlPoint(controlPoints.previous.x, area.left, area.right);
+			model.controlPointPreviousY = capControlPoint(controlPoints.previous.y, area.top, area.bottom);
+			model.controlPointNextX = capControlPoint(controlPoints.next.x, area.left, area.right);
+			model.controlPointNextY = capControlPoint(controlPoints.next.y, area.top, area.bottom);
+		}
+	},
+
+	setHoverStyle: function(point) {
+		var model = point._model;
+		var options = point._options;
+		var getHoverColor = helpers$1.getHoverColor;
+
+		point.$previousStyle = {
+			backgroundColor: model.backgroundColor,
+			borderColor: model.borderColor,
+			borderWidth: model.borderWidth,
+			radius: model.radius
+		};
+
+		model.backgroundColor = valueOrDefault$7(options.hoverBackgroundColor, getHoverColor(options.backgroundColor));
+		model.borderColor = valueOrDefault$7(options.hoverBorderColor, getHoverColor(options.borderColor));
+		model.borderWidth = valueOrDefault$7(options.hoverBorderWidth, options.borderWidth);
+		model.radius = valueOrDefault$7(options.hoverRadius, options.radius);
+	}
+});
+
+core_defaults._set('scatter', {
+	hover: {
+		mode: 'single'
+	},
+
+	scales: {
+		xAxes: [{
+			id: 'x-axis-1',    // need an ID so datasets can reference the scale
+			type: 'linear',    // scatter should not use a category axis
+			position: 'bottom'
+		}],
+		yAxes: [{
+			id: 'y-axis-1',
+			type: 'linear',
+			position: 'left'
+		}]
+	},
+
+	tooltips: {
+		callbacks: {
+			title: function() {
+				return '';     // doesn't make sense for scatter since data are formatted as a point
+			},
+			label: function(item) {
+				return '(' + item.xLabel + ', ' + item.yLabel + ')';
+			}
+		}
+	}
+});
+
+core_defaults._set('global', {
+	datasets: {
+		scatter: {
+			showLine: false
+		}
+	}
+});
+
+// Scatter charts use line controllers
+var controller_scatter = controller_line;
+
+// NOTE export a map in which the key represents the controller type, not
+// the class, and so must be CamelCase in order to be correctly retrieved
+// by the controller in core.controller.js (`controllers[meta.type]`).
+
+var controllers = {
+	bar: controller_bar,
+	bubble: controller_bubble,
+	doughnut: controller_doughnut,
+	horizontalBar: controller_horizontalBar,
+	line: controller_line,
+	polarArea: controller_polarArea,
+	pie: controller_pie,
+	radar: controller_radar,
+	scatter: controller_scatter
+};
+
+/**
+ * Helper function to get relative position for an event
+ * @param {Event|IEvent} event - The event to get the position for
+ * @param {Chart} chart - The chart
+ * @returns {object} the event position
+ */
+function getRelativePosition(e, chart) {
+	if (e.native) {
+		return {
+			x: e.x,
+			y: e.y
+		};
+	}
+
+	return helpers$1.getRelativePosition(e, chart);
+}
+
+/**
+ * Helper function to traverse all of the visible elements in the chart
+ * @param {Chart} chart - the chart
+ * @param {function} handler - the callback to execute for each visible item
+ */
+function parseVisibleItems(chart, handler) {
+	var metasets = chart._getSortedVisibleDatasetMetas();
+	var metadata, i, j, ilen, jlen, element;
+
+	for (i = 0, ilen = metasets.length; i < ilen; ++i) {
+		metadata = metasets[i].data;
+		for (j = 0, jlen = metadata.length; j < jlen; ++j) {
+			element = metadata[j];
+			if (!element._view.skip) {
+				handler(element);
+			}
+		}
+	}
+}
+
+/**
+ * Helper function to get the items that intersect the event position
+ * @param {ChartElement[]} items - elements to filter
+ * @param {object} position - the point to be nearest to
+ * @return {ChartElement[]} the nearest items
+ */
+function getIntersectItems(chart, position) {
+	var elements = [];
+
+	parseVisibleItems(chart, function(element) {
+		if (element.inRange(position.x, position.y)) {
+			elements.push(element);
+		}
+	});
+
+	return elements;
+}
+
+/**
+ * Helper function to get the items nearest to the event position considering all visible items in teh chart
+ * @param {Chart} chart - the chart to look at elements from
+ * @param {object} position - the point to be nearest to
+ * @param {boolean} intersect - if true, only consider items that intersect the position
+ * @param {function} distanceMetric - function to provide the distance between points
+ * @return {ChartElement[]} the nearest items
+ */
+function getNearestItems(chart, position, intersect, distanceMetric) {
+	var minDistance = Number.POSITIVE_INFINITY;
+	var nearestItems = [];
+
+	parseVisibleItems(chart, function(element) {
+		if (intersect && !element.inRange(position.x, position.y)) {
+			return;
+		}
+
+		var center = element.getCenterPoint();
+		var distance = distanceMetric(position, center);
+		if (distance < minDistance) {
+			nearestItems = [element];
+			minDistance = distance;
+		} else if (distance === minDistance) {
+			// Can have multiple items at the same distance in which case we sort by size
+			nearestItems.push(element);
+		}
+	});
+
+	return nearestItems;
+}
+
+/**
+ * Get a distance metric function for two points based on the
+ * axis mode setting
+ * @param {string} axis - the axis mode. x|y|xy
+ */
+function getDistanceMetricForAxis(axis) {
+	var useX = axis.indexOf('x') !== -1;
+	var useY = axis.indexOf('y') !== -1;
+
+	return function(pt1, pt2) {
+		var deltaX = useX ? Math.abs(pt1.x - pt2.x) : 0;
+		var deltaY = useY ? Math.abs(pt1.y - pt2.y) : 0;
+		return Math.sqrt(Math.pow(deltaX, 2) + Math.pow(deltaY, 2));
+	};
+}
+
+function indexMode(chart, e, options) {
+	var position = getRelativePosition(e, chart);
+	// Default axis for index mode is 'x' to match old behaviour
+	options.axis = options.axis || 'x';
+	var distanceMetric = getDistanceMetricForAxis(options.axis);
+	var items = options.intersect ? getIntersectItems(chart, position) : getNearestItems(chart, position, false, distanceMetric);
+	var elements = [];
+
+	if (!items.length) {
+		return [];
+	}
+
+	chart._getSortedVisibleDatasetMetas().forEach(function(meta) {
+		var element = meta.data[items[0]._index];
+
+		// don't count items that are skipped (null data)
+		if (element && !element._view.skip) {
+			elements.push(element);
+		}
+	});
+
+	return elements;
+}
+
+/**
+ * @interface IInteractionOptions
+ */
+/**
+ * If true, only consider items that intersect the point
+ * @name IInterfaceOptions#boolean
+ * @type Boolean
+ */
+
+/**
+ * Contains interaction related functions
+ * @namespace Chart.Interaction
+ */
+var core_interaction = {
+	// Helper function for different modes
+	modes: {
+		single: function(chart, e) {
+			var position = getRelativePosition(e, chart);
+			var elements = [];
+
+			parseVisibleItems(chart, function(element) {
+				if (element.inRange(position.x, position.y)) {
+					elements.push(element);
+					return elements;
+				}
+			});
+
+			return elements.slice(0, 1);
+		},
+
+		/**
+		 * @function Chart.Interaction.modes.label
+		 * @deprecated since version 2.4.0
+		 * @todo remove at version 3
+		 * @private
+		 */
+		label: indexMode,
+
+		/**
+		 * Returns items at the same index. If the options.intersect parameter is true, we only return items if we intersect something
+		 * If the options.intersect mode is false, we find the nearest item and return the items at the same index as that item
+		 * @function Chart.Interaction.modes.index
+		 * @since v2.4.0
+		 * @param {Chart} chart - the chart we are returning items from
+		 * @param {Event} e - the event we are find things at
+		 * @param {IInteractionOptions} options - options to use during interaction
+		 * @return {Chart.Element[]} Array of elements that are under the point. If none are found, an empty array is returned
+		 */
+		index: indexMode,
+
+		/**
+		 * Returns items in the same dataset. If the options.intersect parameter is true, we only return items if we intersect something
+		 * If the options.intersect is false, we find the nearest item and return the items in that dataset
+		 * @function Chart.Interaction.modes.dataset
+		 * @param {Chart} chart - the chart we are returning items from
+		 * @param {Event} e - the event we are find things at
+		 * @param {IInteractionOptions} options - options to use during interaction
+		 * @return {Chart.Element[]} Array of elements that are under the point. If none are found, an empty array is returned
+		 */
+		dataset: function(chart, e, options) {
+			var position = getRelativePosition(e, chart);
+			options.axis = options.axis || 'xy';
+			var distanceMetric = getDistanceMetricForAxis(options.axis);
+			var items = options.intersect ? getIntersectItems(chart, position) : getNearestItems(chart, position, false, distanceMetric);
+
+			if (items.length > 0) {
+				items = chart.getDatasetMeta(items[0]._datasetIndex).data;
+			}
+
+			return items;
+		},
+
+		/**
+		 * @function Chart.Interaction.modes.x-axis
+		 * @deprecated since version 2.4.0. Use index mode and intersect == true
+		 * @todo remove at version 3
+		 * @private
+		 */
+		'x-axis': function(chart, e) {
+			return indexMode(chart, e, {intersect: false});
+		},
+
+		/**
+		 * Point mode returns all elements that hit test based on the event position
+		 * of the event
+		 * @function Chart.Interaction.modes.intersect
+		 * @param {Chart} chart - the chart we are returning items from
+		 * @param {Event} e - the event we are find things at
+		 * @return {Chart.Element[]} Array of elements that are under the point. If none are found, an empty array is returned
+		 */
+		point: function(chart, e) {
+			var position = getRelativePosition(e, chart);
+			return getIntersectItems(chart, position);
+		},
+
+		/**
+		 * nearest mode returns the element closest to the point
+		 * @function Chart.Interaction.modes.intersect
+		 * @param {Chart} chart - the chart we are returning items from
+		 * @param {Event} e - the event we are find things at
+		 * @param {IInteractionOptions} options - options to use
+		 * @return {Chart.Element[]} Array of elements that are under the point. If none are found, an empty array is returned
+		 */
+		nearest: function(chart, e, options) {
+			var position = getRelativePosition(e, chart);
+			options.axis = options.axis || 'xy';
+			var distanceMetric = getDistanceMetricForAxis(options.axis);
+			return getNearestItems(chart, position, options.intersect, distanceMetric);
+		},
+
+		/**
+		 * x mode returns the elements that hit-test at the current x coordinate
+		 * @function Chart.Interaction.modes.x
+		 * @param {Chart} chart - the chart we are returning items from
+		 * @param {Event} e - the event we are find things at
+		 * @param {IInteractionOptions} options - options to use
+		 * @return {Chart.Element[]} Array of elements that are under the point. If none are found, an empty array is returned
+		 */
+		x: function(chart, e, options) {
+			var position = getRelativePosition(e, chart);
+			var items = [];
+			var intersectsItem = false;
+
+			parseVisibleItems(chart, function(element) {
+				if (element.inXRange(position.x)) {
+					items.push(element);
+				}
+
+				if (element.inRange(position.x, position.y)) {
+					intersectsItem = true;
+				}
+			});
+
+			// If we want to trigger on an intersect and we don't have any items
+			// that intersect the position, return nothing
+			if (options.intersect && !intersectsItem) {
+				items = [];
+			}
+			return items;
+		},
+
+		/**
+		 * y mode returns the elements that hit-test at the current y coordinate
+		 * @function Chart.Interaction.modes.y
+		 * @param {Chart} chart - the chart we are returning items from
+		 * @param {Event} e - the event we are find things at
+		 * @param {IInteractionOptions} options - options to use
+		 * @return {Chart.Element[]} Array of elements that are under the point. If none are found, an empty array is returned
+		 */
+		y: function(chart, e, options) {
+			var position = getRelativePosition(e, chart);
+			var items = [];
+			var intersectsItem = false;
+
+			parseVisibleItems(chart, function(element) {
+				if (element.inYRange(position.y)) {
+					items.push(element);
+				}
+
+				if (element.inRange(position.x, position.y)) {
+					intersectsItem = true;
+				}
+			});
+
+			// If we want to trigger on an intersect and we don't have any items
+			// that intersect the position, return nothing
+			if (options.intersect && !intersectsItem) {
+				items = [];
+			}
+			return items;
+		}
+	}
+};
+
+var extend = helpers$1.extend;
+
+function filterByPosition(array, position) {
+	return helpers$1.where(array, function(v) {
+		return v.pos === position;
+	});
+}
+
+function sortByWeight(array, reverse) {
+	return array.sort(function(a, b) {
+		var v0 = reverse ? b : a;
+		var v1 = reverse ? a : b;
+		return v0.weight === v1.weight ?
+			v0.index - v1.index :
+			v0.weight - v1.weight;
+	});
+}
+
+function wrapBoxes(boxes) {
+	var layoutBoxes = [];
+	var i, ilen, box;
+
+	for (i = 0, ilen = (boxes || []).length; i < ilen; ++i) {
+		box = boxes[i];
+		layoutBoxes.push({
+			index: i,
+			box: box,
+			pos: box.position,
+			horizontal: box.isHorizontal(),
+			weight: box.weight
+		});
+	}
+	return layoutBoxes;
+}
+
+function setLayoutDims(layouts, params) {
+	var i, ilen, layout;
+	for (i = 0, ilen = layouts.length; i < ilen; ++i) {
+		layout = layouts[i];
+		// store width used instead of chartArea.w in fitBoxes
+		layout.width = layout.horizontal
+			? layout.box.fullWidth && params.availableWidth
+			: params.vBoxMaxWidth;
+		// store height used instead of chartArea.h in fitBoxes
+		layout.height = layout.horizontal && params.hBoxMaxHeight;
+	}
+}
+
+function buildLayoutBoxes(boxes) {
+	var layoutBoxes = wrapBoxes(boxes);
+	var left = sortByWeight(filterByPosition(layoutBoxes, 'left'), true);
+	var right = sortByWeight(filterByPosition(layoutBoxes, 'right'));
+	var top = sortByWeight(filterByPosition(layoutBoxes, 'top'), true);
+	var bottom = sortByWeight(filterByPosition(layoutBoxes, 'bottom'));
+
+	return {
+		leftAndTop: left.concat(top),
+		rightAndBottom: right.concat(bottom),
+		chartArea: filterByPosition(layoutBoxes, 'chartArea'),
+		vertical: left.concat(right),
+		horizontal: top.concat(bottom)
+	};
+}
+
+function getCombinedMax(maxPadding, chartArea, a, b) {
+	return Math.max(maxPadding[a], chartArea[a]) + Math.max(maxPadding[b], chartArea[b]);
+}
+
+function updateDims(chartArea, params, layout) {
+	var box = layout.box;
+	var maxPadding = chartArea.maxPadding;
+	var newWidth, newHeight;
+
+	if (layout.size) {
+		// this layout was already counted for, lets first reduce old size
+		chartArea[layout.pos] -= layout.size;
+	}
+	layout.size = layout.horizontal ? box.height : box.width;
+	chartArea[layout.pos] += layout.size;
+
+	if (box.getPadding) {
+		var boxPadding = box.getPadding();
+		maxPadding.top = Math.max(maxPadding.top, boxPadding.top);
+		maxPadding.left = Math.max(maxPadding.left, boxPadding.left);
+		maxPadding.bottom = Math.max(maxPadding.bottom, boxPadding.bottom);
+		maxPadding.right = Math.max(maxPadding.right, boxPadding.right);
+	}
+
+	newWidth = params.outerWidth - getCombinedMax(maxPadding, chartArea, 'left', 'right');
+	newHeight = params.outerHeight - getCombinedMax(maxPadding, chartArea, 'top', 'bottom');
+
+	if (newWidth !== chartArea.w || newHeight !== chartArea.h) {
+		chartArea.w = newWidth;
+		chartArea.h = newHeight;
+
+		// return true if chart area changed in layout's direction
+		var sizes = layout.horizontal ? [newWidth, chartArea.w] : [newHeight, chartArea.h];
+		return sizes[0] !== sizes[1] && (!isNaN(sizes[0]) || !isNaN(sizes[1]));
+	}
+}
+
+function handleMaxPadding(chartArea) {
+	var maxPadding = chartArea.maxPadding;
+
+	function updatePos(pos) {
+		var change = Math.max(maxPadding[pos] - chartArea[pos], 0);
+		chartArea[pos] += change;
+		return change;
+	}
+	chartArea.y += updatePos('top');
+	chartArea.x += updatePos('left');
+	updatePos('right');
+	updatePos('bottom');
+}
+
+function getMargins(horizontal, chartArea) {
+	var maxPadding = chartArea.maxPadding;
+
+	function marginForPositions(positions) {
+		var margin = {left: 0, top: 0, right: 0, bottom: 0};
+		positions.forEach(function(pos) {
+			margin[pos] = Math.max(chartArea[pos], maxPadding[pos]);
+		});
+		return margin;
+	}
+
+	return horizontal
+		? marginForPositions(['left', 'right'])
+		: marginForPositions(['top', 'bottom']);
+}
+
+function fitBoxes(boxes, chartArea, params) {
+	var refitBoxes = [];
+	var i, ilen, layout, box, refit, changed;
+
+	for (i = 0, ilen = boxes.length; i < ilen; ++i) {
+		layout = boxes[i];
+		box = layout.box;
+
+		box.update(
+			layout.width || chartArea.w,
+			layout.height || chartArea.h,
+			getMargins(layout.horizontal, chartArea)
+		);
+		if (updateDims(chartArea, params, layout)) {
+			changed = true;
+			if (refitBoxes.length) {
+				// Dimensions changed and there were non full width boxes before this
+				// -> we have to refit those
+				refit = true;
+			}
+		}
+		if (!box.fullWidth) { // fullWidth boxes don't need to be re-fitted in any case
+			refitBoxes.push(layout);
+		}
+	}
+
+	return refit ? fitBoxes(refitBoxes, chartArea, params) || changed : changed;
+}
+
+function placeBoxes(boxes, chartArea, params) {
+	var userPadding = params.padding;
+	var x = chartArea.x;
+	var y = chartArea.y;
+	var i, ilen, layout, box;
+
+	for (i = 0, ilen = boxes.length; i < ilen; ++i) {
+		layout = boxes[i];
+		box = layout.box;
+		if (layout.horizontal) {
+			box.left = box.fullWidth ? userPadding.left : chartArea.left;
+			box.right = box.fullWidth ? params.outerWidth - userPadding.right : chartArea.left + chartArea.w;
+			box.top = y;
+			box.bottom = y + box.height;
+			box.width = box.right - box.left;
+			y = box.bottom;
+		} else {
+			box.left = x;
+			box.right = x + box.width;
+			box.top = chartArea.top;
+			box.bottom = chartArea.top + chartArea.h;
+			box.height = box.bottom - box.top;
+			x = box.right;
+		}
+	}
+
+	chartArea.x = x;
+	chartArea.y = y;
+}
+
+core_defaults._set('global', {
+	layout: {
+		padding: {
+			top: 0,
+			right: 0,
+			bottom: 0,
+			left: 0
+		}
+	}
+});
+
+/**
+ * @interface ILayoutItem
+ * @prop {string} position - The position of the item in the chart layout. Possible values are
+ * 'left', 'top', 'right', 'bottom', and 'chartArea'
+ * @prop {number} weight - The weight used to sort the item. Higher weights are further away from the chart area
+ * @prop {boolean} fullWidth - if true, and the item is horizontal, then push vertical boxes down
+ * @prop {function} isHorizontal - returns true if the layout item is horizontal (ie. top or bottom)
+ * @prop {function} update - Takes two parameters: width and height. Returns size of item
+ * @prop {function} getPadding -  Returns an object with padding on the edges
+ * @prop {number} width - Width of item. Must be valid after update()
+ * @prop {number} height - Height of item. Must be valid after update()
+ * @prop {number} left - Left edge of the item. Set by layout system and cannot be used in update
+ * @prop {number} top - Top edge of the item. Set by layout system and cannot be used in update
+ * @prop {number} right - Right edge of the item. Set by layout system and cannot be used in update
+ * @prop {number} bottom - Bottom edge of the item. Set by layout system and cannot be used in update
+ */
+
+// The layout service is very self explanatory.  It's responsible for the layout within a chart.
+// Scales, Legends and Plugins all rely on the layout service and can easily register to be placed anywhere they need
+// It is this service's responsibility of carrying out that layout.
+var core_layouts = {
+	defaults: {},
+
+	/**
+	 * Register a box to a chart.
+	 * A box is simply a reference to an object that requires layout. eg. Scales, Legend, Title.
+	 * @param {Chart} chart - the chart to use
+	 * @param {ILayoutItem} item - the item to add to be layed out
+	 */
+	addBox: function(chart, item) {
+		if (!chart.boxes) {
+			chart.boxes = [];
+		}
+
+		// initialize item with default values
+		item.fullWidth = item.fullWidth || false;
+		item.position = item.position || 'top';
+		item.weight = item.weight || 0;
+		item._layers = item._layers || function() {
+			return [{
+				z: 0,
+				draw: function() {
+					item.draw.apply(item, arguments);
+				}
+			}];
+		};
+
+		chart.boxes.push(item);
+	},
+
+	/**
+	 * Remove a layoutItem from a chart
+	 * @param {Chart} chart - the chart to remove the box from
+	 * @param {ILayoutItem} layoutItem - the item to remove from the layout
+	 */
+	removeBox: function(chart, layoutItem) {
+		var index = chart.boxes ? chart.boxes.indexOf(layoutItem) : -1;
+		if (index !== -1) {
+			chart.boxes.splice(index, 1);
+		}
+	},
+
+	/**
+	 * Sets (or updates) options on the given `item`.
+	 * @param {Chart} chart - the chart in which the item lives (or will be added to)
+	 * @param {ILayoutItem} item - the item to configure with the given options
+	 * @param {object} options - the new item options.
+	 */
+	configure: function(chart, item, options) {
+		var props = ['fullWidth', 'position', 'weight'];
+		var ilen = props.length;
+		var i = 0;
+		var prop;
+
+		for (; i < ilen; ++i) {
+			prop = props[i];
+			if (options.hasOwnProperty(prop)) {
+				item[prop] = options[prop];
+			}
+		}
+	},
+
+	/**
+	 * Fits boxes of the given chart into the given size by having each box measure itself
+	 * then running a fitting algorithm
+	 * @param {Chart} chart - the chart
+	 * @param {number} width - the width to fit into
+	 * @param {number} height - the height to fit into
+	 */
+	update: function(chart, width, height) {
+		if (!chart) {
+			return;
+		}
+
+		var layoutOptions = chart.options.layout || {};
+		var padding = helpers$1.options.toPadding(layoutOptions.padding);
+
+		var availableWidth = width - padding.width;
+		var availableHeight = height - padding.height;
+		var boxes = buildLayoutBoxes(chart.boxes);
+		var verticalBoxes = boxes.vertical;
+		var horizontalBoxes = boxes.horizontal;
+
+		// Essentially we now have any number of boxes on each of the 4 sides.
+		// Our canvas looks like the following.
+		// The areas L1 and L2 are the left axes. R1 is the right axis, T1 is the top axis and
+		// B1 is the bottom axis
+		// There are also 4 quadrant-like locations (left to right instead of clockwise) reserved for chart overlays
+		// These locations are single-box locations only, when trying to register a chartArea location that is already taken,
+		// an error will be thrown.
+		//
+		// |----------------------------------------------------|
+		// |                  T1 (Full Width)                   |
+		// |----------------------------------------------------|
+		// |    |    |                 T2                  |    |
+		// |    |----|-------------------------------------|----|
+		// |    |    | C1 |                           | C2 |    |
+		// |    |    |----|                           |----|    |
+		// |    |    |                                     |    |
+		// | L1 | L2 |           ChartArea (C0)            | R1 |
+		// |    |    |                                     |    |
+		// |    |    |----|                           |----|    |
+		// |    |    | C3 |                           | C4 |    |
+		// |    |----|-------------------------------------|----|
+		// |    |    |                 B1                  |    |
+		// |----------------------------------------------------|
+		// |                  B2 (Full Width)                   |
+		// |----------------------------------------------------|
+		//
+
+		var params = Object.freeze({
+			outerWidth: width,
+			outerHeight: height,
+			padding: padding,
+			availableWidth: availableWidth,
+			vBoxMaxWidth: availableWidth / 2 / verticalBoxes.length,
+			hBoxMaxHeight: availableHeight / 2
+		});
+		var chartArea = extend({
+			maxPadding: extend({}, padding),
+			w: availableWidth,
+			h: availableHeight,
+			x: padding.left,
+			y: padding.top
+		}, padding);
+
+		setLayoutDims(verticalBoxes.concat(horizontalBoxes), params);
+
+		// First fit vertical boxes
+		fitBoxes(verticalBoxes, chartArea, params);
+
+		// Then fit horizontal boxes
+		if (fitBoxes(horizontalBoxes, chartArea, params)) {
+			// if the area changed, re-fit vertical boxes
+			fitBoxes(verticalBoxes, chartArea, params);
+		}
+
+		handleMaxPadding(chartArea);
+
+		// Finally place the boxes to correct coordinates
+		placeBoxes(boxes.leftAndTop, chartArea, params);
+
+		// Move to opposite side of chart
+		chartArea.x += chartArea.w;
+		chartArea.y += chartArea.h;
+
+		placeBoxes(boxes.rightAndBottom, chartArea, params);
+
+		chart.chartArea = {
+			left: chartArea.left,
+			top: chartArea.top,
+			right: chartArea.left + chartArea.w,
+			bottom: chartArea.top + chartArea.h
+		};
+
+		// Finally update boxes in chartArea (radial scale for example)
+		helpers$1.each(boxes.chartArea, function(layout) {
+			var box = layout.box;
+			extend(box, chart.chartArea);
+			box.update(chartArea.w, chartArea.h);
+		});
+	}
+};
+
+/**
+ * Platform fallback implementation (minimal).
+ * @see https://github.com/chartjs/Chart.js/pull/4591#issuecomment-319575939
+ */
+
+var platform_basic = {
+	acquireContext: function(item) {
+		if (item && item.canvas) {
+			// Support for any object associated to a canvas (including a context2d)
+			item = item.canvas;
+		}
+
+		return item && item.getContext('2d') || null;
+	}
+};
+
+var platform_dom = "/*\r\n * DOM element rendering detection\r\n * https://davidwalsh.name/detect-node-insertion\r\n */\r\n@keyframes chartjs-render-animation {\r\n\tfrom { opacity: 0.99; }\r\n\tto { opacity: 1; }\r\n}\r\n\r\n.chartjs-render-monitor {\r\n\tanimation: chartjs-render-animation 0.001s;\r\n}\r\n\r\n/*\r\n * DOM element resizing detection\r\n * https://github.com/marcj/css-element-queries\r\n */\r\n.chartjs-size-monitor,\r\n.chartjs-size-monitor-expand,\r\n.chartjs-size-monitor-shrink {\r\n\tposition: absolute;\r\n\tdirection: ltr;\r\n\tleft: 0;\r\n\ttop: 0;\r\n\tright: 0;\r\n\tbottom: 0;\r\n\toverflow: hidden;\r\n\tpointer-events: none;\r\n\tvisibility: hidden;\r\n\tz-index: -1;\r\n}\r\n\r\n.chartjs-size-monitor-expand > div {\r\n\tposition: absolute;\r\n\twidth: 1000000px;\r\n\theight: 1000000px;\r\n\tleft: 0;\r\n\ttop: 0;\r\n}\r\n\r\n.chartjs-size-monitor-shrink > div {\r\n\tposition: absolute;\r\n\twidth: 200%;\r\n\theight: 200%;\r\n\tleft: 0;\r\n\ttop: 0;\r\n}\r\n";
+
+var platform_dom$1 = /*#__PURE__*/Object.freeze({
+__proto__: null,
+'default': platform_dom
+});
+
+var stylesheet = getCjsExportFromNamespace(platform_dom$1);
+
+var EXPANDO_KEY = '$chartjs';
+var CSS_PREFIX = 'chartjs-';
+var CSS_SIZE_MONITOR = CSS_PREFIX + 'size-monitor';
+var CSS_RENDER_MONITOR = CSS_PREFIX + 'render-monitor';
+var CSS_RENDER_ANIMATION = CSS_PREFIX + 'render-animation';
+var ANIMATION_START_EVENTS = ['animationstart', 'webkitAnimationStart'];
+
+/**
+ * DOM event types -> Chart.js event types.
+ * Note: only events with different types are mapped.
+ * @see https://developer.mozilla.org/en-US/docs/Web/Events
+ */
+var EVENT_TYPES = {
+	touchstart: 'mousedown',
+	touchmove: 'mousemove',
+	touchend: 'mouseup',
+	pointerenter: 'mouseenter',
+	pointerdown: 'mousedown',
+	pointermove: 'mousemove',
+	pointerup: 'mouseup',
+	pointerleave: 'mouseout',
+	pointerout: 'mouseout'
+};
+
+/**
+ * The "used" size is the final value of a dimension property after all calculations have
+ * been performed. This method uses the computed style of `element` but returns undefined
+ * if the computed style is not expressed in pixels. That can happen in some cases where
+ * `element` has a size relative to its parent and this last one is not yet displayed,
+ * for example because of `display: none` on a parent node.
+ * @see https://developer.mozilla.org/en-US/docs/Web/CSS/used_value
+ * @returns {number} Size in pixels or undefined if unknown.
+ */
+function readUsedSize(element, property) {
+	var value = helpers$1.getStyle(element, property);
+	var matches = value && value.match(/^(\d+)(\.\d+)?px$/);
+	return matches ? Number(matches[1]) : undefined;
+}
+
+/**
+ * Initializes the canvas style and render size without modifying the canvas display size,
+ * since responsiveness is handled by the controller.resize() method. The config is used
+ * to determine the aspect ratio to apply in case no explicit height has been specified.
+ */
+function initCanvas(canvas, config) {
+	var style = canvas.style;
+
+	// NOTE(SB) canvas.getAttribute('width') !== canvas.width: in the first case it
+	// returns null or '' if no explicit value has been set to the canvas attribute.
+	var renderHeight = canvas.getAttribute('height');
+	var renderWidth = canvas.getAttribute('width');
+
+	// Chart.js modifies some canvas values that we want to restore on destroy
+	canvas[EXPANDO_KEY] = {
+		initial: {
+			height: renderHeight,
+			width: renderWidth,
+			style: {
+				display: style.display,
+				height: style.height,
+				width: style.width
+			}
+		}
+	};
+
+	// Force canvas to display as block to avoid extra space caused by inline
+	// elements, which would interfere with the responsive resize process.
+	// https://github.com/chartjs/Chart.js/issues/2538
+	style.display = style.display || 'block';
+
+	if (renderWidth === null || renderWidth === '') {
+		var displayWidth = readUsedSize(canvas, 'width');
+		if (displayWidth !== undefined) {
+			canvas.width = displayWidth;
+		}
+	}
+
+	if (renderHeight === null || renderHeight === '') {
+		if (canvas.style.height === '') {
+			// If no explicit render height and style height, let's apply the aspect ratio,
+			// which one can be specified by the user but also by charts as default option
+			// (i.e. options.aspectRatio). If not specified, use canvas aspect ratio of 2.
+			canvas.height = canvas.width / (config.options.aspectRatio || 2);
+		} else {
+			var displayHeight = readUsedSize(canvas, 'height');
+			if (displayWidth !== undefined) {
+				canvas.height = displayHeight;
+			}
+		}
+	}
+
+	return canvas;
+}
+
+/**
+ * Detects support for options object argument in addEventListener.
+ * https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/addEventListener#Safely_detecting_option_support
+ * @private
+ */
+var supportsEventListenerOptions = (function() {
+	var supports = false;
+	try {
+		var options = Object.defineProperty({}, 'passive', {
+			// eslint-disable-next-line getter-return
+			get: function() {
+				supports = true;
+			}
+		});
+		window.addEventListener('e', null, options);
+	} catch (e) {
+		// continue regardless of error
+	}
+	return supports;
+}());
+
+// Default passive to true as expected by Chrome for 'touchstart' and 'touchend' events.
+// https://github.com/chartjs/Chart.js/issues/4287
+var eventListenerOptions = supportsEventListenerOptions ? {passive: true} : false;
+
+function addListener(node, type, listener) {
+	node.addEventListener(type, listener, eventListenerOptions);
+}
+
+function removeListener(node, type, listener) {
+	node.removeEventListener(type, listener, eventListenerOptions);
+}
+
+function createEvent(type, chart, x, y, nativeEvent) {
+	return {
+		type: type,
+		chart: chart,
+		native: nativeEvent || null,
+		x: x !== undefined ? x : null,
+		y: y !== undefined ? y : null,
+	};
+}
+
+function fromNativeEvent(event, chart) {
+	var type = EVENT_TYPES[event.type] || event.type;
+	var pos = helpers$1.getRelativePosition(event, chart);
+	return createEvent(type, chart, pos.x, pos.y, event);
+}
+
+function throttled(fn, thisArg) {
+	var ticking = false;
+	var args = [];
+
+	return function() {
+		args = Array.prototype.slice.call(arguments);
+		thisArg = thisArg || this;
+
+		if (!ticking) {
+			ticking = true;
+			helpers$1.requestAnimFrame.call(window, function() {
+				ticking = false;
+				fn.apply(thisArg, args);
+			});
+		}
+	};
+}
+
+function createDiv(cls) {
+	var el = document.createElement('div');
+	el.className = cls || '';
+	return el;
+}
+
+// Implementation based on https://github.com/marcj/css-element-queries
+function createResizer(handler) {
+	var maxSize = 1000000;
+
+	// NOTE(SB) Don't use innerHTML because it could be considered unsafe.
+	// https://github.com/chartjs/Chart.js/issues/5902
+	var resizer = createDiv(CSS_SIZE_MONITOR);
+	var expand = createDiv(CSS_SIZE_MONITOR + '-expand');
+	var shrink = createDiv(CSS_SIZE_MONITOR + '-shrink');
+
+	expand.appendChild(createDiv());
+	shrink.appendChild(createDiv());
+
+	resizer.appendChild(expand);
+	resizer.appendChild(shrink);
+	resizer._reset = function() {
+		expand.scrollLeft = maxSize;
+		expand.scrollTop = maxSize;
+		shrink.scrollLeft = maxSize;
+		shrink.scrollTop = maxSize;
+	};
+
+	var onScroll = function() {
+		resizer._reset();
+		handler();
+	};
+
+	addListener(expand, 'scroll', onScroll.bind(expand, 'expand'));
+	addListener(shrink, 'scroll', onScroll.bind(shrink, 'shrink'));
+
+	return resizer;
+}
+
+// https://davidwalsh.name/detect-node-insertion
+function watchForRender(node, handler) {
+	var expando = node[EXPANDO_KEY] || (node[EXPANDO_KEY] = {});
+	var proxy = expando.renderProxy = function(e) {
+		if (e.animationName === CSS_RENDER_ANIMATION) {
+			handler();
+		}
+	};
+
+	helpers$1.each(ANIMATION_START_EVENTS, function(type) {
+		addListener(node, type, proxy);
+	});
+
+	// #4737: Chrome might skip the CSS animation when the CSS_RENDER_MONITOR class
+	// is removed then added back immediately (same animation frame?). Accessing the
+	// `offsetParent` property will force a reflow and re-evaluate the CSS animation.
+	// https://gist.github.com/paulirish/5d52fb081b3570c81e3a#box-metrics
+	// https://github.com/chartjs/Chart.js/issues/4737
+	expando.reflow = !!node.offsetParent;
+
+	node.classList.add(CSS_RENDER_MONITOR);
+}
+
+function unwatchForRender(node) {
+	var expando = node[EXPANDO_KEY] || {};
+	var proxy = expando.renderProxy;
+
+	if (proxy) {
+		helpers$1.each(ANIMATION_START_EVENTS, function(type) {
+			removeListener(node, type, proxy);
+		});
+
+		delete expando.renderProxy;
+	}
+
+	node.classList.remove(CSS_RENDER_MONITOR);
+}
+
+function addResizeListener(node, listener, chart) {
+	var expando = node[EXPANDO_KEY] || (node[EXPANDO_KEY] = {});
+
+	// Let's keep track of this added resizer and thus avoid DOM query when removing it.
+	var resizer = expando.resizer = createResizer(throttled(function() {
+		if (expando.resizer) {
+			var container = chart.options.maintainAspectRatio && node.parentNode;
+			var w = container ? container.clientWidth : 0;
+			listener(createEvent('resize', chart));
+			if (container && container.clientWidth < w && chart.canvas) {
+				// If the container size shrank during chart resize, let's assume
+				// scrollbar appeared. So we resize again with the scrollbar visible -
+				// effectively making chart smaller and the scrollbar hidden again.
+				// Because we are inside `throttled`, and currently `ticking`, scroll
+				// events are ignored during this whole 2 resize process.
+				// If we assumed wrong and something else happened, we are resizing
+				// twice in a frame (potential performance issue)
+				listener(createEvent('resize', chart));
+			}
+		}
+	}));
+
+	// The resizer needs to be attached to the node parent, so we first need to be
+	// sure that `node` is attached to the DOM before injecting the resizer element.
+	watchForRender(node, function() {
+		if (expando.resizer) {
+			var container = node.parentNode;
+			if (container && container !== resizer.parentNode) {
+				container.insertBefore(resizer, container.firstChild);
+			}
+
+			// The container size might have changed, let's reset the resizer state.
+			resizer._reset();
+		}
+	});
+}
+
+function removeResizeListener(node) {
+	var expando = node[EXPANDO_KEY] || {};
+	var resizer = expando.resizer;
+
+	delete expando.resizer;
+	unwatchForRender(node);
+
+	if (resizer && resizer.parentNode) {
+		resizer.parentNode.removeChild(resizer);
+	}
+}
+
+/**
+ * Injects CSS styles inline if the styles are not already present.
+ * @param {HTMLDocument|ShadowRoot} rootNode - the node to contain the <style>.
+ * @param {string} css - the CSS to be injected.
+ */
+function injectCSS(rootNode, css) {
+	// https://stackoverflow.com/q/3922139
+	var expando = rootNode[EXPANDO_KEY] || (rootNode[EXPANDO_KEY] = {});
+	if (!expando.containsStyles) {
+		expando.containsStyles = true;
+		css = '/* Chart.js */\n' + css;
+		var style = document.createElement('style');
+		style.setAttribute('type', 'text/css');
+		style.appendChild(document.createTextNode(css));
+		rootNode.appendChild(style);
+	}
+}
+
+var platform_dom$2 = {
+	/**
+	 * When `true`, prevents the automatic injection of the stylesheet required to
+	 * correctly detect when the chart is added to the DOM and then resized. This
+	 * switch has been added to allow external stylesheet (`dist/Chart(.min)?.js`)
+	 * to be manually imported to make this library compatible with any CSP.
+	 * See https://github.com/chartjs/Chart.js/issues/5208
+	 */
+	disableCSSInjection: false,
+
+	/**
+	 * This property holds whether this platform is enabled for the current environment.
+	 * Currently used by platform.js to select the proper implementation.
+	 * @private
+	 */
+	_enabled: typeof window !== 'undefined' && typeof document !== 'undefined',
+
+	/**
+	 * Initializes resources that depend on platform options.
+	 * @param {HTMLCanvasElement} canvas - The Canvas element.
+	 * @private
+	 */
+	_ensureLoaded: function(canvas) {
+		if (!this.disableCSSInjection) {
+			// If the canvas is in a shadow DOM, then the styles must also be inserted
+			// into the same shadow DOM.
+			// https://github.com/chartjs/Chart.js/issues/5763
+			var root = canvas.getRootNode ? canvas.getRootNode() : document;
+			var targetNode = root.host ? root : document.head;
+			injectCSS(targetNode, stylesheet);
+		}
+	},
+
+	acquireContext: function(item, config) {
+		if (typeof item === 'string') {
+			item = document.getElementById(item);
+		} else if (item.length) {
+			// Support for array based queries (such as jQuery)
+			item = item[0];
+		}
+
+		if (item && item.canvas) {
+			// Support for any object associated to a canvas (including a context2d)
+			item = item.canvas;
+		}
+
+		// To prevent canvas fingerprinting, some add-ons undefine the getContext
+		// method, for example: https://github.com/kkapsner/CanvasBlocker
+		// https://github.com/chartjs/Chart.js/issues/2807
+		var context = item && item.getContext && item.getContext('2d');
+
+		// `instanceof HTMLCanvasElement/CanvasRenderingContext2D` fails when the item is
+		// inside an iframe or when running in a protected environment. We could guess the
+		// types from their toString() value but let's keep things flexible and assume it's
+		// a sufficient condition if the item has a context2D which has item as `canvas`.
+		// https://github.com/chartjs/Chart.js/issues/3887
+		// https://github.com/chartjs/Chart.js/issues/4102
+		// https://github.com/chartjs/Chart.js/issues/4152
+		if (context && context.canvas === item) {
+			// Load platform resources on first chart creation, to make it possible to
+			// import the library before setting platform options.
+			this._ensureLoaded(item);
+			initCanvas(item, config);
+			return context;
+		}
+
+		return null;
+	},
+
+	releaseContext: function(context) {
+		var canvas = context.canvas;
+		if (!canvas[EXPANDO_KEY]) {
+			return;
+		}
+
+		var initial = canvas[EXPANDO_KEY].initial;
+		['height', 'width'].forEach(function(prop) {
+			var value = initial[prop];
+			if (helpers$1.isNullOrUndef(value)) {
+				canvas.removeAttribute(prop);
+			} else {
+				canvas.setAttribute(prop, value);
+			}
+		});
+
+		helpers$1.each(initial.style || {}, function(value, key) {
+			canvas.style[key] = value;
+		});
+
+		// The canvas render size might have been changed (and thus the state stack discarded),
+		// we can't use save() and restore() to restore the initial state. So make sure that at
+		// least the canvas context is reset to the default state by setting the canvas width.
+		// https://www.w3.org/TR/2011/WD-html5-20110525/the-canvas-element.html
+		// eslint-disable-next-line no-self-assign
+		canvas.width = canvas.width;
+
+		delete canvas[EXPANDO_KEY];
+	},
+
+	addEventListener: function(chart, type, listener) {
+		var canvas = chart.canvas;
+		if (type === 'resize') {
+			// Note: the resize event is not supported on all browsers.
+			addResizeListener(canvas, listener, chart);
+			return;
+		}
+
+		var expando = listener[EXPANDO_KEY] || (listener[EXPANDO_KEY] = {});
+		var proxies = expando.proxies || (expando.proxies = {});
+		var proxy = proxies[chart.id + '_' + type] = function(event) {
+			listener(fromNativeEvent(event, chart));
+		};
+
+		addListener(canvas, type, proxy);
+	},
+
+	removeEventListener: function(chart, type, listener) {
+		var canvas = chart.canvas;
+		if (type === 'resize') {
+			// Note: the resize event is not supported on all browsers.
+			removeResizeListener(canvas);
+			return;
+		}
+
+		var expando = listener[EXPANDO_KEY] || {};
+		var proxies = expando.proxies || {};
+		var proxy = proxies[chart.id + '_' + type];
+		if (!proxy) {
+			return;
+		}
+
+		removeListener(canvas, type, proxy);
+	}
+};
+
+// DEPRECATIONS
+
+/**
+ * Provided for backward compatibility, use EventTarget.addEventListener instead.
+ * EventTarget.addEventListener compatibility: Chrome, Opera 7, Safari, FF1.5+, IE9+
+ * @see https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/addEventListener
+ * @function Chart.helpers.addEvent
+ * @deprecated since version 2.7.0
+ * @todo remove at version 3
+ * @private
+ */
+helpers$1.addEvent = addListener;
+
+/**
+ * Provided for backward compatibility, use EventTarget.removeEventListener instead.
+ * EventTarget.removeEventListener compatibility: Chrome, Opera 7, Safari, FF1.5+, IE9+
+ * @see https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/removeEventListener
+ * @function Chart.helpers.removeEvent
+ * @deprecated since version 2.7.0
+ * @todo remove at version 3
+ * @private
+ */
+helpers$1.removeEvent = removeListener;
+
+// @TODO Make possible to select another platform at build time.
+var implementation = platform_dom$2._enabled ? platform_dom$2 : platform_basic;
+
+/**
+ * @namespace Chart.platform
+ * @see https://chartjs.gitbooks.io/proposals/content/Platform.html
+ * @since 2.4.0
+ */
+var platform = helpers$1.extend({
+	/**
+	 * @since 2.7.0
+	 */
+	initialize: function() {},
+
+	/**
+	 * Called at chart construction time, returns a context2d instance implementing
+	 * the [W3C Canvas 2D Context API standard]{@link https://www.w3.org/TR/2dcontext/}.
+	 * @param {*} item - The native item from which to acquire context (platform specific)
+	 * @param {object} options - The chart options
+	 * @returns {CanvasRenderingContext2D} context2d instance
+	 */
+	acquireContext: function() {},
+
+	/**
+	 * Called at chart destruction time, releases any resources associated to the context
+	 * previously returned by the acquireContext() method.
+	 * @param {CanvasRenderingContext2D} context - The context2d instance
+	 * @returns {boolean} true if the method succeeded, else false
+	 */
+	releaseContext: function() {},
+
+	/**
+	 * Registers the specified listener on the given chart.
+	 * @param {Chart} chart - Chart from which to listen for event
+	 * @param {string} type - The ({@link IEvent}) type to listen for
+	 * @param {function} listener - Receives a notification (an object that implements
+	 * the {@link IEvent} interface) when an event of the specified type occurs.
+	 */
+	addEventListener: function() {},
+
+	/**
+	 * Removes the specified listener previously registered with addEventListener.
+	 * @param {Chart} chart - Chart from which to remove the listener
+	 * @param {string} type - The ({@link IEvent}) type to remove
+	 * @param {function} listener - The listener function to remove from the event target.
+	 */
+	removeEventListener: function() {}
+
+}, implementation);
+
+core_defaults._set('global', {
+	plugins: {}
+});
+
+/**
+ * The plugin service singleton
+ * @namespace Chart.plugins
+ * @since 2.1.0
+ */
+var core_plugins = {
+	/**
+	 * Globally registered plugins.
+	 * @private
+	 */
+	_plugins: [],
+
+	/**
+	 * This identifier is used to invalidate the descriptors cache attached to each chart
+	 * when a global plugin is registered or unregistered. In this case, the cache ID is
+	 * incremented and descriptors are regenerated during following API calls.
+	 * @private
+	 */
+	_cacheId: 0,
+
+	/**
+	 * Registers the given plugin(s) if not already registered.
+	 * @param {IPlugin[]|IPlugin} plugins plugin instance(s).
+	 */
+	register: function(plugins) {
+		var p = this._plugins;
+		([]).concat(plugins).forEach(function(plugin) {
+			if (p.indexOf(plugin) === -1) {
+				p.push(plugin);
+			}
+		});
+
+		this._cacheId++;
+	},
+
+	/**
+	 * Unregisters the given plugin(s) only if registered.
+	 * @param {IPlugin[]|IPlugin} plugins plugin instance(s).
+	 */
+	unregister: function(plugins) {
+		var p = this._plugins;
+		([]).concat(plugins).forEach(function(plugin) {
+			var idx = p.indexOf(plugin);
+			if (idx !== -1) {
+				p.splice(idx, 1);
+			}
+		});
+
+		this._cacheId++;
+	},
+
+	/**
+	 * Remove all registered plugins.
+	 * @since 2.1.5
+	 */
+	clear: function() {
+		this._plugins = [];
+		this._cacheId++;
+	},
+
+	/**
+	 * Returns the number of registered plugins?
+	 * @returns {number}
+	 * @since 2.1.5
+	 */
+	count: function() {
+		return this._plugins.length;
+	},
+
+	/**
+	 * Returns all registered plugin instances.
+	 * @returns {IPlugin[]} array of plugin objects.
+	 * @since 2.1.5
+	 */
+	getAll: function() {
+		return this._plugins;
+	},
+
+	/**
+	 * Calls enabled plugins for `chart` on the specified hook and with the given args.
+	 * This method immediately returns as soon as a plugin explicitly returns false. The
+	 * returned value can be used, for instance, to interrupt the current action.
+	 * @param {Chart} chart - The chart instance for which plugins should be called.
+	 * @param {string} hook - The name of the plugin method to call (e.g. 'beforeUpdate').
+	 * @param {Array} [args] - Extra arguments to apply to the hook call.
+	 * @returns {boolean} false if any of the plugins return false, else returns true.
+	 */
+	notify: function(chart, hook, args) {
+		var descriptors = this.descriptors(chart);
+		var ilen = descriptors.length;
+		var i, descriptor, plugin, params, method;
+
+		for (i = 0; i < ilen; ++i) {
+			descriptor = descriptors[i];
+			plugin = descriptor.plugin;
+			method = plugin[hook];
+			if (typeof method === 'function') {
+				params = [chart].concat(args || []);
+				params.push(descriptor.options);
+				if (method.apply(plugin, params) === false) {
+					return false;
+				}
+			}
+		}
+
+		return true;
+	},
+
+	/**
+	 * Returns descriptors of enabled plugins for the given chart.
+	 * @returns {object[]} [{ plugin, options }]
+	 * @private
+	 */
+	descriptors: function(chart) {
+		var cache = chart.$plugins || (chart.$plugins = {});
+		if (cache.id === this._cacheId) {
+			return cache.descriptors;
+		}
+
+		var plugins = [];
+		var descriptors = [];
+		var config = (chart && chart.config) || {};
+		var options = (config.options && config.options.plugins) || {};
+
+		this._plugins.concat(config.plugins || []).forEach(function(plugin) {
+			var idx = plugins.indexOf(plugin);
+			if (idx !== -1) {
+				return;
+			}
+
+			var id = plugin.id;
+			var opts = options[id];
+			if (opts === false) {
+				return;
+			}
+
+			if (opts === true) {
+				opts = helpers$1.clone(core_defaults.global.plugins[id]);
+			}
+
+			plugins.push(plugin);
+			descriptors.push({
+				plugin: plugin,
+				options: opts || {}
+			});
+		});
+
+		cache.descriptors = descriptors;
+		cache.id = this._cacheId;
+		return descriptors;
+	},
+
+	/**
+	 * Invalidates cache for the given chart: descriptors hold a reference on plugin option,
+	 * but in some cases, this reference can be changed by the user when updating options.
+	 * https://github.com/chartjs/Chart.js/issues/5111#issuecomment-355934167
+	 * @private
+	 */
+	_invalidate: function(chart) {
+		delete chart.$plugins;
+	}
+};
+
+var core_scaleService = {
+	// Scale registration object. Extensions can register new scale types (such as log or DB scales) and then
+	// use the new chart options to grab the correct scale
+	constructors: {},
+	// Use a registration function so that we can move to an ES6 map when we no longer need to support
+	// old browsers
+
+	// Scale config defaults
+	defaults: {},
+	registerScaleType: function(type, scaleConstructor, scaleDefaults) {
+		this.constructors[type] = scaleConstructor;
+		this.defaults[type] = helpers$1.clone(scaleDefaults);
+	},
+	getScaleConstructor: function(type) {
+		return this.constructors.hasOwnProperty(type) ? this.constructors[type] : undefined;
+	},
+	getScaleDefaults: function(type) {
+		// Return the scale defaults merged with the global settings so that we always use the latest ones
+		return this.defaults.hasOwnProperty(type) ? helpers$1.merge(Object.create(null), [core_defaults.scale, this.defaults[type]]) : {};
+	},
+	updateScaleDefaults: function(type, additions) {
+		var me = this;
+		if (me.defaults.hasOwnProperty(type)) {
+			me.defaults[type] = helpers$1.extend(me.defaults[type], additions);
+		}
+	},
+	addScalesToLayout: function(chart) {
+		// Adds each scale to the chart.boxes array to be sized accordingly
+		helpers$1.each(chart.scales, function(scale) {
+			// Set ILayoutItem parameters for backwards compatibility
+			scale.fullWidth = scale.options.fullWidth;
+			scale.position = scale.options.position;
+			scale.weight = scale.options.weight;
+			core_layouts.addBox(chart, scale);
+		});
+	}
+};
+
+var valueOrDefault$8 = helpers$1.valueOrDefault;
+var getRtlHelper = helpers$1.rtl.getRtlAdapter;
+
+core_defaults._set('global', {
+	tooltips: {
+		enabled: true,
+		custom: null,
+		mode: 'nearest',
+		position: 'average',
+		intersect: true,
+		backgroundColor: 'rgba(0,0,0,0.8)',
+		titleFontStyle: 'bold',
+		titleSpacing: 2,
+		titleMarginBottom: 6,
+		titleFontColor: '#fff',
+		titleAlign: 'left',
+		bodySpacing: 2,
+		bodyFontColor: '#fff',
+		bodyAlign: 'left',
+		footerFontStyle: 'bold',
+		footerSpacing: 2,
+		footerMarginTop: 6,
+		footerFontColor: '#fff',
+		footerAlign: 'left',
+		yPadding: 6,
+		xPadding: 6,
+		caretPadding: 2,
+		caretSize: 5,
+		cornerRadius: 6,
+		multiKeyBackground: '#fff',
+		displayColors: true,
+		borderColor: 'rgba(0,0,0,0)',
+		borderWidth: 0,
+		callbacks: {
+			// Args are: (tooltipItems, data)
+			beforeTitle: helpers$1.noop,
+			title: function(tooltipItems, data) {
+				var title = '';
+				var labels = data.labels;
+				var labelCount = labels ? labels.length : 0;
+
+				if (tooltipItems.length > 0) {
+					var item = tooltipItems[0];
+					if (item.label) {
+						title = item.label;
+					} else if (item.xLabel) {
+						title = item.xLabel;
+					} else if (labelCount > 0 && item.index < labelCount) {
+						title = labels[item.index];
+					}
+				}
+
+				return title;
+			},
+			afterTitle: helpers$1.noop,
+
+			// Args are: (tooltipItems, data)
+			beforeBody: helpers$1.noop,
+
+			// Args are: (tooltipItem, data)
+			beforeLabel: helpers$1.noop,
+			label: function(tooltipItem, data) {
+				var label = data.datasets[tooltipItem.datasetIndex].label || '';
+
+				if (label) {
+					label += ': ';
+				}
+				if (!helpers$1.isNullOrUndef(tooltipItem.value)) {
+					label += tooltipItem.value;
+				} else {
+					label += tooltipItem.yLabel;
+				}
+				return label;
+			},
+			labelColor: function(tooltipItem, chart) {
+				var meta = chart.getDatasetMeta(tooltipItem.datasetIndex);
+				var activeElement = meta.data[tooltipItem.index];
+				var view = activeElement._view;
+				return {
+					borderColor: view.borderColor,
+					backgroundColor: view.backgroundColor
+				};
+			},
+			labelTextColor: function() {
+				return this._options.bodyFontColor;
+			},
+			afterLabel: helpers$1.noop,
+
+			// Args are: (tooltipItems, data)
+			afterBody: helpers$1.noop,
+
+			// Args are: (tooltipItems, data)
+			beforeFooter: helpers$1.noop,
+			footer: helpers$1.noop,
+			afterFooter: helpers$1.noop
+		}
+	}
+});
+
+var positioners = {
+	/**
+	 * Average mode places the tooltip at the average position of the elements shown
+	 * @function Chart.Tooltip.positioners.average
+	 * @param elements {ChartElement[]} the elements being displayed in the tooltip
+	 * @returns {object} tooltip position
+	 */
+	average: function(elements) {
+		if (!elements.length) {
+			return false;
+		}
+
+		var i, len;
+		var x = 0;
+		var y = 0;
+		var count = 0;
+
+		for (i = 0, len = elements.length; i < len; ++i) {
+			var el = elements[i];
+			if (el && el.hasValue()) {
+				var pos = el.tooltipPosition();
+				x += pos.x;
+				y += pos.y;
+				++count;
+			}
+		}
+
+		return {
+			x: x / count,
+			y: y / count
+		};
+	},
+
+	/**
+	 * Gets the tooltip position nearest of the item nearest to the event position
+	 * @function Chart.Tooltip.positioners.nearest
+	 * @param elements {Chart.Element[]} the tooltip elements
+	 * @param eventPosition {object} the position of the event in canvas coordinates
+	 * @returns {object} the tooltip position
+	 */
+	nearest: function(elements, eventPosition) {
+		var x = eventPosition.x;
+		var y = eventPosition.y;
+		var minDistance = Number.POSITIVE_INFINITY;
+		var i, len, nearestElement;
+
+		for (i = 0, len = elements.length; i < len; ++i) {
+			var el = elements[i];
+			if (el && el.hasValue()) {
+				var center = el.getCenterPoint();
+				var d = helpers$1.distanceBetweenPoints(eventPosition, center);
+
+				if (d < minDistance) {
+					minDistance = d;
+					nearestElement = el;
+				}
+			}
+		}
+
+		if (nearestElement) {
+			var tp = nearestElement.tooltipPosition();
+			x = tp.x;
+			y = tp.y;
+		}
+
+		return {
+			x: x,
+			y: y
+		};
+	}
+};
+
+// Helper to push or concat based on if the 2nd parameter is an array or not
+function pushOrConcat(base, toPush) {
+	if (toPush) {
+		if (helpers$1.isArray(toPush)) {
+			// base = base.concat(toPush);
+			Array.prototype.push.apply(base, toPush);
+		} else {
+			base.push(toPush);
+		}
+	}
+
+	return base;
+}
+
+/**
+ * Returns array of strings split by newline
+ * @param {string} value - The value to split by newline.
+ * @returns {string[]} value if newline present - Returned from String split() method
+ * @function
+ */
+function splitNewlines(str) {
+	if ((typeof str === 'string' || str instanceof String) && str.indexOf('\n') > -1) {
+		return str.split('\n');
+	}
+	return str;
+}
+
+
+/**
+ * Private helper to create a tooltip item model
+ * @param element - the chart element (point, arc, bar) to create the tooltip item for
+ * @return new tooltip item
+ */
+function createTooltipItem(element) {
+	var xScale = element._xScale;
+	var yScale = element._yScale || element._scale; // handle radar || polarArea charts
+	var index = element._index;
+	var datasetIndex = element._datasetIndex;
+	var controller = element._chart.getDatasetMeta(datasetIndex).controller;
+	var indexScale = controller._getIndexScale();
+	var valueScale = controller._getValueScale();
+
+	return {
+		xLabel: xScale ? xScale.getLabelForIndex(index, datasetIndex) : '',
+		yLabel: yScale ? yScale.getLabelForIndex(index, datasetIndex) : '',
+		label: indexScale ? '' + indexScale.getLabelForIndex(index, datasetIndex) : '',
+		value: valueScale ? '' + valueScale.getLabelForIndex(index, datasetIndex) : '',
+		index: index,
+		datasetIndex: datasetIndex,
+		x: element._model.x,
+		y: element._model.y
+	};
+}
+
+/**
+ * Helper to get the reset model for the tooltip
+ * @param tooltipOpts {object} the tooltip options
+ */
+function getBaseModel(tooltipOpts) {
+	var globalDefaults = core_defaults.global;
+
+	return {
+		// Positioning
+		xPadding: tooltipOpts.xPadding,
+		yPadding: tooltipOpts.yPadding,
+		xAlign: tooltipOpts.xAlign,
+		yAlign: tooltipOpts.yAlign,
+
+		// Drawing direction and text direction
+		rtl: tooltipOpts.rtl,
+		textDirection: tooltipOpts.textDirection,
+
+		// Body
+		bodyFontColor: tooltipOpts.bodyFontColor,
+		_bodyFontFamily: valueOrDefault$8(tooltipOpts.bodyFontFamily, globalDefaults.defaultFontFamily),
+		_bodyFontStyle: valueOrDefault$8(tooltipOpts.bodyFontStyle, globalDefaults.defaultFontStyle),
+		_bodyAlign: tooltipOpts.bodyAlign,
+		bodyFontSize: valueOrDefault$8(tooltipOpts.bodyFontSize, globalDefaults.defaultFontSize),
+		bodySpacing: tooltipOpts.bodySpacing,
+
+		// Title
+		titleFontColor: tooltipOpts.titleFontColor,
+		_titleFontFamily: valueOrDefault$8(tooltipOpts.titleFontFamily, globalDefaults.defaultFontFamily),
+		_titleFontStyle: valueOrDefault$8(tooltipOpts.titleFontStyle, globalDefaults.defaultFontStyle),
+		titleFontSize: valueOrDefault$8(tooltipOpts.titleFontSize, globalDefaults.defaultFontSize),
+		_titleAlign: tooltipOpts.titleAlign,
+		titleSpacing: tooltipOpts.titleSpacing,
+		titleMarginBottom: tooltipOpts.titleMarginBottom,
+
+		// Footer
+		footerFontColor: tooltipOpts.footerFontColor,
+		_footerFontFamily: valueOrDefault$8(tooltipOpts.footerFontFamily, globalDefaults.defaultFontFamily),
+		_footerFontStyle: valueOrDefault$8(tooltipOpts.footerFontStyle, globalDefaults.defaultFontStyle),
+		footerFontSize: valueOrDefault$8(tooltipOpts.footerFontSize, globalDefaults.defaultFontSize),
+		_footerAlign: tooltipOpts.footerAlign,
+		footerSpacing: tooltipOpts.footerSpacing,
+		footerMarginTop: tooltipOpts.footerMarginTop,
+
+		// Appearance
+		caretSize: tooltipOpts.caretSize,
+		cornerRadius: tooltipOpts.cornerRadius,
+		backgroundColor: tooltipOpts.backgroundColor,
+		opacity: 0,
+		legendColorBackground: tooltipOpts.multiKeyBackground,
+		displayColors: tooltipOpts.displayColors,
+		borderColor: tooltipOpts.borderColor,
+		borderWidth: tooltipOpts.borderWidth
+	};
+}
+
+/**
+ * Get the size of the tooltip
+ */
+function getTooltipSize(tooltip, model) {
+	var ctx = tooltip._chart.ctx;
+
+	var height = model.yPadding * 2; // Tooltip Padding
+	var width = 0;
+
+	// Count of all lines in the body
+	var body = model.body;
+	var combinedBodyLength = body.reduce(function(count, bodyItem) {
+		return count + bodyItem.before.length + bodyItem.lines.length + bodyItem.after.length;
+	}, 0);
+	combinedBodyLength += model.beforeBody.length + model.afterBody.length;
+
+	var titleLineCount = model.title.length;
+	var footerLineCount = model.footer.length;
+	var titleFontSize = model.titleFontSize;
+	var bodyFontSize = model.bodyFontSize;
+	var footerFontSize = model.footerFontSize;
+
+	height += titleLineCount * titleFontSize; // Title Lines
+	height += titleLineCount ? (titleLineCount - 1) * model.titleSpacing : 0; // Title Line Spacing
+	height += titleLineCount ? model.titleMarginBottom : 0; // Title's bottom Margin
+	height += combinedBodyLength * bodyFontSize; // Body Lines
+	height += combinedBodyLength ? (combinedBodyLength - 1) * model.bodySpacing : 0; // Body Line Spacing
+	height += footerLineCount ? model.footerMarginTop : 0; // Footer Margin
+	height += footerLineCount * (footerFontSize); // Footer Lines
+	height += footerLineCount ? (footerLineCount - 1) * model.footerSpacing : 0; // Footer Line Spacing
+
+	// Title width
+	var widthPadding = 0;
+	var maxLineWidth = function(line) {
+		width = Math.max(width, ctx.measureText(line).width + widthPadding);
+	};
+
+	ctx.font = helpers$1.fontString(titleFontSize, model._titleFontStyle, model._titleFontFamily);
+	helpers$1.each(model.title, maxLineWidth);
+
+	// Body width
+	ctx.font = helpers$1.fontString(bodyFontSize, model._bodyFontStyle, model._bodyFontFamily);
+	helpers$1.each(model.beforeBody.concat(model.afterBody), maxLineWidth);
+
+	// Body lines may include some extra width due to the color box
+	widthPadding = model.displayColors ? (bodyFontSize + 2) : 0;
+	helpers$1.each(body, function(bodyItem) {
+		helpers$1.each(bodyItem.before, maxLineWidth);
+		helpers$1.each(bodyItem.lines, maxLineWidth);
+		helpers$1.each(bodyItem.after, maxLineWidth);
+	});
+
+	// Reset back to 0
+	widthPadding = 0;
+
+	// Footer width
+	ctx.font = helpers$1.fontString(footerFontSize, model._footerFontStyle, model._footerFontFamily);
+	helpers$1.each(model.footer, maxLineWidth);
+
+	// Add padding
+	width += 2 * model.xPadding;
+
+	return {
+		width: width,
+		height: height
+	};
+}
+
+/**
+ * Helper to get the alignment of a tooltip given the size
+ */
+function determineAlignment(tooltip, size) {
+	var model = tooltip._model;
+	var chart = tooltip._chart;
+	var chartArea = tooltip._chart.chartArea;
+	var xAlign = 'center';
+	var yAlign = 'center';
+
+	if (model.y < size.height) {
+		yAlign = 'top';
+	} else if (model.y > (chart.height - size.height)) {
+		yAlign = 'bottom';
+	}
+
+	var lf, rf; // functions to determine left, right alignment
+	var olf, orf; // functions to determine if left/right alignment causes tooltip to go outside chart
+	var yf; // function to get the y alignment if the tooltip goes outside of the left or right edges
+	var midX = (chartArea.left + chartArea.right) / 2;
+	var midY = (chartArea.top + chartArea.bottom) / 2;
+
+	if (yAlign === 'center') {
+		lf = function(x) {
+			return x <= midX;
+		};
+		rf = function(x) {
+			return x > midX;
+		};
+	} else {
+		lf = function(x) {
+			return x <= (size.width / 2);
+		};
+		rf = function(x) {
+			return x >= (chart.width - (size.width / 2));
+		};
+	}
+
+	olf = function(x) {
+		return x + size.width + model.caretSize + model.caretPadding > chart.width;
+	};
+	orf = function(x) {
+		return x - size.width - model.caretSize - model.caretPadding < 0;
+	};
+	yf = function(y) {
+		return y <= midY ? 'top' : 'bottom';
+	};
+
+	if (lf(model.x)) {
+		xAlign = 'left';
+
+		// Is tooltip too wide and goes over the right side of the chart.?
+		if (olf(model.x)) {
+			xAlign = 'center';
+			yAlign = yf(model.y);
+		}
+	} else if (rf(model.x)) {
+		xAlign = 'right';
+
+		// Is tooltip too wide and goes outside left edge of canvas?
+		if (orf(model.x)) {
+			xAlign = 'center';
+			yAlign = yf(model.y);
+		}
+	}
+
+	var opts = tooltip._options;
+	return {
+		xAlign: opts.xAlign ? opts.xAlign : xAlign,
+		yAlign: opts.yAlign ? opts.yAlign : yAlign
+	};
+}
+
+/**
+ * Helper to get the location a tooltip needs to be placed at given the initial position (via the vm) and the size and alignment
+ */
+function getBackgroundPoint(vm, size, alignment, chart) {
+	// Background Position
+	var x = vm.x;
+	var y = vm.y;
+
+	var caretSize = vm.caretSize;
+	var caretPadding = vm.caretPadding;
+	var cornerRadius = vm.cornerRadius;
+	var xAlign = alignment.xAlign;
+	var yAlign = alignment.yAlign;
+	var paddingAndSize = caretSize + caretPadding;
+	var radiusAndPadding = cornerRadius + caretPadding;
+
+	if (xAlign === 'right') {
+		x -= size.width;
+	} else if (xAlign === 'center') {
+		x -= (size.width / 2);
+		if (x + size.width > chart.width) {
+			x = chart.width - size.width;
+		}
+		if (x < 0) {
+			x = 0;
+		}
+	}
+
+	if (yAlign === 'top') {
+		y += paddingAndSize;
+	} else if (yAlign === 'bottom') {
+		y -= size.height + paddingAndSize;
+	} else {
+		y -= (size.height / 2);
+	}
+
+	if (yAlign === 'center') {
+		if (xAlign === 'left') {
+			x += paddingAndSize;
+		} else if (xAlign === 'right') {
+			x -= paddingAndSize;
+		}
+	} else if (xAlign === 'left') {
+		x -= radiusAndPadding;
+	} else if (xAlign === 'right') {
+		x += radiusAndPadding;
+	}
+
+	return {
+		x: x,
+		y: y
+	};
+}
+
+function getAlignedX(vm, align) {
+	return align === 'center'
+		? vm.x + vm.width / 2
+		: align === 'right'
+			? vm.x + vm.width - vm.xPadding
+			: vm.x + vm.xPadding;
+}
+
+/**
+ * Helper to build before and after body lines
+ */
+function getBeforeAfterBodyLines(callback) {
+	return pushOrConcat([], splitNewlines(callback));
+}
+
+var exports$4 = core_element.extend({
+	initialize: function() {
+		this._model = getBaseModel(this._options);
+		this._lastActive = [];
+	},
+
+	// Get the title
+	// Args are: (tooltipItem, data)
+	getTitle: function() {
+		var me = this;
+		var opts = me._options;
+		var callbacks = opts.callbacks;
+
+		var beforeTitle = callbacks.beforeTitle.apply(me, arguments);
+		var title = callbacks.title.apply(me, arguments);
+		var afterTitle = callbacks.afterTitle.apply(me, arguments);
+
+		var lines = [];
+		lines = pushOrConcat(lines, splitNewlines(beforeTitle));
+		lines = pushOrConcat(lines, splitNewlines(title));
+		lines = pushOrConcat(lines, splitNewlines(afterTitle));
+
+		return lines;
+	},
+
+	// Args are: (tooltipItem, data)
+	getBeforeBody: function() {
+		return getBeforeAfterBodyLines(this._options.callbacks.beforeBody.apply(this, arguments));
+	},
+
+	// Args are: (tooltipItem, data)
+	getBody: function(tooltipItems, data) {
+		var me = this;
+		var callbacks = me._options.callbacks;
+		var bodyItems = [];
+
+		helpers$1.each(tooltipItems, function(tooltipItem) {
+			var bodyItem = {
+				before: [],
+				lines: [],
+				after: []
+			};
+			pushOrConcat(bodyItem.before, splitNewlines(callbacks.beforeLabel.call(me, tooltipItem, data)));
+			pushOrConcat(bodyItem.lines, callbacks.label.call(me, tooltipItem, data));
+			pushOrConcat(bodyItem.after, splitNewlines(callbacks.afterLabel.call(me, tooltipItem, data)));
+
+			bodyItems.push(bodyItem);
+		});
+
+		return bodyItems;
+	},
+
+	// Args are: (tooltipItem, data)
+	getAfterBody: function() {
+		return getBeforeAfterBodyLines(this._options.callbacks.afterBody.apply(this, arguments));
+	},
+
+	// Get the footer and beforeFooter and afterFooter lines
+	// Args are: (tooltipItem, data)
+	getFooter: function() {
+		var me = this;
+		var callbacks = me._options.callbacks;
+
+		var beforeFooter = callbacks.beforeFooter.apply(me, arguments);
+		var footer = callbacks.footer.apply(me, arguments);
+		var afterFooter = callbacks.afterFooter.apply(me, arguments);
+
+		var lines = [];
+		lines = pushOrConcat(lines, splitNewlines(beforeFooter));
+		lines = pushOrConcat(lines, splitNewlines(footer));
+		lines = pushOrConcat(lines, splitNewlines(afterFooter));
+
+		return lines;
+	},
+
+	update: function(changed) {
+		var me = this;
+		var opts = me._options;
+
+		// Need to regenerate the model because its faster than using extend and it is necessary due to the optimization in Chart.Element.transition
+		// that does _view = _model if ease === 1. This causes the 2nd tooltip update to set properties in both the view and model at the same time
+		// which breaks any animations.
+		var existingModel = me._model;
+		var model = me._model = getBaseModel(opts);
+		var active = me._active;
+
+		var data = me._data;
+
+		// In the case where active.length === 0 we need to keep these at existing values for good animations
+		var alignment = {
+			xAlign: existingModel.xAlign,
+			yAlign: existingModel.yAlign
+		};
+		var backgroundPoint = {
+			x: existingModel.x,
+			y: existingModel.y
+		};
+		var tooltipSize = {
+			width: existingModel.width,
+			height: existingModel.height
+		};
+		var tooltipPosition = {
+			x: existingModel.caretX,
+			y: existingModel.caretY
+		};
+
+		var i, len;
+
+		if (active.length) {
+			model.opacity = 1;
+
+			var labelColors = [];
+			var labelTextColors = [];
+			tooltipPosition = positioners[opts.position].call(me, active, me._eventPosition);
+
+			var tooltipItems = [];
+			for (i = 0, len = active.length; i < len; ++i) {
+				tooltipItems.push(createTooltipItem(active[i]));
+			}
+
+			// If the user provided a filter function, use it to modify the tooltip items
+			if (opts.filter) {
+				tooltipItems = tooltipItems.filter(function(a) {
+					return opts.filter(a, data);
+				});
+			}
+
+			// If the user provided a sorting function, use it to modify the tooltip items
+			if (opts.itemSort) {
+				tooltipItems = tooltipItems.sort(function(a, b) {
+					return opts.itemSort(a, b, data);
+				});
+			}
+
+			// Determine colors for boxes
+			helpers$1.each(tooltipItems, function(tooltipItem) {
+				labelColors.push(opts.callbacks.labelColor.call(me, tooltipItem, me._chart));
+				labelTextColors.push(opts.callbacks.labelTextColor.call(me, tooltipItem, me._chart));
+			});
+
+
+			// Build the Text Lines
+			model.title = me.getTitle(tooltipItems, data);
+			model.beforeBody = me.getBeforeBody(tooltipItems, data);
+			model.body = me.getBody(tooltipItems, data);
+			model.afterBody = me.getAfterBody(tooltipItems, data);
+			model.footer = me.getFooter(tooltipItems, data);
+
+			// Initial positioning and colors
+			model.x = tooltipPosition.x;
+			model.y = tooltipPosition.y;
+			model.caretPadding = opts.caretPadding;
+			model.labelColors = labelColors;
+			model.labelTextColors = labelTextColors;
+
+			// data points
+			model.dataPoints = tooltipItems;
+
+			// We need to determine alignment of the tooltip
+			tooltipSize = getTooltipSize(this, model);
+			alignment = determineAlignment(this, tooltipSize);
+			// Final Size and Position
+			backgroundPoint = getBackgroundPoint(model, tooltipSize, alignment, me._chart);
+		} else {
+			model.opacity = 0;
+		}
+
+		model.xAlign = alignment.xAlign;
+		model.yAlign = alignment.yAlign;
+		model.x = backgroundPoint.x;
+		model.y = backgroundPoint.y;
+		model.width = tooltipSize.width;
+		model.height = tooltipSize.height;
+
+		// Point where the caret on the tooltip points to
+		model.caretX = tooltipPosition.x;
+		model.caretY = tooltipPosition.y;
+
+		me._model = model;
+
+		if (changed && opts.custom) {
+			opts.custom.call(me, model);
+		}
+
+		return me;
+	},
+
+	drawCaret: function(tooltipPoint, size) {
+		var ctx = this._chart.ctx;
+		var vm = this._view;
+		var caretPosition = this.getCaretPosition(tooltipPoint, size, vm);
+
+		ctx.lineTo(caretPosition.x1, caretPosition.y1);
+		ctx.lineTo(caretPosition.x2, caretPosition.y2);
+		ctx.lineTo(caretPosition.x3, caretPosition.y3);
+	},
+	getCaretPosition: function(tooltipPoint, size, vm) {
+		var x1, x2, x3, y1, y2, y3;
+		var caretSize = vm.caretSize;
+		var cornerRadius = vm.cornerRadius;
+		var xAlign = vm.xAlign;
+		var yAlign = vm.yAlign;
+		var ptX = tooltipPoint.x;
+		var ptY = tooltipPoint.y;
+		var width = size.width;
+		var height = size.height;
+
+		if (yAlign === 'center') {
+			y2 = ptY + (height / 2);
+
+			if (xAlign === 'left') {
+				x1 = ptX;
+				x2 = x1 - caretSize;
+				x3 = x1;
+
+				y1 = y2 + caretSize;
+				y3 = y2 - caretSize;
+			} else {
+				x1 = ptX + width;
+				x2 = x1 + caretSize;
+				x3 = x1;
+
+				y1 = y2 - caretSize;
+				y3 = y2 + caretSize;
+			}
+		} else {
+			if (xAlign === 'left') {
+				x2 = ptX + cornerRadius + (caretSize);
+				x1 = x2 - caretSize;
+				x3 = x2 + caretSize;
+			} else if (xAlign === 'right') {
+				x2 = ptX + width - cornerRadius - caretSize;
+				x1 = x2 - caretSize;
+				x3 = x2 + caretSize;
+			} else {
+				x2 = vm.caretX;
+				x1 = x2 - caretSize;
+				x3 = x2 + caretSize;
+			}
+			if (yAlign === 'top') {
+				y1 = ptY;
+				y2 = y1 - caretSize;
+				y3 = y1;
+			} else {
+				y1 = ptY + height;
+				y2 = y1 + caretSize;
+				y3 = y1;
+				// invert drawing order
+				var tmp = x3;
+				x3 = x1;
+				x1 = tmp;
+			}
+		}
+		return {x1: x1, x2: x2, x3: x3, y1: y1, y2: y2, y3: y3};
+	},
+
+	drawTitle: function(pt, vm, ctx) {
+		var title = vm.title;
+		var length = title.length;
+		var titleFontSize, titleSpacing, i;
+
+		if (length) {
+			var rtlHelper = getRtlHelper(vm.rtl, vm.x, vm.width);
+
+			pt.x = getAlignedX(vm, vm._titleAlign);
+
+			ctx.textAlign = rtlHelper.textAlign(vm._titleAlign);
+			ctx.textBaseline = 'middle';
+
+			titleFontSize = vm.titleFontSize;
+			titleSpacing = vm.titleSpacing;
+
+			ctx.fillStyle = vm.titleFontColor;
+			ctx.font = helpers$1.fontString(titleFontSize, vm._titleFontStyle, vm._titleFontFamily);
+
+			for (i = 0; i < length; ++i) {
+				ctx.fillText(title[i], rtlHelper.x(pt.x), pt.y + titleFontSize / 2);
+				pt.y += titleFontSize + titleSpacing; // Line Height and spacing
+
+				if (i + 1 === length) {
+					pt.y += vm.titleMarginBottom - titleSpacing; // If Last, add margin, remove spacing
+				}
+			}
+		}
+	},
+
+	drawBody: function(pt, vm, ctx) {
+		var bodyFontSize = vm.bodyFontSize;
+		var bodySpacing = vm.bodySpacing;
+		var bodyAlign = vm._bodyAlign;
+		var body = vm.body;
+		var drawColorBoxes = vm.displayColors;
+		var xLinePadding = 0;
+		var colorX = drawColorBoxes ? getAlignedX(vm, 'left') : 0;
+
+		var rtlHelper = getRtlHelper(vm.rtl, vm.x, vm.width);
+
+		var fillLineOfText = function(line) {
+			ctx.fillText(line, rtlHelper.x(pt.x + xLinePadding), pt.y + bodyFontSize / 2);
+			pt.y += bodyFontSize + bodySpacing;
+		};
+
+		var bodyItem, textColor, labelColors, lines, i, j, ilen, jlen;
+		var bodyAlignForCalculation = rtlHelper.textAlign(bodyAlign);
+
+		ctx.textAlign = bodyAlign;
+		ctx.textBaseline = 'middle';
+		ctx.font = helpers$1.fontString(bodyFontSize, vm._bodyFontStyle, vm._bodyFontFamily);
+
+		pt.x = getAlignedX(vm, bodyAlignForCalculation);
+
+		// Before body lines
+		ctx.fillStyle = vm.bodyFontColor;
+		helpers$1.each(vm.beforeBody, fillLineOfText);
+
+		xLinePadding = drawColorBoxes && bodyAlignForCalculation !== 'right'
+			? bodyAlign === 'center' ? (bodyFontSize / 2 + 1) : (bodyFontSize + 2)
+			: 0;
+
+		// Draw body lines now
+		for (i = 0, ilen = body.length; i < ilen; ++i) {
+			bodyItem = body[i];
+			textColor = vm.labelTextColors[i];
+			labelColors = vm.labelColors[i];
+
+			ctx.fillStyle = textColor;
+			helpers$1.each(bodyItem.before, fillLineOfText);
+
+			lines = bodyItem.lines;
+			for (j = 0, jlen = lines.length; j < jlen; ++j) {
+				// Draw Legend-like boxes if needed
+				if (drawColorBoxes) {
+					var rtlColorX = rtlHelper.x(colorX);
+
+					// Fill a white rect so that colours merge nicely if the opacity is < 1
+					ctx.fillStyle = vm.legendColorBackground;
+					ctx.fillRect(rtlHelper.leftForLtr(rtlColorX, bodyFontSize), pt.y, bodyFontSize, bodyFontSize);
+
+					// Border
+					ctx.lineWidth = 1;
+					ctx.strokeStyle = labelColors.borderColor;
+					ctx.strokeRect(rtlHelper.leftForLtr(rtlColorX, bodyFontSize), pt.y, bodyFontSize, bodyFontSize);
+
+					// Inner square
+					ctx.fillStyle = labelColors.backgroundColor;
+					ctx.fillRect(rtlHelper.leftForLtr(rtlHelper.xPlus(rtlColorX, 1), bodyFontSize - 2), pt.y + 1, bodyFontSize - 2, bodyFontSize - 2);
+					ctx.fillStyle = textColor;
+				}
+
+				fillLineOfText(lines[j]);
+			}
+
+			helpers$1.each(bodyItem.after, fillLineOfText);
+		}
+
+		// Reset back to 0 for after body
+		xLinePadding = 0;
+
+		// After body lines
+		helpers$1.each(vm.afterBody, fillLineOfText);
+		pt.y -= bodySpacing; // Remove last body spacing
+	},
+
+	drawFooter: function(pt, vm, ctx) {
+		var footer = vm.footer;
+		var length = footer.length;
+		var footerFontSize, i;
+
+		if (length) {
+			var rtlHelper = getRtlHelper(vm.rtl, vm.x, vm.width);
+
+			pt.x = getAlignedX(vm, vm._footerAlign);
+			pt.y += vm.footerMarginTop;
+
+			ctx.textAlign = rtlHelper.textAlign(vm._footerAlign);
+			ctx.textBaseline = 'middle';
+
+			footerFontSize = vm.footerFontSize;
+
+			ctx.fillStyle = vm.footerFontColor;
+			ctx.font = helpers$1.fontString(footerFontSize, vm._footerFontStyle, vm._footerFontFamily);
+
+			for (i = 0; i < length; ++i) {
+				ctx.fillText(footer[i], rtlHelper.x(pt.x), pt.y + footerFontSize / 2);
+				pt.y += footerFontSize + vm.footerSpacing;
+			}
+		}
+	},
+
+	drawBackground: function(pt, vm, ctx, tooltipSize) {
+		ctx.fillStyle = vm.backgroundColor;
+		ctx.strokeStyle = vm.borderColor;
+		ctx.lineWidth = vm.borderWidth;
+		var xAlign = vm.xAlign;
+		var yAlign = vm.yAlign;
+		var x = pt.x;
+		var y = pt.y;
+		var width = tooltipSize.width;
+		var height = tooltipSize.height;
+		var radius = vm.cornerRadius;
+
+		ctx.beginPath();
+		ctx.moveTo(x + radius, y);
+		if (yAlign === 'top') {
+			this.drawCaret(pt, tooltipSize);
+		}
+		ctx.lineTo(x + width - radius, y);
+		ctx.quadraticCurveTo(x + width, y, x + width, y + radius);
+		if (yAlign === 'center' && xAlign === 'right') {
+			this.drawCaret(pt, tooltipSize);
+		}
+		ctx.lineTo(x + width, y + height - radius);
+		ctx.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
+		if (yAlign === 'bottom') {
+			this.drawCaret(pt, tooltipSize);
+		}
+		ctx.lineTo(x + radius, y + height);
+		ctx.quadraticCurveTo(x, y + height, x, y + height - radius);
+		if (yAlign === 'center' && xAlign === 'left') {
+			this.drawCaret(pt, tooltipSize);
+		}
+		ctx.lineTo(x, y + radius);
+		ctx.quadraticCurveTo(x, y, x + radius, y);
+		ctx.closePath();
+
+		ctx.fill();
+
+		if (vm.borderWidth > 0) {
+			ctx.stroke();
+		}
+	},
+
+	draw: function() {
+		var ctx = this._chart.ctx;
+		var vm = this._view;
+
+		if (vm.opacity === 0) {
+			return;
+		}
+
+		var tooltipSize = {
+			width: vm.width,
+			height: vm.height
+		};
+		var pt = {
+			x: vm.x,
+			y: vm.y
+		};
+
+		// IE11/Edge does not like very small opacities, so snap to 0
+		var opacity = Math.abs(vm.opacity < 1e-3) ? 0 : vm.opacity;
+
+		// Truthy/falsey value for empty tooltip
+		var hasTooltipContent = vm.title.length || vm.beforeBody.length || vm.body.length || vm.afterBody.length || vm.footer.length;
+
+		if (this._options.enabled && hasTooltipContent) {
+			ctx.save();
+			ctx.globalAlpha = opacity;
+
+			// Draw Background
+			this.drawBackground(pt, vm, ctx, tooltipSize);
+
+			// Draw Title, Body, and Footer
+			pt.y += vm.yPadding;
+
+			helpers$1.rtl.overrideTextDirection(ctx, vm.textDirection);
+
+			// Titles
+			this.drawTitle(pt, vm, ctx);
+
+			// Body
+			this.drawBody(pt, vm, ctx);
+
+			// Footer
+			this.drawFooter(pt, vm, ctx);
+
+			helpers$1.rtl.restoreTextDirection(ctx, vm.textDirection);
+
+			ctx.restore();
+		}
+	},
+
+	/**
+	 * Handle an event
+	 * @private
+	 * @param {IEvent} event - The event to handle
+	 * @returns {boolean} true if the tooltip changed
+	 */
+	handleEvent: function(e) {
+		var me = this;
+		var options = me._options;
+		var changed = false;
+
+		me._lastActive = me._lastActive || [];
+
+		// Find Active Elements for tooltips
+		if (e.type === 'mouseout') {
+			me._active = [];
+		} else {
+			me._active = me._chart.getElementsAtEventForMode(e, options.mode, options);
+			if (options.reverse) {
+				me._active.reverse();
+			}
+		}
+
+		// Remember Last Actives
+		changed = !helpers$1.arrayEquals(me._active, me._lastActive);
+
+		// Only handle target event on tooltip change
+		if (changed) {
+			me._lastActive = me._active;
+
+			if (options.enabled || options.custom) {
+				me._eventPosition = {
+					x: e.x,
+					y: e.y
+				};
+
+				me.update(true);
+				me.pivot();
+			}
+		}
+
+		return changed;
+	}
+});
+
+/**
+ * @namespace Chart.Tooltip.positioners
+ */
+var positioners_1 = positioners;
+
+var core_tooltip = exports$4;
+core_tooltip.positioners = positioners_1;
+
+var valueOrDefault$9 = helpers$1.valueOrDefault;
+
+core_defaults._set('global', {
+	elements: {},
+	events: [
+		'mousemove',
+		'mouseout',
+		'click',
+		'touchstart',
+		'touchmove'
+	],
+	hover: {
+		onHover: null,
+		mode: 'nearest',
+		intersect: true,
+		animationDuration: 400
+	},
+	onClick: null,
+	maintainAspectRatio: true,
+	responsive: true,
+	responsiveAnimationDuration: 0
+});
+
+/**
+ * Recursively merge the given config objects representing the `scales` option
+ * by incorporating scale defaults in `xAxes` and `yAxes` array items, then
+ * returns a deep copy of the result, thus doesn't alter inputs.
+ */
+function mergeScaleConfig(/* config objects ... */) {
+	return helpers$1.merge(Object.create(null), [].slice.call(arguments), {
+		merger: function(key, target, source, options) {
+			if (key === 'xAxes' || key === 'yAxes') {
+				var slen = source[key].length;
+				var i, type, scale;
+
+				if (!target[key]) {
+					target[key] = [];
+				}
+
+				for (i = 0; i < slen; ++i) {
+					scale = source[key][i];
+					type = valueOrDefault$9(scale.type, key === 'xAxes' ? 'category' : 'linear');
+
+					if (i >= target[key].length) {
+						target[key].push({});
+					}
+
+					if (!target[key][i].type || (scale.type && scale.type !== target[key][i].type)) {
+						// new/untyped scale or type changed: let's apply the new defaults
+						// then merge source scale to correctly overwrite the defaults.
+						helpers$1.merge(target[key][i], [core_scaleService.getScaleDefaults(type), scale]);
+					} else {
+						// scales type are the same
+						helpers$1.merge(target[key][i], scale);
+					}
+				}
+			} else {
+				helpers$1._merger(key, target, source, options);
+			}
+		}
+	});
+}
+
+/**
+ * Recursively merge the given config objects as the root options by handling
+ * default scale options for the `scales` and `scale` properties, then returns
+ * a deep copy of the result, thus doesn't alter inputs.
+ */
+function mergeConfig(/* config objects ... */) {
+	return helpers$1.merge(Object.create(null), [].slice.call(arguments), {
+		merger: function(key, target, source, options) {
+			var tval = target[key] || Object.create(null);
+			var sval = source[key];
+
+			if (key === 'scales') {
+				// scale config merging is complex. Add our own function here for that
+				target[key] = mergeScaleConfig(tval, sval);
+			} else if (key === 'scale') {
+				// used in polar area & radar charts since there is only one scale
+				target[key] = helpers$1.merge(tval, [core_scaleService.getScaleDefaults(sval.type), sval]);
+			} else {
+				helpers$1._merger(key, target, source, options);
+			}
+		}
+	});
+}
+
+function initConfig(config) {
+	config = config || Object.create(null);
+
+	// Do NOT use mergeConfig for the data object because this method merges arrays
+	// and so would change references to labels and datasets, preventing data updates.
+	var data = config.data = config.data || {};
+	data.datasets = data.datasets || [];
+	data.labels = data.labels || [];
+
+	config.options = mergeConfig(
+		core_defaults.global,
+		core_defaults[config.type],
+		config.options || {});
+
+	return config;
+}
+
+function updateConfig(chart) {
+	var newOptions = chart.options;
+
+	helpers$1.each(chart.scales, function(scale) {
+		core_layouts.removeBox(chart, scale);
+	});
+
+	newOptions = mergeConfig(
+		core_defaults.global,
+		core_defaults[chart.config.type],
+		newOptions);
+
+	chart.options = chart.config.options = newOptions;
+	chart.ensureScalesHaveIDs();
+	chart.buildOrUpdateScales();
+
+	// Tooltip
+	chart.tooltip._options = newOptions.tooltips;
+	chart.tooltip.initialize();
+}
+
+function nextAvailableScaleId(axesOpts, prefix, index) {
+	var id;
+	var hasId = function(obj) {
+		return obj.id === id;
+	};
+
+	do {
+		id = prefix + index++;
+	} while (helpers$1.findIndex(axesOpts, hasId) >= 0);
+
+	return id;
+}
+
+function positionIsHorizontal(position) {
+	return position === 'top' || position === 'bottom';
+}
+
+function compare2Level(l1, l2) {
+	return function(a, b) {
+		return a[l1] === b[l1]
+			? a[l2] - b[l2]
+			: a[l1] - b[l1];
+	};
+}
+
+var Chart = function(item, config) {
+	this.construct(item, config);
+	return this;
+};
+
+helpers$1.extend(Chart.prototype, /** @lends Chart */ {
+	/**
+	 * @private
+	 */
+	construct: function(item, config) {
+		var me = this;
+
+		config = initConfig(config);
+
+		var context = platform.acquireContext(item, config);
+		var canvas = context && context.canvas;
+		var height = canvas && canvas.height;
+		var width = canvas && canvas.width;
+
+		me.id = helpers$1.uid();
+		me.ctx = context;
+		me.canvas = canvas;
+		me.config = config;
+		me.width = width;
+		me.height = height;
+		me.aspectRatio = height ? width / height : null;
+		me.options = config.options;
+		me._bufferedRender = false;
+		me._layers = [];
+
+		/**
+		 * Provided for backward compatibility, Chart and Chart.Controller have been merged,
+		 * the "instance" still need to be defined since it might be called from plugins.
+		 * @prop Chart#chart
+		 * @deprecated since version 2.6.0
+		 * @todo remove at version 3
+		 * @private
+		 */
+		me.chart = me;
+		me.controller = me; // chart.chart.controller #inception
+
+		// Add the chart instance to the global namespace
+		Chart.instances[me.id] = me;
+
+		// Define alias to the config data: `chart.data === chart.config.data`
+		Object.defineProperty(me, 'data', {
+			get: function() {
+				return me.config.data;
+			},
+			set: function(value) {
+				me.config.data = value;
+			}
+		});
+
+		if (!context || !canvas) {
+			// The given item is not a compatible context2d element, let's return before finalizing
+			// the chart initialization but after setting basic chart / controller properties that
+			// can help to figure out that the chart is not valid (e.g chart.canvas !== null);
+			// https://github.com/chartjs/Chart.js/issues/2807
+			console.error("Failed to create chart: can't acquire context from the given item");
+			return;
+		}
+
+		me.initialize();
+		me.update();
+	},
+
+	/**
+	 * @private
+	 */
+	initialize: function() {
+		var me = this;
+
+		// Before init plugin notification
+		core_plugins.notify(me, 'beforeInit');
+
+		helpers$1.retinaScale(me, me.options.devicePixelRatio);
+
+		me.bindEvents();
+
+		if (me.options.responsive) {
+			// Initial resize before chart draws (must be silent to preserve initial animations).
+			me.resize(true);
+		}
+
+		me.initToolTip();
+
+		// After init plugin notification
+		core_plugins.notify(me, 'afterInit');
+
+		return me;
+	},
+
+	clear: function() {
+		helpers$1.canvas.clear(this);
+		return this;
+	},
+
+	stop: function() {
+		// Stops any current animation loop occurring
+		core_animations.cancelAnimation(this);
+		return this;
+	},
+
+	resize: function(silent) {
+		var me = this;
+		var options = me.options;
+		var canvas = me.canvas;
+		var aspectRatio = (options.maintainAspectRatio && me.aspectRatio) || null;
+
+		// the canvas render width and height will be casted to integers so make sure that
+		// the canvas display style uses the same integer values to avoid blurring effect.
+
+		// Set to 0 instead of canvas.size because the size defaults to 300x150 if the element is collapsed
+		var newWidth = Math.max(0, Math.floor(helpers$1.getMaximumWidth(canvas)));
+		var newHeight = Math.max(0, Math.floor(aspectRatio ? newWidth / aspectRatio : helpers$1.getMaximumHeight(canvas)));
+
+		if (me.width === newWidth && me.height === newHeight) {
+			return;
+		}
+
+		canvas.width = me.width = newWidth;
+		canvas.height = me.height = newHeight;
+		canvas.style.width = newWidth + 'px';
+		canvas.style.height = newHeight + 'px';
+
+		helpers$1.retinaScale(me, options.devicePixelRatio);
+
+		if (!silent) {
+			// Notify any plugins about the resize
+			var newSize = {width: newWidth, height: newHeight};
+			core_plugins.notify(me, 'resize', [newSize]);
+
+			// Notify of resize
+			if (options.onResize) {
+				options.onResize(me, newSize);
+			}
+
+			me.stop();
+			me.update({
+				duration: options.responsiveAnimationDuration
+			});
+		}
+	},
+
+	ensureScalesHaveIDs: function() {
+		var options = this.options;
+		var scalesOptions = options.scales || {};
+		var scaleOptions = options.scale;
+
+		helpers$1.each(scalesOptions.xAxes, function(xAxisOptions, index) {
+			if (!xAxisOptions.id) {
+				xAxisOptions.id = nextAvailableScaleId(scalesOptions.xAxes, 'x-axis-', index);
+			}
+		});
+
+		helpers$1.each(scalesOptions.yAxes, function(yAxisOptions, index) {
+			if (!yAxisOptions.id) {
+				yAxisOptions.id = nextAvailableScaleId(scalesOptions.yAxes, 'y-axis-', index);
+			}
+		});
+
+		if (scaleOptions) {
+			scaleOptions.id = scaleOptions.id || 'scale';
+		}
+	},
+
+	/**
+	 * Builds a map of scale ID to scale object for future lookup.
+	 */
+	buildOrUpdateScales: function() {
+		var me = this;
+		var options = me.options;
+		var scales = me.scales || {};
+		var items = [];
+		var updated = Object.keys(scales).reduce(function(obj, id) {
+			obj[id] = false;
+			return obj;
+		}, {});
+
+		if (options.scales) {
+			items = items.concat(
+				(options.scales.xAxes || []).map(function(xAxisOptions) {
+					return {options: xAxisOptions, dtype: 'category', dposition: 'bottom'};
+				}),
+				(options.scales.yAxes || []).map(function(yAxisOptions) {
+					return {options: yAxisOptions, dtype: 'linear', dposition: 'left'};
+				})
+			);
+		}
+
+		if (options.scale) {
+			items.push({
+				options: options.scale,
+				dtype: 'radialLinear',
+				isDefault: true,
+				dposition: 'chartArea'
+			});
+		}
+
+		helpers$1.each(items, function(item) {
+			var scaleOptions = item.options;
+			var id = scaleOptions.id;
+			var scaleType = valueOrDefault$9(scaleOptions.type, item.dtype);
+
+			if (positionIsHorizontal(scaleOptions.position) !== positionIsHorizontal(item.dposition)) {
+				scaleOptions.position = item.dposition;
+			}
+
+			updated[id] = true;
+			var scale = null;
+			if (id in scales && scales[id].type === scaleType) {
+				scale = scales[id];
+				scale.options = scaleOptions;
+				scale.ctx = me.ctx;
+				scale.chart = me;
+			} else {
+				var scaleClass = core_scaleService.getScaleConstructor(scaleType);
+				if (!scaleClass) {
+					return;
+				}
+				scale = new scaleClass({
+					id: id,
+					type: scaleType,
+					options: scaleOptions,
+					ctx: me.ctx,
+					chart: me
+				});
+				scales[scale.id] = scale;
+			}
+
+			scale.mergeTicksOptions();
+
+			// TODO(SB): I think we should be able to remove this custom case (options.scale)
+			// and consider it as a regular scale part of the "scales"" map only! This would
+			// make the logic easier and remove some useless? custom code.
+			if (item.isDefault) {
+				me.scale = scale;
+			}
+		});
+		// clear up discarded scales
+		helpers$1.each(updated, function(hasUpdated, id) {
+			if (!hasUpdated) {
+				delete scales[id];
+			}
+		});
+
+		me.scales = scales;
+
+		core_scaleService.addScalesToLayout(this);
+	},
+
+	buildOrUpdateControllers: function() {
+		var me = this;
+		var newControllers = [];
+		var datasets = me.data.datasets;
+		var i, ilen;
+
+		for (i = 0, ilen = datasets.length; i < ilen; i++) {
+			var dataset = datasets[i];
+			var meta = me.getDatasetMeta(i);
+			var type = dataset.type || me.config.type;
+
+			if (meta.type && meta.type !== type) {
+				me.destroyDatasetMeta(i);
+				meta = me.getDatasetMeta(i);
+			}
+			meta.type = type;
+			meta.order = dataset.order || 0;
+			meta.index = i;
+
+			if (meta.controller) {
+				meta.controller.updateIndex(i);
+				meta.controller.linkScales();
+			} else {
+				var ControllerClass = controllers[meta.type];
+				if (ControllerClass === undefined) {
+					throw new Error('"' + meta.type + '" is not a chart type.');
+				}
+
+				meta.controller = new ControllerClass(me, i);
+				newControllers.push(meta.controller);
+			}
+		}
+
+		return newControllers;
+	},
+
+	/**
+	 * Reset the elements of all datasets
+	 * @private
+	 */
+	resetElements: function() {
+		var me = this;
+		helpers$1.each(me.data.datasets, function(dataset, datasetIndex) {
+			me.getDatasetMeta(datasetIndex).controller.reset();
+		}, me);
+	},
+
+	/**
+	* Resets the chart back to it's state before the initial animation
+	*/
+	reset: function() {
+		this.resetElements();
+		this.tooltip.initialize();
+	},
+
+	update: function(config) {
+		var me = this;
+		var i, ilen;
+
+		if (!config || typeof config !== 'object') {
+			// backwards compatibility
+			config = {
+				duration: config,
+				lazy: arguments[1]
+			};
+		}
+
+		updateConfig(me);
+
+		// plugins options references might have change, let's invalidate the cache
+		// https://github.com/chartjs/Chart.js/issues/5111#issuecomment-355934167
+		core_plugins._invalidate(me);
+
+		if (core_plugins.notify(me, 'beforeUpdate') === false) {
+			return;
+		}
+
+		// In case the entire data object changed
+		me.tooltip._data = me.data;
+
+		// Make sure dataset controllers are updated and new controllers are reset
+		var newControllers = me.buildOrUpdateControllers();
+
+		// Make sure all dataset controllers have correct meta data counts
+		for (i = 0, ilen = me.data.datasets.length; i < ilen; i++) {
+			me.getDatasetMeta(i).controller.buildOrUpdateElements();
+		}
+
+		me.updateLayout();
+
+		// Can only reset the new controllers after the scales have been updated
+		if (me.options.animation && me.options.animation.duration) {
+			helpers$1.each(newControllers, function(controller) {
+				controller.reset();
+			});
+		}
+
+		me.updateDatasets();
+
+		// Need to reset tooltip in case it is displayed with elements that are removed
+		// after update.
+		me.tooltip.initialize();
+
+		// Last active contains items that were previously in the tooltip.
+		// When we reset the tooltip, we need to clear it
+		me.lastActive = [];
+
+		// Do this before render so that any plugins that need final scale updates can use it
+		core_plugins.notify(me, 'afterUpdate');
+
+		me._layers.sort(compare2Level('z', '_idx'));
+
+		if (me._bufferedRender) {
+			me._bufferedRequest = {
+				duration: config.duration,
+				easing: config.easing,
+				lazy: config.lazy
+			};
+		} else {
+			me.render(config);
+		}
+	},
+
+	/**
+	 * Updates the chart layout unless a plugin returns `false` to the `beforeLayout`
+	 * hook, in which case, plugins will not be called on `afterLayout`.
+	 * @private
+	 */
+	updateLayout: function() {
+		var me = this;
+
+		if (core_plugins.notify(me, 'beforeLayout') === false) {
+			return;
+		}
+
+		core_layouts.update(this, this.width, this.height);
+
+		me._layers = [];
+		helpers$1.each(me.boxes, function(box) {
+			// _configure is called twice, once in core.scale.update and once here.
+			// Here the boxes are fully updated and at their final positions.
+			if (box._configure) {
+				box._configure();
+			}
+			me._layers.push.apply(me._layers, box._layers());
+		}, me);
+
+		me._layers.forEach(function(item, index) {
+			item._idx = index;
+		});
+
+		/**
+		 * Provided for backward compatibility, use `afterLayout` instead.
+		 * @method IPlugin#afterScaleUpdate
+		 * @deprecated since version 2.5.0
+		 * @todo remove at version 3
+		 * @private
+		 */
+		core_plugins.notify(me, 'afterScaleUpdate');
+		core_plugins.notify(me, 'afterLayout');
+	},
+
+	/**
+	 * Updates all datasets unless a plugin returns `false` to the `beforeDatasetsUpdate`
+	 * hook, in which case, plugins will not be called on `afterDatasetsUpdate`.
+	 * @private
+	 */
+	updateDatasets: function() {
+		var me = this;
+
+		if (core_plugins.notify(me, 'beforeDatasetsUpdate') === false) {
+			return;
+		}
+
+		for (var i = 0, ilen = me.data.datasets.length; i < ilen; ++i) {
+			me.updateDataset(i);
+		}
+
+		core_plugins.notify(me, 'afterDatasetsUpdate');
+	},
+
+	/**
+	 * Updates dataset at index unless a plugin returns `false` to the `beforeDatasetUpdate`
+	 * hook, in which case, plugins will not be called on `afterDatasetUpdate`.
+	 * @private
+	 */
+	updateDataset: function(index) {
+		var me = this;
+		var meta = me.getDatasetMeta(index);
+		var args = {
+			meta: meta,
+			index: index
+		};
+
+		if (core_plugins.notify(me, 'beforeDatasetUpdate', [args]) === false) {
+			return;
+		}
+
+		meta.controller._update();
+
+		core_plugins.notify(me, 'afterDatasetUpdate', [args]);
+	},
+
+	render: function(config) {
+		var me = this;
+
+		if (!config || typeof config !== 'object') {
+			// backwards compatibility
+			config = {
+				duration: config,
+				lazy: arguments[1]
+			};
+		}
+
+		var animationOptions = me.options.animation;
+		var duration = valueOrDefault$9(config.duration, animationOptions && animationOptions.duration);
+		var lazy = config.lazy;
+
+		if (core_plugins.notify(me, 'beforeRender') === false) {
+			return;
+		}
+
+		var onComplete = function(animation) {
+			core_plugins.notify(me, 'afterRender');
+			helpers$1.callback(animationOptions && animationOptions.onComplete, [animation], me);
+		};
+
+		if (animationOptions && duration) {
+			var animation = new core_animation({
+				numSteps: duration / 16.66, // 60 fps
+				easing: config.easing || animationOptions.easing,
+
+				render: function(chart, animationObject) {
+					var easingFunction = helpers$1.easing.effects[animationObject.easing];
+					var currentStep = animationObject.currentStep;
+					var stepDecimal = currentStep / animationObject.numSteps;
+
+					chart.draw(easingFunction(stepDecimal), stepDecimal, currentStep);
+				},
+
+				onAnimationProgress: animationOptions.onProgress,
+				onAnimationComplete: onComplete
+			});
+
+			core_animations.addAnimation(me, animation, duration, lazy);
+		} else {
+			me.draw();
+
+			// See https://github.com/chartjs/Chart.js/issues/3781
+			onComplete(new core_animation({numSteps: 0, chart: me}));
+		}
+
+		return me;
+	},
+
+	draw: function(easingValue) {
+		var me = this;
+		var i, layers;
+
+		me.clear();
+
+		if (helpers$1.isNullOrUndef(easingValue)) {
+			easingValue = 1;
+		}
+
+		me.transition(easingValue);
+
+		if (me.width <= 0 || me.height <= 0) {
+			return;
+		}
+
+		if (core_plugins.notify(me, 'beforeDraw', [easingValue]) === false) {
+			return;
+		}
+
+		// Because of plugin hooks (before/afterDatasetsDraw), datasets can't
+		// currently be part of layers. Instead, we draw
+		// layers <= 0 before(default, backward compat), and the rest after
+		layers = me._layers;
+		for (i = 0; i < layers.length && layers[i].z <= 0; ++i) {
+			layers[i].draw(me.chartArea);
+		}
+
+		me.drawDatasets(easingValue);
+
+		// Rest of layers
+		for (; i < layers.length; ++i) {
+			layers[i].draw(me.chartArea);
+		}
+
+		me._drawTooltip(easingValue);
+
+		core_plugins.notify(me, 'afterDraw', [easingValue]);
+	},
+
+	/**
+	 * @private
+	 */
+	transition: function(easingValue) {
+		var me = this;
+
+		for (var i = 0, ilen = (me.data.datasets || []).length; i < ilen; ++i) {
+			if (me.isDatasetVisible(i)) {
+				me.getDatasetMeta(i).controller.transition(easingValue);
+			}
+		}
+
+		me.tooltip.transition(easingValue);
+	},
+
+	/**
+	 * @private
+	 */
+	_getSortedDatasetMetas: function(filterVisible) {
+		var me = this;
+		var datasets = me.data.datasets || [];
+		var result = [];
+		var i, ilen;
+
+		for (i = 0, ilen = datasets.length; i < ilen; ++i) {
+			if (!filterVisible || me.isDatasetVisible(i)) {
+				result.push(me.getDatasetMeta(i));
+			}
+		}
+
+		result.sort(compare2Level('order', 'index'));
+
+		return result;
+	},
+
+	/**
+	 * @private
+	 */
+	_getSortedVisibleDatasetMetas: function() {
+		return this._getSortedDatasetMetas(true);
+	},
+
+	/**
+	 * Draws all datasets unless a plugin returns `false` to the `beforeDatasetsDraw`
+	 * hook, in which case, plugins will not be called on `afterDatasetsDraw`.
+	 * @private
+	 */
+	drawDatasets: function(easingValue) {
+		var me = this;
+		var metasets, i;
+
+		if (core_plugins.notify(me, 'beforeDatasetsDraw', [easingValue]) === false) {
+			return;
+		}
+
+		metasets = me._getSortedVisibleDatasetMetas();
+		for (i = metasets.length - 1; i >= 0; --i) {
+			me.drawDataset(metasets[i], easingValue);
+		}
+
+		core_plugins.notify(me, 'afterDatasetsDraw', [easingValue]);
+	},
+
+	/**
+	 * Draws dataset at index unless a plugin returns `false` to the `beforeDatasetDraw`
+	 * hook, in which case, plugins will not be called on `afterDatasetDraw`.
+	 * @private
+	 */
+	drawDataset: function(meta, easingValue) {
+		var me = this;
+		var args = {
+			meta: meta,
+			index: meta.index,
+			easingValue: easingValue
+		};
+
+		if (core_plugins.notify(me, 'beforeDatasetDraw', [args]) === false) {
+			return;
+		}
+
+		meta.controller.draw(easingValue);
+
+		core_plugins.notify(me, 'afterDatasetDraw', [args]);
+	},
+
+	/**
+	 * Draws tooltip unless a plugin returns `false` to the `beforeTooltipDraw`
+	 * hook, in which case, plugins will not be called on `afterTooltipDraw`.
+	 * @private
+	 */
+	_drawTooltip: function(easingValue) {
+		var me = this;
+		var tooltip = me.tooltip;
+		var args = {
+			tooltip: tooltip,
+			easingValue: easingValue
+		};
+
+		if (core_plugins.notify(me, 'beforeTooltipDraw', [args]) === false) {
+			return;
+		}
+
+		tooltip.draw();
+
+		core_plugins.notify(me, 'afterTooltipDraw', [args]);
+	},
+
+	/**
+	 * Get the single element that was clicked on
+	 * @return An object containing the dataset index and element index of the matching element. Also contains the rectangle that was draw
+	 */
+	getElementAtEvent: function(e) {
+		return core_interaction.modes.single(this, e);
+	},
+
+	getElementsAtEvent: function(e) {
+		return core_interaction.modes.label(this, e, {intersect: true});
+	},
+
+	getElementsAtXAxis: function(e) {
+		return core_interaction.modes['x-axis'](this, e, {intersect: true});
+	},
+
+	getElementsAtEventForMode: function(e, mode, options) {
+		var method = core_interaction.modes[mode];
+		if (typeof method === 'function') {
+			return method(this, e, options);
+		}
+
+		return [];
+	},
+
+	getDatasetAtEvent: function(e) {
+		return core_interaction.modes.dataset(this, e, {intersect: true});
+	},
+
+	getDatasetMeta: function(datasetIndex) {
+		var me = this;
+		var dataset = me.data.datasets[datasetIndex];
+		if (!dataset._meta) {
+			dataset._meta = {};
+		}
+
+		var meta = dataset._meta[me.id];
+		if (!meta) {
+			meta = dataset._meta[me.id] = {
+				type: null,
+				data: [],
+				dataset: null,
+				controller: null,
+				hidden: null,			// See isDatasetVisible() comment
+				xAxisID: null,
+				yAxisID: null,
+				order: dataset.order || 0,
+				index: datasetIndex
+			};
+		}
+
+		return meta;
+	},
+
+	getVisibleDatasetCount: function() {
+		var count = 0;
+		for (var i = 0, ilen = this.data.datasets.length; i < ilen; ++i) {
+			if (this.isDatasetVisible(i)) {
+				count++;
+			}
+		}
+		return count;
+	},
+
+	isDatasetVisible: function(datasetIndex) {
+		var meta = this.getDatasetMeta(datasetIndex);
+
+		// meta.hidden is a per chart dataset hidden flag override with 3 states: if true or false,
+		// the dataset.hidden value is ignored, else if null, the dataset hidden state is returned.
+		return typeof meta.hidden === 'boolean' ? !meta.hidden : !this.data.datasets[datasetIndex].hidden;
+	},
+
+	generateLegend: function() {
+		return this.options.legendCallback(this);
+	},
+
+	/**
+	 * @private
+	 */
+	destroyDatasetMeta: function(datasetIndex) {
+		var id = this.id;
+		var dataset = this.data.datasets[datasetIndex];
+		var meta = dataset._meta && dataset._meta[id];
+
+		if (meta) {
+			meta.controller.destroy();
+			delete dataset._meta[id];
+		}
+	},
+
+	destroy: function() {
+		var me = this;
+		var canvas = me.canvas;
+		var i, ilen;
+
+		me.stop();
+
+		// dataset controllers need to cleanup associated data
+		for (i = 0, ilen = me.data.datasets.length; i < ilen; ++i) {
+			me.destroyDatasetMeta(i);
+		}
+
+		if (canvas) {
+			me.unbindEvents();
+			helpers$1.canvas.clear(me);
+			platform.releaseContext(me.ctx);
+			me.canvas = null;
+			me.ctx = null;
+		}
+
+		core_plugins.notify(me, 'destroy');
+
+		delete Chart.instances[me.id];
+	},
+
+	toBase64Image: function() {
+		return this.canvas.toDataURL.apply(this.canvas, arguments);
+	},
+
+	initToolTip: function() {
+		var me = this;
+		me.tooltip = new core_tooltip({
+			_chart: me,
+			_chartInstance: me, // deprecated, backward compatibility
+			_data: me.data,
+			_options: me.options.tooltips
+		}, me);
+	},
+
+	/**
+	 * @private
+	 */
+	bindEvents: function() {
+		var me = this;
+		var listeners = me._listeners = {};
+		var listener = function() {
+			me.eventHandler.apply(me, arguments);
+		};
+
+		helpers$1.each(me.options.events, function(type) {
+			platform.addEventListener(me, type, listener);
+			listeners[type] = listener;
+		});
+
+		// Elements used to detect size change should not be injected for non responsive charts.
+		// See https://github.com/chartjs/Chart.js/issues/2210
+		if (me.options.responsive) {
+			listener = function() {
+				me.resize();
+			};
+
+			platform.addEventListener(me, 'resize', listener);
+			listeners.resize = listener;
+		}
+	},
+
+	/**
+	 * @private
+	 */
+	unbindEvents: function() {
+		var me = this;
+		var listeners = me._listeners;
+		if (!listeners) {
+			return;
+		}
+
+		delete me._listeners;
+		helpers$1.each(listeners, function(listener, type) {
+			platform.removeEventListener(me, type, listener);
+		});
+	},
+
+	updateHoverStyle: function(elements, mode, enabled) {
+		var prefix = enabled ? 'set' : 'remove';
+		var element, i, ilen;
+
+		for (i = 0, ilen = elements.length; i < ilen; ++i) {
+			element = elements[i];
+			if (element) {
+				this.getDatasetMeta(element._datasetIndex).controller[prefix + 'HoverStyle'](element);
+			}
+		}
+
+		if (mode === 'dataset') {
+			this.getDatasetMeta(elements[0]._datasetIndex).controller['_' + prefix + 'DatasetHoverStyle']();
+		}
+	},
+
+	/**
+	 * @private
+	 */
+	eventHandler: function(e) {
+		var me = this;
+		var tooltip = me.tooltip;
+
+		if (core_plugins.notify(me, 'beforeEvent', [e]) === false) {
+			return;
+		}
+
+		// Buffer any update calls so that renders do not occur
+		me._bufferedRender = true;
+		me._bufferedRequest = null;
+
+		var changed = me.handleEvent(e);
+		// for smooth tooltip animations issue #4989
+		// the tooltip should be the source of change
+		// Animation check workaround:
+		// tooltip._start will be null when tooltip isn't animating
+		if (tooltip) {
+			changed = tooltip._start
+				? tooltip.handleEvent(e)
+				: changed | tooltip.handleEvent(e);
+		}
+
+		core_plugins.notify(me, 'afterEvent', [e]);
+
+		var bufferedRequest = me._bufferedRequest;
+		if (bufferedRequest) {
+			// If we have an update that was triggered, we need to do a normal render
+			me.render(bufferedRequest);
+		} else if (changed && !me.animating) {
+			// If entering, leaving, or changing elements, animate the change via pivot
+			me.stop();
+
+			// We only need to render at this point. Updating will cause scales to be
+			// recomputed generating flicker & using more memory than necessary.
+			me.render({
+				duration: me.options.hover.animationDuration,
+				lazy: true
+			});
+		}
+
+		me._bufferedRender = false;
+		me._bufferedRequest = null;
+
+		return me;
+	},
+
+	/**
+	 * Handle an event
+	 * @private
+	 * @param {IEvent} event the event to handle
+	 * @return {boolean} true if the chart needs to re-render
+	 */
+	handleEvent: function(e) {
+		var me = this;
+		var options = me.options || {};
+		var hoverOptions = options.hover;
+		var changed = false;
+
+		me.lastActive = me.lastActive || [];
+
+		// Find Active Elements for hover and tooltips
+		if (e.type === 'mouseout') {
+			me.active = [];
+		} else {
+			me.active = me.getElementsAtEventForMode(e, hoverOptions.mode, hoverOptions);
+		}
+
+		// Invoke onHover hook
+		// Need to call with native event here to not break backwards compatibility
+		helpers$1.callback(options.onHover || options.hover.onHover, [e.native, me.active], me);
+
+		if (e.type === 'mouseup' || e.type === 'click') {
+			if (options.onClick) {
+				// Use e.native here for backwards compatibility
+				options.onClick.call(me, e.native, me.active);
+			}
+		}
+
+		// Remove styling for last active (even if it may still be active)
+		if (me.lastActive.length) {
+			me.updateHoverStyle(me.lastActive, hoverOptions.mode, false);
+		}
+
+		// Built in hover styling
+		if (me.active.length && hoverOptions.mode) {
+			me.updateHoverStyle(me.active, hoverOptions.mode, true);
+		}
+
+		changed = !helpers$1.arrayEquals(me.active, me.lastActive);
+
+		// Remember Last Actives
+		me.lastActive = me.active;
+
+		return changed;
+	}
+});
+
+/**
+ * NOTE(SB) We actually don't use this container anymore but we need to keep it
+ * for backward compatibility. Though, it can still be useful for plugins that
+ * would need to work on multiple charts?!
+ */
+Chart.instances = {};
+
+var core_controller = Chart;
+
+// DEPRECATIONS
+
+/**
+ * Provided for backward compatibility, use Chart instead.
+ * @class Chart.Controller
+ * @deprecated since version 2.6
+ * @todo remove at version 3
+ * @private
+ */
+Chart.Controller = Chart;
+
+/**
+ * Provided for backward compatibility, not available anymore.
+ * @namespace Chart
+ * @deprecated since version 2.8
+ * @todo remove at version 3
+ * @private
+ */
+Chart.types = {};
+
+/**
+ * Provided for backward compatibility, not available anymore.
+ * @namespace Chart.helpers.configMerge
+ * @deprecated since version 2.8.0
+ * @todo remove at version 3
+ * @private
+ */
+helpers$1.configMerge = mergeConfig;
+
+/**
+ * Provided for backward compatibility, not available anymore.
+ * @namespace Chart.helpers.scaleMerge
+ * @deprecated since version 2.8.0
+ * @todo remove at version 3
+ * @private
+ */
+helpers$1.scaleMerge = mergeScaleConfig;
+
+var core_helpers = function() {
+
+	// -- Basic js utility methods
+
+	helpers$1.where = function(collection, filterCallback) {
+		if (helpers$1.isArray(collection) && Array.prototype.filter) {
+			return collection.filter(filterCallback);
+		}
+		var filtered = [];
+
+		helpers$1.each(collection, function(item) {
+			if (filterCallback(item)) {
+				filtered.push(item);
+			}
+		});
+
+		return filtered;
+	};
+	helpers$1.findIndex = Array.prototype.findIndex ?
+		function(array, callback, scope) {
+			return array.findIndex(callback, scope);
+		} :
+		function(array, callback, scope) {
+			scope = scope === undefined ? array : scope;
+			for (var i = 0, ilen = array.length; i < ilen; ++i) {
+				if (callback.call(scope, array[i], i, array)) {
+					return i;
+				}
+			}
+			return -1;
+		};
+	helpers$1.findNextWhere = function(arrayToSearch, filterCallback, startIndex) {
+		// Default to start of the array
+		if (helpers$1.isNullOrUndef(startIndex)) {
+			startIndex = -1;
+		}
+		for (var i = startIndex + 1; i < arrayToSearch.length; i++) {
+			var currentItem = arrayToSearch[i];
+			if (filterCallback(currentItem)) {
+				return currentItem;
+			}
+		}
+	};
+	helpers$1.findPreviousWhere = function(arrayToSearch, filterCallback, startIndex) {
+		// Default to end of the array
+		if (helpers$1.isNullOrUndef(startIndex)) {
+			startIndex = arrayToSearch.length;
+		}
+		for (var i = startIndex - 1; i >= 0; i--) {
+			var currentItem = arrayToSearch[i];
+			if (filterCallback(currentItem)) {
+				return currentItem;
+			}
+		}
+	};
+
+	// -- Math methods
+	helpers$1.isNumber = function(n) {
+		return !isNaN(parseFloat(n)) && isFinite(n);
+	};
+	helpers$1.almostEquals = function(x, y, epsilon) {
+		return Math.abs(x - y) < epsilon;
+	};
+	helpers$1.almostWhole = function(x, epsilon) {
+		var rounded = Math.round(x);
+		return ((rounded - epsilon) <= x) && ((rounded + epsilon) >= x);
+	};
+	helpers$1.max = function(array) {
+		return array.reduce(function(max, value) {
+			if (!isNaN(value)) {
+				return Math.max(max, value);
+			}
+			return max;
+		}, Number.NEGATIVE_INFINITY);
+	};
+	helpers$1.min = function(array) {
+		return array.reduce(function(min, value) {
+			if (!isNaN(value)) {
+				return Math.min(min, value);
+			}
+			return min;
+		}, Number.POSITIVE_INFINITY);
+	};
+	helpers$1.sign = Math.sign ?
+		function(x) {
+			return Math.sign(x);
+		} :
+		function(x) {
+			x = +x; // convert to a number
+			if (x === 0 || isNaN(x)) {
+				return x;
+			}
+			return x > 0 ? 1 : -1;
+		};
+	helpers$1.toRadians = function(degrees) {
+		return degrees * (Math.PI / 180);
+	};
+	helpers$1.toDegrees = function(radians) {
+		return radians * (180 / Math.PI);
+	};
+
+	/**
+	 * Returns the number of decimal places
+	 * i.e. the number of digits after the decimal point, of the value of this Number.
+	 * @param {number} x - A number.
+	 * @returns {number} The number of decimal places.
+	 * @private
+	 */
+	helpers$1._decimalPlaces = function(x) {
+		if (!helpers$1.isFinite(x)) {
+			return;
+		}
+		var e = 1;
+		var p = 0;
+		while (Math.round(x * e) / e !== x) {
+			e *= 10;
+			p++;
+		}
+		return p;
+	};
+
+	// Gets the angle from vertical upright to the point about a centre.
+	helpers$1.getAngleFromPoint = function(centrePoint, anglePoint) {
+		var distanceFromXCenter = anglePoint.x - centrePoint.x;
+		var distanceFromYCenter = anglePoint.y - centrePoint.y;
+		var radialDistanceFromCenter = Math.sqrt(distanceFromXCenter * distanceFromXCenter + distanceFromYCenter * distanceFromYCenter);
+
+		var angle = Math.atan2(distanceFromYCenter, distanceFromXCenter);
+
+		if (angle < (-0.5 * Math.PI)) {
+			angle += 2.0 * Math.PI; // make sure the returned angle is in the range of (-PI/2, 3PI/2]
+		}
+
+		return {
+			angle: angle,
+			distance: radialDistanceFromCenter
+		};
+	};
+	helpers$1.distanceBetweenPoints = function(pt1, pt2) {
+		return Math.sqrt(Math.pow(pt2.x - pt1.x, 2) + Math.pow(pt2.y - pt1.y, 2));
+	};
+
+	/**
+	 * Provided for backward compatibility, not available anymore
+	 * @function Chart.helpers.aliasPixel
+	 * @deprecated since version 2.8.0
+	 * @todo remove at version 3
+	 */
+	helpers$1.aliasPixel = function(pixelWidth) {
+		return (pixelWidth % 2 === 0) ? 0 : 0.5;
+	};
+
+	/**
+	 * Returns the aligned pixel value to avoid anti-aliasing blur
+	 * @param {Chart} chart - The chart instance.
+	 * @param {number} pixel - A pixel value.
+	 * @param {number} width - The width of the element.
+	 * @returns {number} The aligned pixel value.
+	 * @private
+	 */
+	helpers$1._alignPixel = function(chart, pixel, width) {
+		var devicePixelRatio = chart.currentDevicePixelRatio;
+		var halfWidth = width / 2;
+		return Math.round((pixel - halfWidth) * devicePixelRatio) / devicePixelRatio + halfWidth;
+	};
+
+	helpers$1.splineCurve = function(firstPoint, middlePoint, afterPoint, t) {
+		// Props to Rob Spencer at scaled innovation for his post on splining between points
+		// http://scaledinnovation.com/analytics/splines/aboutSplines.html
+
+		// This function must also respect "skipped" points
+
+		var previous = firstPoint.skip ? middlePoint : firstPoint;
+		var current = middlePoint;
+		var next = afterPoint.skip ? middlePoint : afterPoint;
+
+		var d01 = Math.sqrt(Math.pow(current.x - previous.x, 2) + Math.pow(current.y - previous.y, 2));
+		var d12 = Math.sqrt(Math.pow(next.x - current.x, 2) + Math.pow(next.y - current.y, 2));
+
+		var s01 = d01 / (d01 + d12);
+		var s12 = d12 / (d01 + d12);
+
+		// If all points are the same, s01 & s02 will be inf
+		s01 = isNaN(s01) ? 0 : s01;
+		s12 = isNaN(s12) ? 0 : s12;
+
+		var fa = t * s01; // scaling factor for triangle Ta
+		var fb = t * s12;
+
+		return {
+			previous: {
+				x: current.x - fa * (next.x - previous.x),
+				y: current.y - fa * (next.y - previous.y)
+			},
+			next: {
+				x: current.x + fb * (next.x - previous.x),
+				y: current.y + fb * (next.y - previous.y)
+			}
+		};
+	};
+	helpers$1.EPSILON = Number.EPSILON || 1e-14;
+	helpers$1.splineCurveMonotone = function(points) {
+		// This function calculates Bézier control points in a similar way than |splineCurve|,
+		// but preserves monotonicity of the provided data and ensures no local extremums are added
+		// between the dataset discrete points due to the interpolation.
+		// See : https://en.wikipedia.org/wiki/Monotone_cubic_interpolation
+
+		var pointsWithTangents = (points || []).map(function(point) {
+			return {
+				model: point._model,
+				deltaK: 0,
+				mK: 0
+			};
+		});
+
+		// Calculate slopes (deltaK) and initialize tangents (mK)
+		var pointsLen = pointsWithTangents.length;
+		var i, pointBefore, pointCurrent, pointAfter;
+		for (i = 0; i < pointsLen; ++i) {
+			pointCurrent = pointsWithTangents[i];
+			if (pointCurrent.model.skip) {
+				continue;
+			}
+
+			pointBefore = i > 0 ? pointsWithTangents[i - 1] : null;
+			pointAfter = i < pointsLen - 1 ? pointsWithTangents[i + 1] : null;
+			if (pointAfter && !pointAfter.model.skip) {
+				var slopeDeltaX = (pointAfter.model.x - pointCurrent.model.x);
+
+				// In the case of two points that appear at the same x pixel, slopeDeltaX is 0
+				pointCurrent.deltaK = slopeDeltaX !== 0 ? (pointAfter.model.y - pointCurrent.model.y) / slopeDeltaX : 0;
+			}
+
+			if (!pointBefore || pointBefore.model.skip) {
+				pointCurrent.mK = pointCurrent.deltaK;
+			} else if (!pointAfter || pointAfter.model.skip) {
+				pointCurrent.mK = pointBefore.deltaK;
+			} else if (this.sign(pointBefore.deltaK) !== this.sign(pointCurrent.deltaK)) {
+				pointCurrent.mK = 0;
+			} else {
+				pointCurrent.mK = (pointBefore.deltaK + pointCurrent.deltaK) / 2;
+			}
+		}
+
+		// Adjust tangents to ensure monotonic properties
+		var alphaK, betaK, tauK, squaredMagnitude;
+		for (i = 0; i < pointsLen - 1; ++i) {
+			pointCurrent = pointsWithTangents[i];
+			pointAfter = pointsWithTangents[i + 1];
+			if (pointCurrent.model.skip || pointAfter.model.skip) {
+				continue;
+			}
+
+			if (helpers$1.almostEquals(pointCurrent.deltaK, 0, this.EPSILON)) {
+				pointCurrent.mK = pointAfter.mK = 0;
+				continue;
+			}
+
+			alphaK = pointCurrent.mK / pointCurrent.deltaK;
+			betaK = pointAfter.mK / pointCurrent.deltaK;
+			squaredMagnitude = Math.pow(alphaK, 2) + Math.pow(betaK, 2);
+			if (squaredMagnitude <= 9) {
+				continue;
+			}
+
+			tauK = 3 / Math.sqrt(squaredMagnitude);
+			pointCurrent.mK = alphaK * tauK * pointCurrent.deltaK;
+			pointAfter.mK = betaK * tauK * pointCurrent.deltaK;
+		}
+
+		// Compute control points
+		var deltaX;
+		for (i = 0; i < pointsLen; ++i) {
+			pointCurrent = pointsWithTangents[i];
+			if (pointCurrent.model.skip) {
+				continue;
+			}
+
+			pointBefore = i > 0 ? pointsWithTangents[i - 1] : null;
+			pointAfter = i < pointsLen - 1 ? pointsWithTangents[i + 1] : null;
+			if (pointBefore && !pointBefore.model.skip) {
+				deltaX = (pointCurrent.model.x - pointBefore.model.x) / 3;
+				pointCurrent.model.controlPointPreviousX = pointCurrent.model.x - deltaX;
+				pointCurrent.model.controlPointPreviousY = pointCurrent.model.y - deltaX * pointCurrent.mK;
+			}
+			if (pointAfter && !pointAfter.model.skip) {
+				deltaX = (pointAfter.model.x - pointCurrent.model.x) / 3;
+				pointCurrent.model.controlPointNextX = pointCurrent.model.x + deltaX;
+				pointCurrent.model.controlPointNextY = pointCurrent.model.y + deltaX * pointCurrent.mK;
+			}
+		}
+	};
+	helpers$1.nextItem = function(collection, index, loop) {
+		if (loop) {
+			return index >= collection.length - 1 ? collection[0] : collection[index + 1];
+		}
+		return index >= collection.length - 1 ? collection[collection.length - 1] : collection[index + 1];
+	};
+	helpers$1.previousItem = function(collection, index, loop) {
+		if (loop) {
+			return index <= 0 ? collection[collection.length - 1] : collection[index - 1];
+		}
+		return index <= 0 ? collection[0] : collection[index - 1];
+	};
+	// Implementation of the nice number algorithm used in determining where axis labels will go
+	helpers$1.niceNum = function(range, round) {
+		var exponent = Math.floor(helpers$1.log10(range));
+		var fraction = range / Math.pow(10, exponent);
+		var niceFraction;
+
+		if (round) {
+			if (fraction < 1.5) {
+				niceFraction = 1;
+			} else if (fraction < 3) {
+				niceFraction = 2;
+			} else if (fraction < 7) {
+				niceFraction = 5;
+			} else {
+				niceFraction = 10;
+			}
+		} else if (fraction <= 1.0) {
+			niceFraction = 1;
+		} else if (fraction <= 2) {
+			niceFraction = 2;
+		} else if (fraction <= 5) {
+			niceFraction = 5;
+		} else {
+			niceFraction = 10;
+		}
+
+		return niceFraction * Math.pow(10, exponent);
+	};
+	// Request animation polyfill - https://www.paulirish.com/2011/requestanimationframe-for-smart-animating/
+	helpers$1.requestAnimFrame = (function() {
+		if (typeof window === 'undefined') {
+			return function(callback) {
+				callback();
+			};
+		}
+		return window.requestAnimationFrame ||
+			window.webkitRequestAnimationFrame ||
+			window.mozRequestAnimationFrame ||
+			window.oRequestAnimationFrame ||
+			window.msRequestAnimationFrame ||
+			function(callback) {
+				return window.setTimeout(callback, 1000 / 60);
+			};
+	}());
+	// -- DOM methods
+	helpers$1.getRelativePosition = function(evt, chart) {
+		var mouseX, mouseY;
+		var e = evt.originalEvent || evt;
+		var canvas = evt.target || evt.srcElement;
+		var boundingRect = canvas.getBoundingClientRect();
+
+		var touches = e.touches;
+		if (touches && touches.length > 0) {
+			mouseX = touches[0].clientX;
+			mouseY = touches[0].clientY;
+
+		} else {
+			mouseX = e.clientX;
+			mouseY = e.clientY;
+		}
+
+		// Scale mouse coordinates into canvas coordinates
+		// by following the pattern laid out by 'jerryj' in the comments of
+		// https://www.html5canvastutorials.com/advanced/html5-canvas-mouse-coordinates/
+		var paddingLeft = parseFloat(helpers$1.getStyle(canvas, 'padding-left'));
+		var paddingTop = parseFloat(helpers$1.getStyle(canvas, 'padding-top'));
+		var paddingRight = parseFloat(helpers$1.getStyle(canvas, 'padding-right'));
+		var paddingBottom = parseFloat(helpers$1.getStyle(canvas, 'padding-bottom'));
+		var width = boundingRect.right - boundingRect.left - paddingLeft - paddingRight;
+		var height = boundingRect.bottom - boundingRect.top - paddingTop - paddingBottom;
+
+		// We divide by the current device pixel ratio, because the canvas is scaled up by that amount in each direction. However
+		// the backend model is in unscaled coordinates. Since we are going to deal with our model coordinates, we go back here
+		mouseX = Math.round((mouseX - boundingRect.left - paddingLeft) / (width) * canvas.width / chart.currentDevicePixelRatio);
+		mouseY = Math.round((mouseY - boundingRect.top - paddingTop) / (height) * canvas.height / chart.currentDevicePixelRatio);
+
+		return {
+			x: mouseX,
+			y: mouseY
+		};
+
+	};
+
+	// Private helper function to convert max-width/max-height values that may be percentages into a number
+	function parseMaxStyle(styleValue, node, parentProperty) {
+		var valueInPixels;
+		if (typeof styleValue === 'string') {
+			valueInPixels = parseInt(styleValue, 10);
+
+			if (styleValue.indexOf('%') !== -1) {
+				// percentage * size in dimension
+				valueInPixels = valueInPixels / 100 * node.parentNode[parentProperty];
+			}
+		} else {
+			valueInPixels = styleValue;
+		}
+
+		return valueInPixels;
+	}
+
+	/**
+	 * Returns if the given value contains an effective constraint.
+	 * @private
+	 */
+	function isConstrainedValue(value) {
+		return value !== undefined && value !== null && value !== 'none';
+	}
+
+	/**
+	 * Returns the max width or height of the given DOM node in a cross-browser compatible fashion
+	 * @param {HTMLElement} domNode - the node to check the constraint on
+	 * @param {string} maxStyle - the style that defines the maximum for the direction we are using ('max-width' / 'max-height')
+	 * @param {string} percentageProperty - property of parent to use when calculating width as a percentage
+	 * @see {@link https://www.nathanaeljones.com/blog/2013/reading-max-width-cross-browser}
+	 */
+	function getConstraintDimension(domNode, maxStyle, percentageProperty) {
+		var view = document.defaultView;
+		var parentNode = helpers$1._getParentNode(domNode);
+		var constrainedNode = view.getComputedStyle(domNode)[maxStyle];
+		var constrainedContainer = view.getComputedStyle(parentNode)[maxStyle];
+		var hasCNode = isConstrainedValue(constrainedNode);
+		var hasCContainer = isConstrainedValue(constrainedContainer);
+		var infinity = Number.POSITIVE_INFINITY;
+
+		if (hasCNode || hasCContainer) {
+			return Math.min(
+				hasCNode ? parseMaxStyle(constrainedNode, domNode, percentageProperty) : infinity,
+				hasCContainer ? parseMaxStyle(constrainedContainer, parentNode, percentageProperty) : infinity);
+		}
+
+		return 'none';
+	}
+	// returns Number or undefined if no constraint
+	helpers$1.getConstraintWidth = function(domNode) {
+		return getConstraintDimension(domNode, 'max-width', 'clientWidth');
+	};
+	// returns Number or undefined if no constraint
+	helpers$1.getConstraintHeight = function(domNode) {
+		return getConstraintDimension(domNode, 'max-height', 'clientHeight');
+	};
+	/**
+	 * @private
+ 	 */
+	helpers$1._calculatePadding = function(container, padding, parentDimension) {
+		padding = helpers$1.getStyle(container, padding);
+
+		return padding.indexOf('%') > -1 ? parentDimension * parseInt(padding, 10) / 100 : parseInt(padding, 10);
+	};
+	/**
+	 * @private
+	 */
+	helpers$1._getParentNode = function(domNode) {
+		var parent = domNode.parentNode;
+		if (parent && parent.toString() === '[object ShadowRoot]') {
+			parent = parent.host;
+		}
+		return parent;
+	};
+	helpers$1.getMaximumWidth = function(domNode) {
+		var container = helpers$1._getParentNode(domNode);
+		if (!container) {
+			return domNode.clientWidth;
+		}
+
+		var clientWidth = container.clientWidth;
+		var paddingLeft = helpers$1._calculatePadding(container, 'padding-left', clientWidth);
+		var paddingRight = helpers$1._calculatePadding(container, 'padding-right', clientWidth);
+
+		var w = clientWidth - paddingLeft - paddingRight;
+		var cw = helpers$1.getConstraintWidth(domNode);
+		return isNaN(cw) ? w : Math.min(w, cw);
+	};
+	helpers$1.getMaximumHeight = function(domNode) {
+		var container = helpers$1._getParentNode(domNode);
+		if (!container) {
+			return domNode.clientHeight;
+		}
+
+		var clientHeight = container.clientHeight;
+		var paddingTop = helpers$1._calculatePadding(container, 'padding-top', clientHeight);
+		var paddingBottom = helpers$1._calculatePadding(container, 'padding-bottom', clientHeight);
+
+		var h = clientHeight - paddingTop - paddingBottom;
+		var ch = helpers$1.getConstraintHeight(domNode);
+		return isNaN(ch) ? h : Math.min(h, ch);
+	};
+	helpers$1.getStyle = function(el, property) {
+		return el.currentStyle ?
+			el.currentStyle[property] :
+			document.defaultView.getComputedStyle(el, null).getPropertyValue(property);
+	};
+	helpers$1.retinaScale = function(chart, forceRatio) {
+		var pixelRatio = chart.currentDevicePixelRatio = forceRatio || (typeof window !== 'undefined' && window.devicePixelRatio) || 1;
+		if (pixelRatio === 1) {
+			return;
+		}
+
+		var canvas = chart.canvas;
+		var height = chart.height;
+		var width = chart.width;
+
+		canvas.height = height * pixelRatio;
+		canvas.width = width * pixelRatio;
+		chart.ctx.scale(pixelRatio, pixelRatio);
+
+		// If no style has been set on the canvas, the render size is used as display size,
+		// making the chart visually bigger, so let's enforce it to the "correct" values.
+		// See https://github.com/chartjs/Chart.js/issues/3575
+		if (!canvas.style.height && !canvas.style.width) {
+			canvas.style.height = height + 'px';
+			canvas.style.width = width + 'px';
+		}
+	};
+	// -- Canvas methods
+	helpers$1.fontString = function(pixelSize, fontStyle, fontFamily) {
+		return fontStyle + ' ' + pixelSize + 'px ' + fontFamily;
+	};
+	helpers$1.longestText = function(ctx, font, arrayOfThings, cache) {
+		cache = cache || {};
+		var data = cache.data = cache.data || {};
+		var gc = cache.garbageCollect = cache.garbageCollect || [];
+
+		if (cache.font !== font) {
+			data = cache.data = {};
+			gc = cache.garbageCollect = [];
+			cache.font = font;
+		}
+
+		ctx.font = font;
+		var longest = 0;
+		var ilen = arrayOfThings.length;
+		var i, j, jlen, thing, nestedThing;
+		for (i = 0; i < ilen; i++) {
+			thing = arrayOfThings[i];
+
+			// Undefined strings and arrays should not be measured
+			if (thing !== undefined && thing !== null && helpers$1.isArray(thing) !== true) {
+				longest = helpers$1.measureText(ctx, data, gc, longest, thing);
+			} else if (helpers$1.isArray(thing)) {
+				// if it is an array lets measure each element
+				// to do maybe simplify this function a bit so we can do this more recursively?
+				for (j = 0, jlen = thing.length; j < jlen; j++) {
+					nestedThing = thing[j];
+					// Undefined strings and arrays should not be measured
+					if (nestedThing !== undefined && nestedThing !== null && !helpers$1.isArray(nestedThing)) {
+						longest = helpers$1.measureText(ctx, data, gc, longest, nestedThing);
+					}
+				}
+			}
+		}
+
+		var gcLen = gc.length / 2;
+		if (gcLen > arrayOfThings.length) {
+			for (i = 0; i < gcLen; i++) {
+				delete data[gc[i]];
+			}
+			gc.splice(0, gcLen);
+		}
+		return longest;
+	};
+	helpers$1.measureText = function(ctx, data, gc, longest, string) {
+		var textWidth = data[string];
+		if (!textWidth) {
+			textWidth = data[string] = ctx.measureText(string).width;
+			gc.push(string);
+		}
+		if (textWidth > longest) {
+			longest = textWidth;
+		}
+		return longest;
+	};
+
+	/**
+	 * @deprecated
+	 */
+	helpers$1.numberOfLabelLines = function(arrayOfThings) {
+		var numberOfLines = 1;
+		helpers$1.each(arrayOfThings, function(thing) {
+			if (helpers$1.isArray(thing)) {
+				if (thing.length > numberOfLines) {
+					numberOfLines = thing.length;
+				}
+			}
+		});
+		return numberOfLines;
+	};
+
+	helpers$1.color = !chartjsColor ?
+		function(value) {
+			console.error('Color.js not found!');
+			return value;
+		} :
+		function(value) {
+			/* global CanvasGradient */
+			if (value instanceof CanvasGradient) {
+				value = core_defaults.global.defaultColor;
+			}
+
+			return chartjsColor(value);
+		};
+
+	helpers$1.getHoverColor = function(colorValue) {
+		/* global CanvasPattern */
+		return (colorValue instanceof CanvasPattern || colorValue instanceof CanvasGradient) ?
+			colorValue :
+			helpers$1.color(colorValue).saturate(0.5).darken(0.1).rgbString();
+	};
+};
+
+function abstract() {
+	throw new Error(
+		'This method is not implemented: either no adapter can ' +
+		'be found or an incomplete integration was provided.'
+	);
+}
+
+/**
+ * Date adapter (current used by the time scale)
+ * @namespace Chart._adapters._date
+ * @memberof Chart._adapters
+ * @private
+ */
+
+/**
+ * Currently supported unit string values.
+ * @typedef {('millisecond'|'second'|'minute'|'hour'|'day'|'week'|'month'|'quarter'|'year')}
+ * @memberof Chart._adapters._date
+ * @name Unit
+ */
+
+/**
+ * @class
+ */
+function DateAdapter(options) {
+	this.options = options || {};
+}
+
+helpers$1.extend(DateAdapter.prototype, /** @lends DateAdapter */ {
+	/**
+	 * Returns a map of time formats for the supported formatting units defined
+	 * in Unit as well as 'datetime' representing a detailed date/time string.
+	 * @returns {{string: string}}
+	 */
+	formats: abstract,
+
+	/**
+	 * Parses the given `value` and return the associated timestamp.
+	 * @param {any} value - the value to parse (usually comes from the data)
+	 * @param {string} [format] - the expected data format
+	 * @returns {(number|null)}
+	 * @function
+	 */
+	parse: abstract,
+
+	/**
+	 * Returns the formatted date in the specified `format` for a given `timestamp`.
+	 * @param {number} timestamp - the timestamp to format
+	 * @param {string} format - the date/time token
+	 * @return {string}
+	 * @function
+	 */
+	format: abstract,
+
+	/**
+	 * Adds the specified `amount` of `unit` to the given `timestamp`.
+	 * @param {number} timestamp - the input timestamp
+	 * @param {number} amount - the amount to add
+	 * @param {Unit} unit - the unit as string
+	 * @return {number}
+	 * @function
+	 */
+	add: abstract,
+
+	/**
+	 * Returns the number of `unit` between the given timestamps.
+	 * @param {number} max - the input timestamp (reference)
+	 * @param {number} min - the timestamp to substract
+	 * @param {Unit} unit - the unit as string
+	 * @return {number}
+	 * @function
+	 */
+	diff: abstract,
+
+	/**
+	 * Returns start of `unit` for the given `timestamp`.
+	 * @param {number} timestamp - the input timestamp
+	 * @param {Unit} unit - the unit as string
+	 * @param {number} [weekday] - the ISO day of the week with 1 being Monday
+	 * and 7 being Sunday (only needed if param *unit* is `isoWeek`).
+	 * @function
+	 */
+	startOf: abstract,
+
+	/**
+	 * Returns end of `unit` for the given `timestamp`.
+	 * @param {number} timestamp - the input timestamp
+	 * @param {Unit} unit - the unit as string
+	 * @function
+	 */
+	endOf: abstract,
+
+	// DEPRECATIONS
+
+	/**
+	 * Provided for backward compatibility for scale.getValueForPixel(),
+	 * this method should be overridden only by the moment adapter.
+	 * @deprecated since version 2.8.0
+	 * @todo remove at version 3
+	 * @private
+	 */
+	_create: function(value) {
+		return value;
+	}
+});
+
+DateAdapter.override = function(members) {
+	helpers$1.extend(DateAdapter.prototype, members);
+};
+
+var _date = DateAdapter;
+
+var core_adapters = {
+	_date: _date
+};
+
+/**
+ * Namespace to hold static tick generation functions
+ * @namespace Chart.Ticks
+ */
+var core_ticks = {
+	/**
+	 * Namespace to hold formatters for different types of ticks
+	 * @namespace Chart.Ticks.formatters
+	 */
+	formatters: {
+		/**
+		 * Formatter for value labels
+		 * @method Chart.Ticks.formatters.values
+		 * @param value the value to display
+		 * @return {string|string[]} the label to display
+		 */
+		values: function(value) {
+			return helpers$1.isArray(value) ? value : '' + value;
+		},
+
+		/**
+		 * Formatter for linear numeric ticks
+		 * @method Chart.Ticks.formatters.linear
+		 * @param tickValue {number} the value to be formatted
+		 * @param index {number} the position of the tickValue parameter in the ticks array
+		 * @param ticks {number[]} the list of ticks being converted
+		 * @return {string} string representation of the tickValue parameter
+		 */
+		linear: function(tickValue, index, ticks) {
+			// If we have lots of ticks, don't use the ones
+			var delta = ticks.length > 3 ? ticks[2] - ticks[1] : ticks[1] - ticks[0];
+
+			// If we have a number like 2.5 as the delta, figure out how many decimal places we need
+			if (Math.abs(delta) > 1) {
+				if (tickValue !== Math.floor(tickValue)) {
+					// not an integer
+					delta = tickValue - Math.floor(tickValue);
+				}
+			}
+
+			var logDelta = helpers$1.log10(Math.abs(delta));
+			var tickString = '';
+
+			if (tickValue !== 0) {
+				var maxTick = Math.max(Math.abs(ticks[0]), Math.abs(ticks[ticks.length - 1]));
+				if (maxTick < 1e-4) { // all ticks are small numbers; use scientific notation
+					var logTick = helpers$1.log10(Math.abs(tickValue));
+					var numExponential = Math.floor(logTick) - Math.floor(logDelta);
+					numExponential = Math.max(Math.min(numExponential, 20), 0);
+					tickString = tickValue.toExponential(numExponential);
+				} else {
+					var numDecimal = -1 * Math.floor(logDelta);
+					numDecimal = Math.max(Math.min(numDecimal, 20), 0); // toFixed has a max of 20 decimal places
+					tickString = tickValue.toFixed(numDecimal);
+				}
+			} else {
+				tickString = '0'; // never show decimal places for 0
+			}
+
+			return tickString;
+		},
+
+		logarithmic: function(tickValue, index, ticks) {
+			var remain = tickValue / (Math.pow(10, Math.floor(helpers$1.log10(tickValue))));
+
+			if (tickValue === 0) {
+				return '0';
+			} else if (remain === 1 || remain === 2 || remain === 5 || index === 0 || index === ticks.length - 1) {
+				return tickValue.toExponential();
+			}
+			return '';
+		}
+	}
+};
+
+var isArray = helpers$1.isArray;
+var isNullOrUndef = helpers$1.isNullOrUndef;
+var valueOrDefault$a = helpers$1.valueOrDefault;
+var valueAtIndexOrDefault = helpers$1.valueAtIndexOrDefault;
+
+core_defaults._set('scale', {
+	display: true,
+	position: 'left',
+	offset: false,
+
+	// grid line settings
+	gridLines: {
+		display: true,
+		color: 'rgba(0,0,0,0.1)',
+		lineWidth: 1,
+		drawBorder: true,
+		drawOnChartArea: true,
+		drawTicks: true,
+		tickMarkLength: 10,
+		zeroLineWidth: 1,
+		zeroLineColor: 'rgba(0,0,0,0.25)',
+		zeroLineBorderDash: [],
+		zeroLineBorderDashOffset: 0.0,
+		offsetGridLines: false,
+		borderDash: [],
+		borderDashOffset: 0.0
+	},
+
+	// scale label
+	scaleLabel: {
+		// display property
+		display: false,
+
+		// actual label
+		labelString: '',
+
+		// top/bottom padding
+		padding: {
+			top: 4,
+			bottom: 4
+		}
+	},
+
+	// label settings
+	ticks: {
+		beginAtZero: false,
+		minRotation: 0,
+		maxRotation: 50,
+		mirror: false,
+		padding: 0,
+		reverse: false,
+		display: true,
+		autoSkip: true,
+		autoSkipPadding: 0,
+		labelOffset: 0,
+		// We pass through arrays to be rendered as multiline labels, we convert Others to strings here.
+		callback: core_ticks.formatters.values,
+		minor: {},
+		major: {}
+	}
+});
+
+/** Returns a new array containing numItems from arr */
+function sample(arr, numItems) {
+	var result = [];
+	var increment = arr.length / numItems;
+	var i = 0;
+	var len = arr.length;
+
+	for (; i < len; i += increment) {
+		result.push(arr[Math.floor(i)]);
+	}
+	return result;
+}
+
+function getPixelForGridLine(scale, index, offsetGridLines) {
+	var length = scale.getTicks().length;
+	var validIndex = Math.min(index, length - 1);
+	var lineValue = scale.getPixelForTick(validIndex);
+	var start = scale._startPixel;
+	var end = scale._endPixel;
+	var epsilon = 1e-6; // 1e-6 is margin in pixels for accumulated error.
+	var offset;
+
+	if (offsetGridLines) {
+		if (length === 1) {
+			offset = Math.max(lineValue - start, end - lineValue);
+		} else if (index === 0) {
+			offset = (scale.getPixelForTick(1) - lineValue) / 2;
+		} else {
+			offset = (lineValue - scale.getPixelForTick(validIndex - 1)) / 2;
+		}
+		lineValue += validIndex < index ? offset : -offset;
+
+		// Return undefined if the pixel is out of the range
+		if (lineValue < start - epsilon || lineValue > end + epsilon) {
+			return;
+		}
+	}
+	return lineValue;
+}
+
+function garbageCollect(caches, length) {
+	helpers$1.each(caches, function(cache) {
+		var gc = cache.gc;
+		var gcLen = gc.length / 2;
+		var i;
+		if (gcLen > length) {
+			for (i = 0; i < gcLen; ++i) {
+				delete cache.data[gc[i]];
+			}
+			gc.splice(0, gcLen);
+		}
+	});
+}
+
+/**
+ * Returns {width, height, offset} objects for the first, last, widest, highest tick
+ * labels where offset indicates the anchor point offset from the top in pixels.
+ */
+function computeLabelSizes(ctx, tickFonts, ticks, caches) {
+	var length = ticks.length;
+	var widths = [];
+	var heights = [];
+	var offsets = [];
+	var widestLabelSize = 0;
+	var highestLabelSize = 0;
+	var i, j, jlen, label, tickFont, fontString, cache, lineHeight, width, height, nestedLabel, widest, highest;
+
+	for (i = 0; i < length; ++i) {
+		label = ticks[i].label;
+		tickFont = ticks[i].major ? tickFonts.major : tickFonts.minor;
+		ctx.font = fontString = tickFont.string;
+		cache = caches[fontString] = caches[fontString] || {data: {}, gc: []};
+		lineHeight = tickFont.lineHeight;
+		width = height = 0;
+		// Undefined labels and arrays should not be measured
+		if (!isNullOrUndef(label) && !isArray(label)) {
+			width = helpers$1.measureText(ctx, cache.data, cache.gc, width, label);
+			height = lineHeight;
+		} else if (isArray(label)) {
+			// if it is an array let's measure each element
+			for (j = 0, jlen = label.length; j < jlen; ++j) {
+				nestedLabel = label[j];
+				// Undefined labels and arrays should not be measured
+				if (!isNullOrUndef(nestedLabel) && !isArray(nestedLabel)) {
+					width = helpers$1.measureText(ctx, cache.data, cache.gc, width, nestedLabel);
+					height += lineHeight;
+				}
+			}
+		}
+		widths.push(width);
+		heights.push(height);
+		offsets.push(lineHeight / 2);
+		widestLabelSize = Math.max(width, widestLabelSize);
+		highestLabelSize = Math.max(height, highestLabelSize);
+	}
+	garbageCollect(caches, length);
+
+	widest = widths.indexOf(widestLabelSize);
+	highest = heights.indexOf(highestLabelSize);
+
+	function valueAt(idx) {
+		return {
+			width: widths[idx] || 0,
+			height: heights[idx] || 0,
+			offset: offsets[idx] || 0
+		};
+	}
+
+	return {
+		first: valueAt(0),
+		last: valueAt(length - 1),
+		widest: valueAt(widest),
+		highest: valueAt(highest)
+	};
+}
+
+function getTickMarkLength(options) {
+	return options.drawTicks ? options.tickMarkLength : 0;
+}
+
+function getScaleLabelHeight(options) {
+	var font, padding;
+
+	if (!options.display) {
+		return 0;
+	}
+
+	font = helpers$1.options._parseFont(options);
+	padding = helpers$1.options.toPadding(options.padding);
+
+	return font.lineHeight + padding.height;
+}
+
+function parseFontOptions(options, nestedOpts) {
+	return helpers$1.extend(helpers$1.options._parseFont({
+		fontFamily: valueOrDefault$a(nestedOpts.fontFamily, options.fontFamily),
+		fontSize: valueOrDefault$a(nestedOpts.fontSize, options.fontSize),
+		fontStyle: valueOrDefault$a(nestedOpts.fontStyle, options.fontStyle),
+		lineHeight: valueOrDefault$a(nestedOpts.lineHeight, options.lineHeight)
+	}), {
+		color: helpers$1.options.resolve([nestedOpts.fontColor, options.fontColor, core_defaults.global.defaultFontColor])
+	});
+}
+
+function parseTickFontOptions(options) {
+	var minor = parseFontOptions(options, options.minor);
+	var major = options.major.enabled ? parseFontOptions(options, options.major) : minor;
+
+	return {minor: minor, major: major};
+}
+
+function nonSkipped(ticksToFilter) {
+	var filtered = [];
+	var item, index, len;
+	for (index = 0, len = ticksToFilter.length; index < len; ++index) {
+		item = ticksToFilter[index];
+		if (typeof item._index !== 'undefined') {
+			filtered.push(item);
+		}
+	}
+	return filtered;
+}
+
+function getEvenSpacing(arr) {
+	var len = arr.length;
+	var i, diff;
+
+	if (len < 2) {
+		return false;
+	}
+
+	for (diff = arr[0], i = 1; i < len; ++i) {
+		if (arr[i] - arr[i - 1] !== diff) {
+			return false;
+		}
+	}
+	return diff;
+}
+
+function calculateSpacing(majorIndices, ticks, axisLength, ticksLimit) {
+	var evenMajorSpacing = getEvenSpacing(majorIndices);
+	var spacing = (ticks.length - 1) / ticksLimit;
+	var factors, factor, i, ilen;
+
+	// If the major ticks are evenly spaced apart, place the minor ticks
+	// so that they divide the major ticks into even chunks
+	if (!evenMajorSpacing) {
+		return Math.max(spacing, 1);
+	}
+
+	factors = helpers$1.math._factorize(evenMajorSpacing);
+	for (i = 0, ilen = factors.length - 1; i < ilen; i++) {
+		factor = factors[i];
+		if (factor > spacing) {
+			return factor;
+		}
+	}
+	return Math.max(spacing, 1);
+}
+
+function getMajorIndices(ticks) {
+	var result = [];
+	var i, ilen;
+	for (i = 0, ilen = ticks.length; i < ilen; i++) {
+		if (ticks[i].major) {
+			result.push(i);
+		}
+	}
+	return result;
+}
+
+function skipMajors(ticks, majorIndices, spacing) {
+	var count = 0;
+	var next = majorIndices[0];
+	var i, tick;
+
+	spacing = Math.ceil(spacing);
+	for (i = 0; i < ticks.length; i++) {
+		tick = ticks[i];
+		if (i === next) {
+			tick._index = i;
+			count++;
+			next = majorIndices[count * spacing];
+		} else {
+			delete tick.label;
+		}
+	}
+}
+
+function skip(ticks, spacing, majorStart, majorEnd) {
+	var start = valueOrDefault$a(majorStart, 0);
+	var end = Math.min(valueOrDefault$a(majorEnd, ticks.length), ticks.length);
+	var count = 0;
+	var length, i, tick, next;
+
+	spacing = Math.ceil(spacing);
+	if (majorEnd) {
+		length = majorEnd - majorStart;
+		spacing = length / Math.floor(length / spacing);
+	}
+
+	next = start;
+
+	while (next < 0) {
+		count++;
+		next = Math.round(start + count * spacing);
+	}
+
+	for (i = Math.max(start, 0); i < end; i++) {
+		tick = ticks[i];
+		if (i === next) {
+			tick._index = i;
+			count++;
+			next = Math.round(start + count * spacing);
+		} else {
+			delete tick.label;
+		}
+	}
+}
+
+var Scale = core_element.extend({
+
+	zeroLineIndex: 0,
+
+	/**
+	 * Get the padding needed for the scale
+	 * @method getPadding
+	 * @private
+	 * @returns {Padding} the necessary padding
+	 */
+	getPadding: function() {
+		var me = this;
+		return {
+			left: me.paddingLeft || 0,
+			top: me.paddingTop || 0,
+			right: me.paddingRight || 0,
+			bottom: me.paddingBottom || 0
+		};
+	},
+
+	/**
+	 * Returns the scale tick objects ({label, major})
+	 * @since 2.7
+	 */
+	getTicks: function() {
+		return this._ticks;
+	},
+
+	/**
+	* @private
+	*/
+	_getLabels: function() {
+		var data = this.chart.data;
+		return this.options.labels || (this.isHorizontal() ? data.xLabels : data.yLabels) || data.labels || [];
+	},
+
+	// These methods are ordered by lifecyle. Utilities then follow.
+	// Any function defined here is inherited by all scale types.
+	// Any function can be extended by the scale type
+
+	/**
+	 * Provided for backward compatibility, not available anymore
+	 * @function Chart.Scale.mergeTicksOptions
+	 * @deprecated since version 2.8.0
+	 * @todo remove at version 3
+	 */
+	mergeTicksOptions: function() {
+		// noop
+	},
+
+	beforeUpdate: function() {
+		helpers$1.callback(this.options.beforeUpdate, [this]);
+	},
+
+	/**
+	 * @param {number} maxWidth - the max width in pixels
+	 * @param {number} maxHeight - the max height in pixels
+	 * @param {object} margins - the space between the edge of the other scales and edge of the chart
+	 *   This space comes from two sources:
+	 *     - padding - space that's required to show the labels at the edges of the scale
+	 *     - thickness of scales or legends in another orientation
+	 */
+	update: function(maxWidth, maxHeight, margins) {
+		var me = this;
+		var tickOpts = me.options.ticks;
+		var sampleSize = tickOpts.sampleSize;
+		var i, ilen, labels, ticks, samplingEnabled;
+
+		// Update Lifecycle - Probably don't want to ever extend or overwrite this function ;)
+		me.beforeUpdate();
+
+		// Absorb the master measurements
+		me.maxWidth = maxWidth;
+		me.maxHeight = maxHeight;
+		me.margins = helpers$1.extend({
+			left: 0,
+			right: 0,
+			top: 0,
+			bottom: 0
+		}, margins);
+
+		me._ticks = null;
+		me.ticks = null;
+		me._labelSizes = null;
+		me._maxLabelLines = 0;
+		me.longestLabelWidth = 0;
+		me.longestTextCache = me.longestTextCache || {};
+		me._gridLineItems = null;
+		me._labelItems = null;
+
+		// Dimensions
+		me.beforeSetDimensions();
+		me.setDimensions();
+		me.afterSetDimensions();
+
+		// Data min/max
+		me.beforeDataLimits();
+		me.determineDataLimits();
+		me.afterDataLimits();
+
+		// Ticks - `this.ticks` is now DEPRECATED!
+		// Internal ticks are now stored as objects in the PRIVATE `this._ticks` member
+		// and must not be accessed directly from outside this class. `this.ticks` being
+		// around for long time and not marked as private, we can't change its structure
+		// without unexpected breaking changes. If you need to access the scale ticks,
+		// use scale.getTicks() instead.
+
+		me.beforeBuildTicks();
+
+		// New implementations should return an array of objects but for BACKWARD COMPAT,
+		// we still support no return (`this.ticks` internally set by calling this method).
+		ticks = me.buildTicks() || [];
+
+		// Allow modification of ticks in callback.
+		ticks = me.afterBuildTicks(ticks) || ticks;
+
+		// Ensure ticks contains ticks in new tick format
+		if ((!ticks || !ticks.length) && me.ticks) {
+			ticks = [];
+			for (i = 0, ilen = me.ticks.length; i < ilen; ++i) {
+				ticks.push({
+					value: me.ticks[i],
+					major: false
+				});
+			}
+		}
+
+		me._ticks = ticks;
+
+		// Compute tick rotation and fit using a sampled subset of labels
+		// We generally don't need to compute the size of every single label for determining scale size
+		samplingEnabled = sampleSize < ticks.length;
+		labels = me._convertTicksToLabels(samplingEnabled ? sample(ticks, sampleSize) : ticks);
+
+		// _configure is called twice, once here, once from core.controller.updateLayout.
+		// Here we haven't been positioned yet, but dimensions are correct.
+		// Variables set in _configure are needed for calculateTickRotation, and
+		// it's ok that coordinates are not correct there, only dimensions matter.
+		me._configure();
+
+		// Tick Rotation
+		me.beforeCalculateTickRotation();
+		me.calculateTickRotation();
+		me.afterCalculateTickRotation();
+
+		me.beforeFit();
+		me.fit();
+		me.afterFit();
+
+		// Auto-skip
+		me._ticksToDraw = tickOpts.display && (tickOpts.autoSkip || tickOpts.source === 'auto') ? me._autoSkip(ticks) : ticks;
+
+		if (samplingEnabled) {
+			// Generate labels using all non-skipped ticks
+			labels = me._convertTicksToLabels(me._ticksToDraw);
+		}
+
+		me.ticks = labels;   // BACKWARD COMPATIBILITY
+
+		// IMPORTANT: after this point, we consider that `this.ticks` will NEVER change!
+
+		me.afterUpdate();
+
+		// TODO(v3): remove minSize as a public property and return value from all layout boxes. It is unused
+		// make maxWidth and maxHeight private
+		return me.minSize;
+	},
+
+	/**
+	 * @private
+	 */
+	_configure: function() {
+		var me = this;
+		var reversePixels = me.options.ticks.reverse;
+		var startPixel, endPixel;
+
+		if (me.isHorizontal()) {
+			startPixel = me.left;
+			endPixel = me.right;
+		} else {
+			startPixel = me.top;
+			endPixel = me.bottom;
+			// by default vertical scales are from bottom to top, so pixels are reversed
+			reversePixels = !reversePixels;
+		}
+		me._startPixel = startPixel;
+		me._endPixel = endPixel;
+		me._reversePixels = reversePixels;
+		me._length = endPixel - startPixel;
+	},
+
+	afterUpdate: function() {
+		helpers$1.callback(this.options.afterUpdate, [this]);
+	},
+
+	//
+
+	beforeSetDimensions: function() {
+		helpers$1.callback(this.options.beforeSetDimensions, [this]);
+	},
+	setDimensions: function() {
+		var me = this;
+		// Set the unconstrained dimension before label rotation
+		if (me.isHorizontal()) {
+			// Reset position before calculating rotation
+			me.width = me.maxWidth;
+			me.left = 0;
+			me.right = me.width;
+		} else {
+			me.height = me.maxHeight;
+
+			// Reset position before calculating rotation
+			me.top = 0;
+			me.bottom = me.height;
+		}
+
+		// Reset padding
+		me.paddingLeft = 0;
+		me.paddingTop = 0;
+		me.paddingRight = 0;
+		me.paddingBottom = 0;
+	},
+	afterSetDimensions: function() {
+		helpers$1.callback(this.options.afterSetDimensions, [this]);
+	},
+
+	// Data limits
+	beforeDataLimits: function() {
+		helpers$1.callback(this.options.beforeDataLimits, [this]);
+	},
+	determineDataLimits: helpers$1.noop,
+	afterDataLimits: function() {
+		helpers$1.callback(this.options.afterDataLimits, [this]);
+	},
+
+	//
+	beforeBuildTicks: function() {
+		helpers$1.callback(this.options.beforeBuildTicks, [this]);
+	},
+	buildTicks: helpers$1.noop,
+	afterBuildTicks: function(ticks) {
+		var me = this;
+		// ticks is empty for old axis implementations here
+		if (isArray(ticks) && ticks.length) {
+			return helpers$1.callback(me.options.afterBuildTicks, [me, ticks]);
+		}
+		// Support old implementations (that modified `this.ticks` directly in buildTicks)
+		me.ticks = helpers$1.callback(me.options.afterBuildTicks, [me, me.ticks]) || me.ticks;
+		return ticks;
+	},
+
+	beforeTickToLabelConversion: function() {
+		helpers$1.callback(this.options.beforeTickToLabelConversion, [this]);
+	},
+	convertTicksToLabels: function() {
+		var me = this;
+		// Convert ticks to strings
+		var tickOpts = me.options.ticks;
+		me.ticks = me.ticks.map(tickOpts.userCallback || tickOpts.callback, this);
+	},
+	afterTickToLabelConversion: function() {
+		helpers$1.callback(this.options.afterTickToLabelConversion, [this]);
+	},
+
+	//
+
+	beforeCalculateTickRotation: function() {
+		helpers$1.callback(this.options.beforeCalculateTickRotation, [this]);
+	},
+	calculateTickRotation: function() {
+		var me = this;
+		var options = me.options;
+		var tickOpts = options.ticks;
+		var numTicks = me.getTicks().length;
+		var minRotation = tickOpts.minRotation || 0;
+		var maxRotation = tickOpts.maxRotation;
+		var labelRotation = minRotation;
+		var labelSizes, maxLabelWidth, maxLabelHeight, maxWidth, tickWidth, maxHeight, maxLabelDiagonal;
+
+		if (!me._isVisible() || !tickOpts.display || minRotation >= maxRotation || numTicks <= 1 || !me.isHorizontal()) {
+			me.labelRotation = minRotation;
+			return;
+		}
+
+		labelSizes = me._getLabelSizes();
+		maxLabelWidth = labelSizes.widest.width;
+		maxLabelHeight = labelSizes.highest.height - labelSizes.highest.offset;
+
+		// Estimate the width of each grid based on the canvas width, the maximum
+		// label width and the number of tick intervals
+		maxWidth = Math.min(me.maxWidth, me.chart.width - maxLabelWidth);
+		tickWidth = options.offset ? me.maxWidth / numTicks : maxWidth / (numTicks - 1);
+
+		// Allow 3 pixels x2 padding either side for label readability
+		if (maxLabelWidth + 6 > tickWidth) {
+			tickWidth = maxWidth / (numTicks - (options.offset ? 0.5 : 1));
+			maxHeight = me.maxHeight - getTickMarkLength(options.gridLines)
+				- tickOpts.padding - getScaleLabelHeight(options.scaleLabel);
+			maxLabelDiagonal = Math.sqrt(maxLabelWidth * maxLabelWidth + maxLabelHeight * maxLabelHeight);
+			labelRotation = helpers$1.toDegrees(Math.min(
+				Math.asin(Math.min((labelSizes.highest.height + 6) / tickWidth, 1)),
+				Math.asin(Math.min(maxHeight / maxLabelDiagonal, 1)) - Math.asin(maxLabelHeight / maxLabelDiagonal)
+			));
+			labelRotation = Math.max(minRotation, Math.min(maxRotation, labelRotation));
+		}
+
+		me.labelRotation = labelRotation;
+	},
+	afterCalculateTickRotation: function() {
+		helpers$1.callback(this.options.afterCalculateTickRotation, [this]);
+	},
+
+	//
+
+	beforeFit: function() {
+		helpers$1.callback(this.options.beforeFit, [this]);
+	},
+	fit: function() {
+		var me = this;
+		// Reset
+		var minSize = me.minSize = {
+			width: 0,
+			height: 0
+		};
+
+		var chart = me.chart;
+		var opts = me.options;
+		var tickOpts = opts.ticks;
+		var scaleLabelOpts = opts.scaleLabel;
+		var gridLineOpts = opts.gridLines;
+		var display = me._isVisible();
+		var isBottom = opts.position === 'bottom';
+		var isHorizontal = me.isHorizontal();
+
+		// Width
+		if (isHorizontal) {
+			minSize.width = me.maxWidth;
+		} else if (display) {
+			minSize.width = getTickMarkLength(gridLineOpts) + getScaleLabelHeight(scaleLabelOpts);
+		}
+
+		// height
+		if (!isHorizontal) {
+			minSize.height = me.maxHeight; // fill all the height
+		} else if (display) {
+			minSize.height = getTickMarkLength(gridLineOpts) + getScaleLabelHeight(scaleLabelOpts);
+		}
+
+		// Don't bother fitting the ticks if we are not showing the labels
+		if (tickOpts.display && display) {
+			var tickFonts = parseTickFontOptions(tickOpts);
+			var labelSizes = me._getLabelSizes();
+			var firstLabelSize = labelSizes.first;
+			var lastLabelSize = labelSizes.last;
+			var widestLabelSize = labelSizes.widest;
+			var highestLabelSize = labelSizes.highest;
+			var lineSpace = tickFonts.minor.lineHeight * 0.4;
+			var tickPadding = tickOpts.padding;
+
+			if (isHorizontal) {
+				// A horizontal axis is more constrained by the height.
+				var isRotated = me.labelRotation !== 0;
+				var angleRadians = helpers$1.toRadians(me.labelRotation);
+				var cosRotation = Math.cos(angleRadians);
+				var sinRotation = Math.sin(angleRadians);
+
+				var labelHeight = sinRotation * widestLabelSize.width
+					+ cosRotation * (highestLabelSize.height - (isRotated ? highestLabelSize.offset : 0))
+					+ (isRotated ? 0 : lineSpace); // padding
+
+				minSize.height = Math.min(me.maxHeight, minSize.height + labelHeight + tickPadding);
+
+				var offsetLeft = me.getPixelForTick(0) - me.left;
+				var offsetRight = me.right - me.getPixelForTick(me.getTicks().length - 1);
+				var paddingLeft, paddingRight;
+
+				// Ensure that our ticks are always inside the canvas. When rotated, ticks are right aligned
+				// which means that the right padding is dominated by the font height
+				if (isRotated) {
+					paddingLeft = isBottom ?
+						cosRotation * firstLabelSize.width + sinRotation * firstLabelSize.offset :
+						sinRotation * (firstLabelSize.height - firstLabelSize.offset);
+					paddingRight = isBottom ?
+						sinRotation * (lastLabelSize.height - lastLabelSize.offset) :
+						cosRotation * lastLabelSize.width + sinRotation * lastLabelSize.offset;
+				} else {
+					paddingLeft = firstLabelSize.width / 2;
+					paddingRight = lastLabelSize.width / 2;
+				}
+
+				// Adjust padding taking into account changes in offsets
+				// and add 3 px to move away from canvas edges
+				me.paddingLeft = Math.max((paddingLeft - offsetLeft) * me.width / (me.width - offsetLeft), 0) + 3;
+				me.paddingRight = Math.max((paddingRight - offsetRight) * me.width / (me.width - offsetRight), 0) + 3;
+			} else {
+				// A vertical axis is more constrained by the width. Labels are the
+				// dominant factor here, so get that length first and account for padding
+				var labelWidth = tickOpts.mirror ? 0 :
+					// use lineSpace for consistency with horizontal axis
+					// tickPadding is not implemented for horizontal
+					widestLabelSize.width + tickPadding + lineSpace;
+
+				minSize.width = Math.min(me.maxWidth, minSize.width + labelWidth);
+
+				me.paddingTop = firstLabelSize.height / 2;
+				me.paddingBottom = lastLabelSize.height / 2;
+			}
+		}
+
+		me.handleMargins();
+
+		if (isHorizontal) {
+			me.width = me._length = chart.width - me.margins.left - me.margins.right;
+			me.height = minSize.height;
+		} else {
+			me.width = minSize.width;
+			me.height = me._length = chart.height - me.margins.top - me.margins.bottom;
+		}
+	},
+
+	/**
+	 * Handle margins and padding interactions
+	 * @private
+	 */
+	handleMargins: function() {
+		var me = this;
+		if (me.margins) {
+			me.margins.left = Math.max(me.paddingLeft, me.margins.left);
+			me.margins.top = Math.max(me.paddingTop, me.margins.top);
+			me.margins.right = Math.max(me.paddingRight, me.margins.right);
+			me.margins.bottom = Math.max(me.paddingBottom, me.margins.bottom);
+		}
+	},
+
+	afterFit: function() {
+		helpers$1.callback(this.options.afterFit, [this]);
+	},
+
+	// Shared Methods
+	isHorizontal: function() {
+		var pos = this.options.position;
+		return pos === 'top' || pos === 'bottom';
+	},
+	isFullWidth: function() {
+		return this.options.fullWidth;
+	},
+
+	// Get the correct value. NaN bad inputs, If the value type is object get the x or y based on whether we are horizontal or not
+	getRightValue: function(rawValue) {
+		// Null and undefined values first
+		if (isNullOrUndef(rawValue)) {
+			return NaN;
+		}
+		// isNaN(object) returns true, so make sure NaN is checking for a number; Discard Infinite values
+		if ((typeof rawValue === 'number' || rawValue instanceof Number) && !isFinite(rawValue)) {
+			return NaN;
+		}
+
+		// If it is in fact an object, dive in one more level
+		if (rawValue) {
+			if (this.isHorizontal()) {
+				if (rawValue.x !== undefined) {
+					return this.getRightValue(rawValue.x);
+				}
+			} else if (rawValue.y !== undefined) {
+				return this.getRightValue(rawValue.y);
+			}
+		}
+
+		// Value is good, return it
+		return rawValue;
+	},
+
+	_convertTicksToLabels: function(ticks) {
+		var me = this;
+		var labels, i, ilen;
+
+		me.ticks = ticks.map(function(tick) {
+			return tick.value;
+		});
+
+		me.beforeTickToLabelConversion();
+
+		// New implementations should return the formatted tick labels but for BACKWARD
+		// COMPAT, we still support no return (`this.ticks` internally changed by calling
+		// this method and supposed to contain only string values).
+		labels = me.convertTicksToLabels(ticks) || me.ticks;
+
+		me.afterTickToLabelConversion();
+
+		// BACKWARD COMPAT: synchronize `_ticks` with labels (so potentially `this.ticks`)
+		for (i = 0, ilen = ticks.length; i < ilen; ++i) {
+			ticks[i].label = labels[i];
+		}
+
+		return labels;
+	},
+
+	/**
+	 * @private
+	 */
+	_getLabelSizes: function() {
+		var me = this;
+		var labelSizes = me._labelSizes;
+
+		if (!labelSizes) {
+			me._labelSizes = labelSizes = computeLabelSizes(me.ctx, parseTickFontOptions(me.options.ticks), me.getTicks(), me.longestTextCache);
+			me.longestLabelWidth = labelSizes.widest.width;
+		}
+
+		return labelSizes;
+	},
+
+	/**
+	 * @private
+	 */
+	_parseValue: function(value) {
+		var start, end, min, max;
+
+		if (isArray(value)) {
+			start = +this.getRightValue(value[0]);
+			end = +this.getRightValue(value[1]);
+			min = Math.min(start, end);
+			max = Math.max(start, end);
+		} else {
+			value = +this.getRightValue(value);
+			start = undefined;
+			end = value;
+			min = value;
+			max = value;
+		}
+
+		return {
+			min: min,
+			max: max,
+			start: start,
+			end: end
+		};
+	},
+
+	/**
+	* @private
+	*/
+	_getScaleLabel: function(rawValue) {
+		var v = this._parseValue(rawValue);
+		if (v.start !== undefined) {
+			return '[' + v.start + ', ' + v.end + ']';
+		}
+
+		return +this.getRightValue(rawValue);
+	},
+
+	/**
+	 * Used to get the value to display in the tooltip for the data at the given index
+	 * @param index
+	 * @param datasetIndex
+	 */
+	getLabelForIndex: helpers$1.noop,
+
+	/**
+	 * Returns the location of the given data point. Value can either be an index or a numerical value
+	 * The coordinate (0, 0) is at the upper-left corner of the canvas
+	 * @param value
+	 * @param index
+	 * @param datasetIndex
+	 */
+	getPixelForValue: helpers$1.noop,
+
+	/**
+	 * Used to get the data value from a given pixel. This is the inverse of getPixelForValue
+	 * The coordinate (0, 0) is at the upper-left corner of the canvas
+	 * @param pixel
+	 */
+	getValueForPixel: helpers$1.noop,
+
+	/**
+	 * Returns the location of the tick at the given index
+	 * The coordinate (0, 0) is at the upper-left corner of the canvas
+	 */
+	getPixelForTick: function(index) {
+		var me = this;
+		var offset = me.options.offset;
+		var numTicks = me._ticks.length;
+		var tickWidth = 1 / Math.max(numTicks - (offset ? 0 : 1), 1);
+
+		return index < 0 || index > numTicks - 1
+			? null
+			: me.getPixelForDecimal(index * tickWidth + (offset ? tickWidth / 2 : 0));
+	},
+
+	/**
+	 * Utility for getting the pixel location of a percentage of scale
+	 * The coordinate (0, 0) is at the upper-left corner of the canvas
+	 */
+	getPixelForDecimal: function(decimal) {
+		var me = this;
+
+		if (me._reversePixels) {
+			decimal = 1 - decimal;
+		}
+
+		return me._startPixel + decimal * me._length;
+	},
+
+	getDecimalForPixel: function(pixel) {
+		var decimal = (pixel - this._startPixel) / this._length;
+		return this._reversePixels ? 1 - decimal : decimal;
+	},
+
+	/**
+	 * Returns the pixel for the minimum chart value
+	 * The coordinate (0, 0) is at the upper-left corner of the canvas
+	 */
+	getBasePixel: function() {
+		return this.getPixelForValue(this.getBaseValue());
+	},
+
+	getBaseValue: function() {
+		var me = this;
+		var min = me.min;
+		var max = me.max;
+
+		return me.beginAtZero ? 0 :
+			min < 0 && max < 0 ? max :
+			min > 0 && max > 0 ? min :
+			0;
+	},
+
+	/**
+	 * Returns a subset of ticks to be plotted to avoid overlapping labels.
+	 * @private
+	 */
+	_autoSkip: function(ticks) {
+		var me = this;
+		var tickOpts = me.options.ticks;
+		var axisLength = me._length;
+		var ticksLimit = tickOpts.maxTicksLimit || axisLength / me._tickSize() + 1;
+		var majorIndices = tickOpts.major.enabled ? getMajorIndices(ticks) : [];
+		var numMajorIndices = majorIndices.length;
+		var first = majorIndices[0];
+		var last = majorIndices[numMajorIndices - 1];
+		var i, ilen, spacing, avgMajorSpacing;
+
+		// If there are too many major ticks to display them all
+		if (numMajorIndices > ticksLimit) {
+			skipMajors(ticks, majorIndices, numMajorIndices / ticksLimit);
+			return nonSkipped(ticks);
+		}
+
+		spacing = calculateSpacing(majorIndices, ticks, axisLength, ticksLimit);
+
+		if (numMajorIndices > 0) {
+			for (i = 0, ilen = numMajorIndices - 1; i < ilen; i++) {
+				skip(ticks, spacing, majorIndices[i], majorIndices[i + 1]);
+			}
+			avgMajorSpacing = numMajorIndices > 1 ? (last - first) / (numMajorIndices - 1) : null;
+			skip(ticks, spacing, helpers$1.isNullOrUndef(avgMajorSpacing) ? 0 : first - avgMajorSpacing, first);
+			skip(ticks, spacing, last, helpers$1.isNullOrUndef(avgMajorSpacing) ? ticks.length : last + avgMajorSpacing);
+			return nonSkipped(ticks);
+		}
+		skip(ticks, spacing);
+		return nonSkipped(ticks);
+	},
+
+	/**
+	 * @private
+	 */
+	_tickSize: function() {
+		var me = this;
+		var optionTicks = me.options.ticks;
+
+		// Calculate space needed by label in axis direction.
+		var rot = helpers$1.toRadians(me.labelRotation);
+		var cos = Math.abs(Math.cos(rot));
+		var sin = Math.abs(Math.sin(rot));
+
+		var labelSizes = me._getLabelSizes();
+		var padding = optionTicks.autoSkipPadding || 0;
+		var w = labelSizes ? labelSizes.widest.width + padding : 0;
+		var h = labelSizes ? labelSizes.highest.height + padding : 0;
+
+		// Calculate space needed for 1 tick in axis direction.
+		return me.isHorizontal()
+			? h * cos > w * sin ? w / cos : h / sin
+			: h * sin < w * cos ? h / cos : w / sin;
+	},
+
+	/**
+	 * @private
+	 */
+	_isVisible: function() {
+		var me = this;
+		var chart = me.chart;
+		var display = me.options.display;
+		var i, ilen, meta;
+
+		if (display !== 'auto') {
+			return !!display;
+		}
+
+		// When 'auto', the scale is visible if at least one associated dataset is visible.
+		for (i = 0, ilen = chart.data.datasets.length; i < ilen; ++i) {
+			if (chart.isDatasetVisible(i)) {
+				meta = chart.getDatasetMeta(i);
+				if (meta.xAxisID === me.id || meta.yAxisID === me.id) {
+					return true;
+				}
+			}
+		}
+
+		return false;
+	},
+
+	/**
+	 * @private
+	 */
+	_computeGridLineItems: function(chartArea) {
+		var me = this;
+		var chart = me.chart;
+		var options = me.options;
+		var gridLines = options.gridLines;
+		var position = options.position;
+		var offsetGridLines = gridLines.offsetGridLines;
+		var isHorizontal = me.isHorizontal();
+		var ticks = me._ticksToDraw;
+		var ticksLength = ticks.length + (offsetGridLines ? 1 : 0);
+
+		var tl = getTickMarkLength(gridLines);
+		var items = [];
+		var axisWidth = gridLines.drawBorder ? valueAtIndexOrDefault(gridLines.lineWidth, 0, 0) : 0;
+		var axisHalfWidth = axisWidth / 2;
+		var alignPixel = helpers$1._alignPixel;
+		var alignBorderValue = function(pixel) {
+			return alignPixel(chart, pixel, axisWidth);
+		};
+		var borderValue, i, tick, lineValue, alignedLineValue;
+		var tx1, ty1, tx2, ty2, x1, y1, x2, y2, lineWidth, lineColor, borderDash, borderDashOffset;
+
+		if (position === 'top') {
+			borderValue = alignBorderValue(me.bottom);
+			ty1 = me.bottom - tl;
+			ty2 = borderValue - axisHalfWidth;
+			y1 = alignBorderValue(chartArea.top) + axisHalfWidth;
+			y2 = chartArea.bottom;
+		} else if (position === 'bottom') {
+			borderValue = alignBorderValue(me.top);
+			y1 = chartArea.top;
+			y2 = alignBorderValue(chartArea.bottom) - axisHalfWidth;
+			ty1 = borderValue + axisHalfWidth;
+			ty2 = me.top + tl;
+		} else if (position === 'left') {
+			borderValue = alignBorderValue(me.right);
+			tx1 = me.right - tl;
+			tx2 = borderValue - axisHalfWidth;
+			x1 = alignBorderValue(chartArea.left) + axisHalfWidth;
+			x2 = chartArea.right;
+		} else {
+			borderValue = alignBorderValue(me.left);
+			x1 = chartArea.left;
+			x2 = alignBorderValue(chartArea.right) - axisHalfWidth;
+			tx1 = borderValue + axisHalfWidth;
+			tx2 = me.left + tl;
+		}
+
+		for (i = 0; i < ticksLength; ++i) {
+			tick = ticks[i] || {};
+
+			// autoskipper skipped this tick (#4635)
+			if (isNullOrUndef(tick.label) && i < ticks.length) {
+				continue;
+			}
+
+			if (i === me.zeroLineIndex && options.offset === offsetGridLines) {
+				// Draw the first index specially
+				lineWidth = gridLines.zeroLineWidth;
+				lineColor = gridLines.zeroLineColor;
+				borderDash = gridLines.zeroLineBorderDash || [];
+				borderDashOffset = gridLines.zeroLineBorderDashOffset || 0.0;
+			} else {
+				lineWidth = valueAtIndexOrDefault(gridLines.lineWidth, i, 1);
+				lineColor = valueAtIndexOrDefault(gridLines.color, i, 'rgba(0,0,0,0.1)');
+				borderDash = gridLines.borderDash || [];
+				borderDashOffset = gridLines.borderDashOffset || 0.0;
+			}
+
+			lineValue = getPixelForGridLine(me, tick._index || i, offsetGridLines);
+
+			// Skip if the pixel is out of the range
+			if (lineValue === undefined) {
+				continue;
+			}
+
+			alignedLineValue = alignPixel(chart, lineValue, lineWidth);
+
+			if (isHorizontal) {
+				tx1 = tx2 = x1 = x2 = alignedLineValue;
+			} else {
+				ty1 = ty2 = y1 = y2 = alignedLineValue;
+			}
+
+			items.push({
+				tx1: tx1,
+				ty1: ty1,
+				tx2: tx2,
+				ty2: ty2,
+				x1: x1,
+				y1: y1,
+				x2: x2,
+				y2: y2,
+				width: lineWidth,
+				color: lineColor,
+				borderDash: borderDash,
+				borderDashOffset: borderDashOffset,
+			});
+		}
+
+		items.ticksLength = ticksLength;
+		items.borderValue = borderValue;
+
+		return items;
+	},
+
+	/**
+	 * @private
+	 */
+	_computeLabelItems: function() {
+		var me = this;
+		var options = me.options;
+		var optionTicks = options.ticks;
+		var position = options.position;
+		var isMirrored = optionTicks.mirror;
+		var isHorizontal = me.isHorizontal();
+		var ticks = me._ticksToDraw;
+		var fonts = parseTickFontOptions(optionTicks);
+		var tickPadding = optionTicks.padding;
+		var tl = getTickMarkLength(options.gridLines);
+		var rotation = -helpers$1.toRadians(me.labelRotation);
+		var items = [];
+		var i, ilen, tick, label, x, y, textAlign, pixel, font, lineHeight, lineCount, textOffset;
+
+		if (position === 'top') {
+			y = me.bottom - tl - tickPadding;
+			textAlign = !rotation ? 'center' : 'left';
+		} else if (position === 'bottom') {
+			y = me.top + tl + tickPadding;
+			textAlign = !rotation ? 'center' : 'right';
+		} else if (position === 'left') {
+			x = me.right - (isMirrored ? 0 : tl) - tickPadding;
+			textAlign = isMirrored ? 'left' : 'right';
+		} else {
+			x = me.left + (isMirrored ? 0 : tl) + tickPadding;
+			textAlign = isMirrored ? 'right' : 'left';
+		}
+
+		for (i = 0, ilen = ticks.length; i < ilen; ++i) {
+			tick = ticks[i];
+			label = tick.label;
+
+			// autoskipper skipped this tick (#4635)
+			if (isNullOrUndef(label)) {
+				continue;
+			}
+
+			pixel = me.getPixelForTick(tick._index || i) + optionTicks.labelOffset;
+			font = tick.major ? fonts.major : fonts.minor;
+			lineHeight = font.lineHeight;
+			lineCount = isArray(label) ? label.length : 1;
+
+			if (isHorizontal) {
+				x = pixel;
+				textOffset = position === 'top'
+					? ((!rotation ? 0.5 : 1) - lineCount) * lineHeight
+					: (!rotation ? 0.5 : 0) * lineHeight;
+			} else {
+				y = pixel;
+				textOffset = (1 - lineCount) * lineHeight / 2;
+			}
+
+			items.push({
+				x: x,
+				y: y,
+				rotation: rotation,
+				label: label,
+				font: font,
+				textOffset: textOffset,
+				textAlign: textAlign
+			});
+		}
+
+		return items;
+	},
+
+	/**
+	 * @private
+	 */
+	_drawGrid: function(chartArea) {
+		var me = this;
+		var gridLines = me.options.gridLines;
+
+		if (!gridLines.display) {
+			return;
+		}
+
+		var ctx = me.ctx;
+		var chart = me.chart;
+		var alignPixel = helpers$1._alignPixel;
+		var axisWidth = gridLines.drawBorder ? valueAtIndexOrDefault(gridLines.lineWidth, 0, 0) : 0;
+		var items = me._gridLineItems || (me._gridLineItems = me._computeGridLineItems(chartArea));
+		var width, color, i, ilen, item;
+
+		for (i = 0, ilen = items.length; i < ilen; ++i) {
+			item = items[i];
+			width = item.width;
+			color = item.color;
+
+			if (width && color) {
+				ctx.save();
+				ctx.lineWidth = width;
+				ctx.strokeStyle = color;
+				if (ctx.setLineDash) {
+					ctx.setLineDash(item.borderDash);
+					ctx.lineDashOffset = item.borderDashOffset;
+				}
+
+				ctx.beginPath();
+
+				if (gridLines.drawTicks) {
+					ctx.moveTo(item.tx1, item.ty1);
+					ctx.lineTo(item.tx2, item.ty2);
+				}
+
+				if (gridLines.drawOnChartArea) {
+					ctx.moveTo(item.x1, item.y1);
+					ctx.lineTo(item.x2, item.y2);
+				}
+
+				ctx.stroke();
+				ctx.restore();
+			}
+		}
+
+		if (axisWidth) {
+			// Draw the line at the edge of the axis
+			var firstLineWidth = axisWidth;
+			var lastLineWidth = valueAtIndexOrDefault(gridLines.lineWidth, items.ticksLength - 1, 1);
+			var borderValue = items.borderValue;
+			var x1, x2, y1, y2;
+
+			if (me.isHorizontal()) {
+				x1 = alignPixel(chart, me.left, firstLineWidth) - firstLineWidth / 2;
+				x2 = alignPixel(chart, me.right, lastLineWidth) + lastLineWidth / 2;
+				y1 = y2 = borderValue;
+			} else {
+				y1 = alignPixel(chart, me.top, firstLineWidth) - firstLineWidth / 2;
+				y2 = alignPixel(chart, me.bottom, lastLineWidth) + lastLineWidth / 2;
+				x1 = x2 = borderValue;
+			}
+
+			ctx.lineWidth = axisWidth;
+			ctx.strokeStyle = valueAtIndexOrDefault(gridLines.color, 0);
+			ctx.beginPath();
+			ctx.moveTo(x1, y1);
+			ctx.lineTo(x2, y2);
+			ctx.stroke();
+		}
+	},
+
+	/**
+	 * @private
+	 */
+	_drawLabels: function() {
+		var me = this;
+		var optionTicks = me.options.ticks;
+
+		if (!optionTicks.display) {
+			return;
+		}
+
+		var ctx = me.ctx;
+		var items = me._labelItems || (me._labelItems = me._computeLabelItems());
+		var i, j, ilen, jlen, item, tickFont, label, y;
+
+		for (i = 0, ilen = items.length; i < ilen; ++i) {
+			item = items[i];
+			tickFont = item.font;
+
+			// Make sure we draw text in the correct color and font
+			ctx.save();
+			ctx.translate(item.x, item.y);
+			ctx.rotate(item.rotation);
+			ctx.font = tickFont.string;
+			ctx.fillStyle = tickFont.color;
+			ctx.textBaseline = 'middle';
+			ctx.textAlign = item.textAlign;
+
+			label = item.label;
+			y = item.textOffset;
+			if (isArray(label)) {
+				for (j = 0, jlen = label.length; j < jlen; ++j) {
+					// We just make sure the multiline element is a string here..
+					ctx.fillText('' + label[j], 0, y);
+					y += tickFont.lineHeight;
+				}
+			} else {
+				ctx.fillText(label, 0, y);
+			}
+			ctx.restore();
+		}
+	},
+
+	/**
+	 * @private
+	 */
+	_drawTitle: function() {
+		var me = this;
+		var ctx = me.ctx;
+		var options = me.options;
+		var scaleLabel = options.scaleLabel;
+
+		if (!scaleLabel.display) {
+			return;
+		}
+
+		var scaleLabelFontColor = valueOrDefault$a(scaleLabel.fontColor, core_defaults.global.defaultFontColor);
+		var scaleLabelFont = helpers$1.options._parseFont(scaleLabel);
+		var scaleLabelPadding = helpers$1.options.toPadding(scaleLabel.padding);
+		var halfLineHeight = scaleLabelFont.lineHeight / 2;
+		var position = options.position;
+		var rotation = 0;
+		var scaleLabelX, scaleLabelY;
+
+		if (me.isHorizontal()) {
+			scaleLabelX = me.left + me.width / 2; // midpoint of the width
+			scaleLabelY = position === 'bottom'
+				? me.bottom - halfLineHeight - scaleLabelPadding.bottom
+				: me.top + halfLineHeight + scaleLabelPadding.top;
+		} else {
+			var isLeft = position === 'left';
+			scaleLabelX = isLeft
+				? me.left + halfLineHeight + scaleLabelPadding.top
+				: me.right - halfLineHeight - scaleLabelPadding.top;
+			scaleLabelY = me.top + me.height / 2;
+			rotation = isLeft ? -0.5 * Math.PI : 0.5 * Math.PI;
+		}
+
+		ctx.save();
+		ctx.translate(scaleLabelX, scaleLabelY);
+		ctx.rotate(rotation);
+		ctx.textAlign = 'center';
+		ctx.textBaseline = 'middle';
+		ctx.fillStyle = scaleLabelFontColor; // render in correct colour
+		ctx.font = scaleLabelFont.string;
+		ctx.fillText(scaleLabel.labelString, 0, 0);
+		ctx.restore();
+	},
+
+	draw: function(chartArea) {
+		var me = this;
+
+		if (!me._isVisible()) {
+			return;
+		}
+
+		me._drawGrid(chartArea);
+		me._drawTitle();
+		me._drawLabels();
+	},
+
+	/**
+	 * @private
+	 */
+	_layers: function() {
+		var me = this;
+		var opts = me.options;
+		var tz = opts.ticks && opts.ticks.z || 0;
+		var gz = opts.gridLines && opts.gridLines.z || 0;
+
+		if (!me._isVisible() || tz === gz || me.draw !== me._draw) {
+			// backward compatibility: draw has been overridden by custom scale
+			return [{
+				z: tz,
+				draw: function() {
+					me.draw.apply(me, arguments);
+				}
+			}];
+		}
+
+		return [{
+			z: gz,
+			draw: function() {
+				me._drawGrid.apply(me, arguments);
+				me._drawTitle.apply(me, arguments);
+			}
+		}, {
+			z: tz,
+			draw: function() {
+				me._drawLabels.apply(me, arguments);
+			}
+		}];
+	},
+
+	/**
+	 * @private
+	 */
+	_getMatchingVisibleMetas: function(type) {
+		var me = this;
+		var isHorizontal = me.isHorizontal();
+		return me.chart._getSortedVisibleDatasetMetas()
+			.filter(function(meta) {
+				return (!type || meta.type === type)
+					&& (isHorizontal ? meta.xAxisID === me.id : meta.yAxisID === me.id);
+			});
+	}
+});
+
+Scale.prototype._draw = Scale.prototype.draw;
+
+var core_scale = Scale;
+
+var isNullOrUndef$1 = helpers$1.isNullOrUndef;
+
+var defaultConfig = {
+	position: 'bottom'
+};
+
+var scale_category = core_scale.extend({
+	determineDataLimits: function() {
+		var me = this;
+		var labels = me._getLabels();
+		var ticksOpts = me.options.ticks;
+		var min = ticksOpts.min;
+		var max = ticksOpts.max;
+		var minIndex = 0;
+		var maxIndex = labels.length - 1;
+		var findIndex;
+
+		if (min !== undefined) {
+			// user specified min value
+			findIndex = labels.indexOf(min);
+			if (findIndex >= 0) {
+				minIndex = findIndex;
+			}
+		}
+
+		if (max !== undefined) {
+			// user specified max value
+			findIndex = labels.indexOf(max);
+			if (findIndex >= 0) {
+				maxIndex = findIndex;
+			}
+		}
+
+		me.minIndex = minIndex;
+		me.maxIndex = maxIndex;
+		me.min = labels[minIndex];
+		me.max = labels[maxIndex];
+	},
+
+	buildTicks: function() {
+		var me = this;
+		var labels = me._getLabels();
+		var minIndex = me.minIndex;
+		var maxIndex = me.maxIndex;
+
+		// If we are viewing some subset of labels, slice the original array
+		me.ticks = (minIndex === 0 && maxIndex === labels.length - 1) ? labels : labels.slice(minIndex, maxIndex + 1);
+	},
+
+	getLabelForIndex: function(index, datasetIndex) {
+		var me = this;
+		var chart = me.chart;
+
+		if (chart.getDatasetMeta(datasetIndex).controller._getValueScaleId() === me.id) {
+			return me.getRightValue(chart.data.datasets[datasetIndex].data[index]);
+		}
+
+		return me._getLabels()[index];
+	},
+
+	_configure: function() {
+		var me = this;
+		var offset = me.options.offset;
+		var ticks = me.ticks;
+
+		core_scale.prototype._configure.call(me);
+
+		if (!me.isHorizontal()) {
+			// For backward compatibility, vertical category scale reverse is inverted.
+			me._reversePixels = !me._reversePixels;
+		}
+
+		if (!ticks) {
+			return;
+		}
+
+		me._startValue = me.minIndex - (offset ? 0.5 : 0);
+		me._valueRange = Math.max(ticks.length - (offset ? 0 : 1), 1);
+	},
+
+	// Used to get data value locations.  Value can either be an index or a numerical value
+	getPixelForValue: function(value, index, datasetIndex) {
+		var me = this;
+		var valueCategory, labels, idx;
+
+		if (!isNullOrUndef$1(index) && !isNullOrUndef$1(datasetIndex)) {
+			value = me.chart.data.datasets[datasetIndex].data[index];
+		}
+
+		// If value is a data object, then index is the index in the data array,
+		// not the index of the scale. We need to change that.
+		if (!isNullOrUndef$1(value)) {
+			valueCategory = me.isHorizontal() ? value.x : value.y;
+		}
+		if (valueCategory !== undefined || (value !== undefined && isNaN(index))) {
+			labels = me._getLabels();
+			value = helpers$1.valueOrDefault(valueCategory, value);
+			idx = labels.indexOf(value);
+			index = idx !== -1 ? idx : index;
+			if (isNaN(index)) {
+				index = value;
+			}
+		}
+		return me.getPixelForDecimal((index - me._startValue) / me._valueRange);
+	},
+
+	getPixelForTick: function(index) {
+		var ticks = this.ticks;
+		return index < 0 || index > ticks.length - 1
+			? null
+			: this.getPixelForValue(ticks[index], index + this.minIndex);
+	},
+
+	getValueForPixel: function(pixel) {
+		var me = this;
+		var value = Math.round(me._startValue + me.getDecimalForPixel(pixel) * me._valueRange);
+		return Math.min(Math.max(value, 0), me.ticks.length - 1);
+	},
+
+	getBasePixel: function() {
+		return this.bottom;
+	}
+});
+
+// INTERNAL: static default options, registered in src/index.js
+var _defaults = defaultConfig;
+scale_category._defaults = _defaults;
+
+var noop = helpers$1.noop;
+var isNullOrUndef$2 = helpers$1.isNullOrUndef;
+
+/**
+ * Generate a set of linear ticks
+ * @param generationOptions the options used to generate the ticks
+ * @param dataRange the range of the data
+ * @returns {number[]} array of tick values
+ */
+function generateTicks(generationOptions, dataRange) {
+	var ticks = [];
+	// To get a "nice" value for the tick spacing, we will use the appropriately named
+	// "nice number" algorithm. See https://stackoverflow.com/questions/8506881/nice-label-algorithm-for-charts-with-minimum-ticks
+	// for details.
+
+	var MIN_SPACING = 1e-14;
+	var stepSize = generationOptions.stepSize;
+	var unit = stepSize || 1;
+	var maxNumSpaces = generationOptions.maxTicks - 1;
+	var min = generationOptions.min;
+	var max = generationOptions.max;
+	var precision = generationOptions.precision;
+	var rmin = dataRange.min;
+	var rmax = dataRange.max;
+	var spacing = helpers$1.niceNum((rmax - rmin) / maxNumSpaces / unit) * unit;
+	var factor, niceMin, niceMax, numSpaces;
+
+	// Beyond MIN_SPACING floating point numbers being to lose precision
+	// such that we can't do the math necessary to generate ticks
+	if (spacing < MIN_SPACING && isNullOrUndef$2(min) && isNullOrUndef$2(max)) {
+		return [rmin, rmax];
+	}
+
+	numSpaces = Math.ceil(rmax / spacing) - Math.floor(rmin / spacing);
+	if (numSpaces > maxNumSpaces) {
+		// If the calculated num of spaces exceeds maxNumSpaces, recalculate it
+		spacing = helpers$1.niceNum(numSpaces * spacing / maxNumSpaces / unit) * unit;
+	}
+
+	if (stepSize || isNullOrUndef$2(precision)) {
+		// If a precision is not specified, calculate factor based on spacing
+		factor = Math.pow(10, helpers$1._decimalPlaces(spacing));
+	} else {
+		// If the user specified a precision, round to that number of decimal places
+		factor = Math.pow(10, precision);
+		spacing = Math.ceil(spacing * factor) / factor;
+	}
+
+	niceMin = Math.floor(rmin / spacing) * spacing;
+	niceMax = Math.ceil(rmax / spacing) * spacing;
+
+	// If min, max and stepSize is set and they make an evenly spaced scale use it.
+	if (stepSize) {
+		// If very close to our whole number, use it.
+		if (!isNullOrUndef$2(min) && helpers$1.almostWhole(min / spacing, spacing / 1000)) {
+			niceMin = min;
+		}
+		if (!isNullOrUndef$2(max) && helpers$1.almostWhole(max / spacing, spacing / 1000)) {
+			niceMax = max;
+		}
+	}
+
+	numSpaces = (niceMax - niceMin) / spacing;
+	// If very close to our rounded value, use it.
+	if (helpers$1.almostEquals(numSpaces, Math.round(numSpaces), spacing / 1000)) {
+		numSpaces = Math.round(numSpaces);
+	} else {
+		numSpaces = Math.ceil(numSpaces);
+	}
+
+	niceMin = Math.round(niceMin * factor) / factor;
+	niceMax = Math.round(niceMax * factor) / factor;
+	ticks.push(isNullOrUndef$2(min) ? niceMin : min);
+	for (var j = 1; j < numSpaces; ++j) {
+		ticks.push(Math.round((niceMin + j * spacing) * factor) / factor);
+	}
+	ticks.push(isNullOrUndef$2(max) ? niceMax : max);
+
+	return ticks;
+}
+
+var scale_linearbase = core_scale.extend({
+	getRightValue: function(value) {
+		if (typeof value === 'string') {
+			return +value;
+		}
+		return core_scale.prototype.getRightValue.call(this, value);
+	},
+
+	handleTickRangeOptions: function() {
+		var me = this;
+		var opts = me.options;
+		var tickOpts = opts.ticks;
+
+		// If we are forcing it to begin at 0, but 0 will already be rendered on the chart,
+		// do nothing since that would make the chart weird. If the user really wants a weird chart
+		// axis, they can manually override it
+		if (tickOpts.beginAtZero) {
+			var minSign = helpers$1.sign(me.min);
+			var maxSign = helpers$1.sign(me.max);
+
+			if (minSign < 0 && maxSign < 0) {
+				// move the top up to 0
+				me.max = 0;
+			} else if (minSign > 0 && maxSign > 0) {
+				// move the bottom down to 0
+				me.min = 0;
+			}
+		}
+
+		var setMin = tickOpts.min !== undefined || tickOpts.suggestedMin !== undefined;
+		var setMax = tickOpts.max !== undefined || tickOpts.suggestedMax !== undefined;
+
+		if (tickOpts.min !== undefined) {
+			me.min = tickOpts.min;
+		} else if (tickOpts.suggestedMin !== undefined) {
+			if (me.min === null) {
+				me.min = tickOpts.suggestedMin;
+			} else {
+				me.min = Math.min(me.min, tickOpts.suggestedMin);
+			}
+		}
+
+		if (tickOpts.max !== undefined) {
+			me.max = tickOpts.max;
+		} else if (tickOpts.suggestedMax !== undefined) {
+			if (me.max === null) {
+				me.max = tickOpts.suggestedMax;
+			} else {
+				me.max = Math.max(me.max, tickOpts.suggestedMax);
+			}
+		}
+
+		if (setMin !== setMax) {
+			// We set the min or the max but not both.
+			// So ensure that our range is good
+			// Inverted or 0 length range can happen when
+			// ticks.min is set, and no datasets are visible
+			if (me.min >= me.max) {
+				if (setMin) {
+					me.max = me.min + 1;
+				} else {
+					me.min = me.max - 1;
+				}
+			}
+		}
+
+		if (me.min === me.max) {
+			me.max++;
+
+			if (!tickOpts.beginAtZero) {
+				me.min--;
+			}
+		}
+	},
+
+	getTickLimit: function() {
+		var me = this;
+		var tickOpts = me.options.ticks;
+		var stepSize = tickOpts.stepSize;
+		var maxTicksLimit = tickOpts.maxTicksLimit;
+		var maxTicks;
+
+		if (stepSize) {
+			maxTicks = Math.ceil(me.max / stepSize) - Math.floor(me.min / stepSize) + 1;
+		} else {
+			maxTicks = me._computeTickLimit();
+			maxTicksLimit = maxTicksLimit || 11;
+		}
+
+		if (maxTicksLimit) {
+			maxTicks = Math.min(maxTicksLimit, maxTicks);
+		}
+
+		return maxTicks;
+	},
+
+	_computeTickLimit: function() {
+		return Number.POSITIVE_INFINITY;
+	},
+
+	handleDirectionalChanges: noop,
+
+	buildTicks: function() {
+		var me = this;
+		var opts = me.options;
+		var tickOpts = opts.ticks;
+
+		// Figure out what the max number of ticks we can support it is based on the size of
+		// the axis area. For now, we say that the minimum tick spacing in pixels must be 40
+		// We also limit the maximum number of ticks to 11 which gives a nice 10 squares on
+		// the graph. Make sure we always have at least 2 ticks
+		var maxTicks = me.getTickLimit();
+		maxTicks = Math.max(2, maxTicks);
+
+		var numericGeneratorOptions = {
+			maxTicks: maxTicks,
+			min: tickOpts.min,
+			max: tickOpts.max,
+			precision: tickOpts.precision,
+			stepSize: helpers$1.valueOrDefault(tickOpts.fixedStepSize, tickOpts.stepSize)
+		};
+		var ticks = me.ticks = generateTicks(numericGeneratorOptions, me);
+
+		me.handleDirectionalChanges();
+
+		// At this point, we need to update our max and min given the tick values since we have expanded the
+		// range of the scale
+		me.max = helpers$1.max(ticks);
+		me.min = helpers$1.min(ticks);
+
+		if (tickOpts.reverse) {
+			ticks.reverse();
+
+			me.start = me.max;
+			me.end = me.min;
+		} else {
+			me.start = me.min;
+			me.end = me.max;
+		}
+	},
+
+	convertTicksToLabels: function() {
+		var me = this;
+		me.ticksAsNumbers = me.ticks.slice();
+		me.zeroLineIndex = me.ticks.indexOf(0);
+
+		core_scale.prototype.convertTicksToLabels.call(me);
+	},
+
+	_configure: function() {
+		var me = this;
+		var ticks = me.getTicks();
+		var start = me.min;
+		var end = me.max;
+		var offset;
+
+		core_scale.prototype._configure.call(me);
+
+		if (me.options.offset && ticks.length) {
+			offset = (end - start) / Math.max(ticks.length - 1, 1) / 2;
+			start -= offset;
+			end += offset;
+		}
+		me._startValue = start;
+		me._endValue = end;
+		me._valueRange = end - start;
+	}
+});
+
+var defaultConfig$1 = {
+	position: 'left',
+	ticks: {
+		callback: core_ticks.formatters.linear
+	}
+};
+
+var DEFAULT_MIN = 0;
+var DEFAULT_MAX = 1;
+
+function getOrCreateStack(stacks, stacked, meta) {
+	var key = [
+		meta.type,
+		// we have a separate stack for stack=undefined datasets when the opts.stacked is undefined
+		stacked === undefined && meta.stack === undefined ? meta.index : '',
+		meta.stack
+	].join('.');
+
+	if (stacks[key] === undefined) {
+		stacks[key] = {
+			pos: [],
+			neg: []
+		};
+	}
+
+	return stacks[key];
+}
+
+function stackData(scale, stacks, meta, data) {
+	var opts = scale.options;
+	var stacked = opts.stacked;
+	var stack = getOrCreateStack(stacks, stacked, meta);
+	var pos = stack.pos;
+	var neg = stack.neg;
+	var ilen = data.length;
+	var i, value;
+
+	for (i = 0; i < ilen; ++i) {
+		value = scale._parseValue(data[i]);
+		if (isNaN(value.min) || isNaN(value.max) || meta.data[i].hidden) {
+			continue;
+		}
+
+		pos[i] = pos[i] || 0;
+		neg[i] = neg[i] || 0;
+
+		if (opts.relativePoints) {
+			pos[i] = 100;
+		} else if (value.min < 0 || value.max < 0) {
+			neg[i] += value.min;
+		} else {
+			pos[i] += value.max;
+		}
+	}
+}
+
+function updateMinMax(scale, meta, data) {
+	var ilen = data.length;
+	var i, value;
+
+	for (i = 0; i < ilen; ++i) {
+		value = scale._parseValue(data[i]);
+		if (isNaN(value.min) || isNaN(value.max) || meta.data[i].hidden) {
+			continue;
+		}
+
+		scale.min = Math.min(scale.min, value.min);
+		scale.max = Math.max(scale.max, value.max);
+	}
+}
+
+var scale_linear = scale_linearbase.extend({
+	determineDataLimits: function() {
+		var me = this;
+		var opts = me.options;
+		var chart = me.chart;
+		var datasets = chart.data.datasets;
+		var metasets = me._getMatchingVisibleMetas();
+		var hasStacks = opts.stacked;
+		var stacks = {};
+		var ilen = metasets.length;
+		var i, meta, data, values;
+
+		me.min = Number.POSITIVE_INFINITY;
+		me.max = Number.NEGATIVE_INFINITY;
+
+		if (hasStacks === undefined) {
+			for (i = 0; !hasStacks && i < ilen; ++i) {
+				meta = metasets[i];
+				hasStacks = meta.stack !== undefined;
+			}
+		}
+
+		for (i = 0; i < ilen; ++i) {
+			meta = metasets[i];
+			data = datasets[meta.index].data;
+			if (hasStacks) {
+				stackData(me, stacks, meta, data);
+			} else {
+				updateMinMax(me, meta, data);
+			}
+		}
+
+		helpers$1.each(stacks, function(stackValues) {
+			values = stackValues.pos.concat(stackValues.neg);
+			me.min = Math.min(me.min, helpers$1.min(values));
+			me.max = Math.max(me.max, helpers$1.max(values));
+		});
+
+		me.min = helpers$1.isFinite(me.min) && !isNaN(me.min) ? me.min : DEFAULT_MIN;
+		me.max = helpers$1.isFinite(me.max) && !isNaN(me.max) ? me.max : DEFAULT_MAX;
+
+		// Common base implementation to handle ticks.min, ticks.max, ticks.beginAtZero
+		me.handleTickRangeOptions();
+	},
+
+	// Returns the maximum number of ticks based on the scale dimension
+	_computeTickLimit: function() {
+		var me = this;
+		var tickFont;
+
+		if (me.isHorizontal()) {
+			return Math.ceil(me.width / 40);
+		}
+		tickFont = helpers$1.options._parseFont(me.options.ticks);
+		return Math.ceil(me.height / tickFont.lineHeight);
+	},
+
+	// Called after the ticks are built. We need
+	handleDirectionalChanges: function() {
+		if (!this.isHorizontal()) {
+			// We are in a vertical orientation. The top value is the highest. So reverse the array
+			this.ticks.reverse();
+		}
+	},
+
+	getLabelForIndex: function(index, datasetIndex) {
+		return this._getScaleLabel(this.chart.data.datasets[datasetIndex].data[index]);
+	},
+
+	// Utils
+	getPixelForValue: function(value) {
+		var me = this;
+		return me.getPixelForDecimal((+me.getRightValue(value) - me._startValue) / me._valueRange);
+	},
+
+	getValueForPixel: function(pixel) {
+		return this._startValue + this.getDecimalForPixel(pixel) * this._valueRange;
+	},
+
+	getPixelForTick: function(index) {
+		var ticks = this.ticksAsNumbers;
+		if (index < 0 || index > ticks.length - 1) {
+			return null;
+		}
+		return this.getPixelForValue(ticks[index]);
+	}
+});
+
+// INTERNAL: static default options, registered in src/index.js
+var _defaults$1 = defaultConfig$1;
+scale_linear._defaults = _defaults$1;
+
+var valueOrDefault$b = helpers$1.valueOrDefault;
+var log10 = helpers$1.math.log10;
+
+/**
+ * Generate a set of logarithmic ticks
+ * @param generationOptions the options used to generate the ticks
+ * @param dataRange the range of the data
+ * @returns {number[]} array of tick values
+ */
+function generateTicks$1(generationOptions, dataRange) {
+	var ticks = [];
+
+	var tickVal = valueOrDefault$b(generationOptions.min, Math.pow(10, Math.floor(log10(dataRange.min))));
+
+	var endExp = Math.floor(log10(dataRange.max));
+	var endSignificand = Math.ceil(dataRange.max / Math.pow(10, endExp));
+	var exp, significand;
+
+	if (tickVal === 0) {
+		exp = Math.floor(log10(dataRange.minNotZero));
+		significand = Math.floor(dataRange.minNotZero / Math.pow(10, exp));
+
+		ticks.push(tickVal);
+		tickVal = significand * Math.pow(10, exp);
+	} else {
+		exp = Math.floor(log10(tickVal));
+		significand = Math.floor(tickVal / Math.pow(10, exp));
+	}
+	var precision = exp < 0 ? Math.pow(10, Math.abs(exp)) : 1;
+
+	do {
+		ticks.push(tickVal);
+
+		++significand;
+		if (significand === 10) {
+			significand = 1;
+			++exp;
+			precision = exp >= 0 ? 1 : precision;
+		}
+
+		tickVal = Math.round(significand * Math.pow(10, exp) * precision) / precision;
+	} while (exp < endExp || (exp === endExp && significand < endSignificand));
+
+	var lastTick = valueOrDefault$b(generationOptions.max, tickVal);
+	ticks.push(lastTick);
+
+	return ticks;
+}
+
+var defaultConfig$2 = {
+	position: 'left',
+
+	// label settings
+	ticks: {
+		callback: core_ticks.formatters.logarithmic
+	}
+};
+
+// TODO(v3): change this to positiveOrDefault
+function nonNegativeOrDefault(value, defaultValue) {
+	return helpers$1.isFinite(value) && value >= 0 ? value : defaultValue;
+}
+
+var scale_logarithmic = core_scale.extend({
+	determineDataLimits: function() {
+		var me = this;
+		var opts = me.options;
+		var chart = me.chart;
+		var datasets = chart.data.datasets;
+		var isHorizontal = me.isHorizontal();
+		function IDMatches(meta) {
+			return isHorizontal ? meta.xAxisID === me.id : meta.yAxisID === me.id;
+		}
+		var datasetIndex, meta, value, data, i, ilen;
+
+		// Calculate Range
+		me.min = Number.POSITIVE_INFINITY;
+		me.max = Number.NEGATIVE_INFINITY;
+		me.minNotZero = Number.POSITIVE_INFINITY;
+
+		var hasStacks = opts.stacked;
+		if (hasStacks === undefined) {
+			for (datasetIndex = 0; datasetIndex < datasets.length; datasetIndex++) {
+				meta = chart.getDatasetMeta(datasetIndex);
+				if (chart.isDatasetVisible(datasetIndex) && IDMatches(meta) &&
+					meta.stack !== undefined) {
+					hasStacks = true;
+					break;
+				}
+			}
+		}
+
+		if (opts.stacked || hasStacks) {
+			var valuesPerStack = {};
+
+			for (datasetIndex = 0; datasetIndex < datasets.length; datasetIndex++) {
+				meta = chart.getDatasetMeta(datasetIndex);
+				var key = [
+					meta.type,
+					// we have a separate stack for stack=undefined datasets when the opts.stacked is undefined
+					((opts.stacked === undefined && meta.stack === undefined) ? datasetIndex : ''),
+					meta.stack
+				].join('.');
+
+				if (chart.isDatasetVisible(datasetIndex) && IDMatches(meta)) {
+					if (valuesPerStack[key] === undefined) {
+						valuesPerStack[key] = [];
+					}
+
+					data = datasets[datasetIndex].data;
+					for (i = 0, ilen = data.length; i < ilen; i++) {
+						var values = valuesPerStack[key];
+						value = me._parseValue(data[i]);
+						// invalid, hidden and negative values are ignored
+						if (isNaN(value.min) || isNaN(value.max) || meta.data[i].hidden || value.min < 0 || value.max < 0) {
+							continue;
+						}
+						values[i] = values[i] || 0;
+						values[i] += value.max;
+					}
+				}
+			}
+
+			helpers$1.each(valuesPerStack, function(valuesForType) {
+				if (valuesForType.length > 0) {
+					var minVal = helpers$1.min(valuesForType);
+					var maxVal = helpers$1.max(valuesForType);
+					me.min = Math.min(me.min, minVal);
+					me.max = Math.max(me.max, maxVal);
+				}
+			});
+
+		} else {
+			for (datasetIndex = 0; datasetIndex < datasets.length; datasetIndex++) {
+				meta = chart.getDatasetMeta(datasetIndex);
+				if (chart.isDatasetVisible(datasetIndex) && IDMatches(meta)) {
+					data = datasets[datasetIndex].data;
+					for (i = 0, ilen = data.length; i < ilen; i++) {
+						value = me._parseValue(data[i]);
+						// invalid, hidden and negative values are ignored
+						if (isNaN(value.min) || isNaN(value.max) || meta.data[i].hidden || value.min < 0 || value.max < 0) {
+							continue;
+						}
+
+						me.min = Math.min(value.min, me.min);
+						me.max = Math.max(value.max, me.max);
+
+						if (value.min !== 0) {
+							me.minNotZero = Math.min(value.min, me.minNotZero);
+						}
+					}
+				}
+			}
+		}
+
+		me.min = helpers$1.isFinite(me.min) ? me.min : null;
+		me.max = helpers$1.isFinite(me.max) ? me.max : null;
+		me.minNotZero = helpers$1.isFinite(me.minNotZero) ? me.minNotZero : null;
+
+		// Common base implementation to handle ticks.min, ticks.max
+		this.handleTickRangeOptions();
+	},
+
+	handleTickRangeOptions: function() {
+		var me = this;
+		var tickOpts = me.options.ticks;
+		var DEFAULT_MIN = 1;
+		var DEFAULT_MAX = 10;
+
+		me.min = nonNegativeOrDefault(tickOpts.min, me.min);
+		me.max = nonNegativeOrDefault(tickOpts.max, me.max);
+
+		if (me.min === me.max) {
+			if (me.min !== 0 && me.min !== null) {
+				me.min = Math.pow(10, Math.floor(log10(me.min)) - 1);
+				me.max = Math.pow(10, Math.floor(log10(me.max)) + 1);
+			} else {
+				me.min = DEFAULT_MIN;
+				me.max = DEFAULT_MAX;
+			}
+		}
+		if (me.min === null) {
+			me.min = Math.pow(10, Math.floor(log10(me.max)) - 1);
+		}
+		if (me.max === null) {
+			me.max = me.min !== 0
+				? Math.pow(10, Math.floor(log10(me.min)) + 1)
+				: DEFAULT_MAX;
+		}
+		if (me.minNotZero === null) {
+			if (me.min > 0) {
+				me.minNotZero = me.min;
+			} else if (me.max < 1) {
+				me.minNotZero = Math.pow(10, Math.floor(log10(me.max)));
+			} else {
+				me.minNotZero = DEFAULT_MIN;
+			}
+		}
+	},
+
+	buildTicks: function() {
+		var me = this;
+		var tickOpts = me.options.ticks;
+		var reverse = !me.isHorizontal();
+
+		var generationOptions = {
+			min: nonNegativeOrDefault(tickOpts.min),
+			max: nonNegativeOrDefault(tickOpts.max)
+		};
+		var ticks = me.ticks = generateTicks$1(generationOptions, me);
+
+		// At this point, we need to update our max and min given the tick values since we have expanded the
+		// range of the scale
+		me.max = helpers$1.max(ticks);
+		me.min = helpers$1.min(ticks);
+
+		if (tickOpts.reverse) {
+			reverse = !reverse;
+			me.start = me.max;
+			me.end = me.min;
+		} else {
+			me.start = me.min;
+			me.end = me.max;
+		}
+		if (reverse) {
+			ticks.reverse();
+		}
+	},
+
+	convertTicksToLabels: function() {
+		this.tickValues = this.ticks.slice();
+
+		core_scale.prototype.convertTicksToLabels.call(this);
+	},
+
+	// Get the correct tooltip label
+	getLabelForIndex: function(index, datasetIndex) {
+		return this._getScaleLabel(this.chart.data.datasets[datasetIndex].data[index]);
+	},
+
+	getPixelForTick: function(index) {
+		var ticks = this.tickValues;
+		if (index < 0 || index > ticks.length - 1) {
+			return null;
+		}
+		return this.getPixelForValue(ticks[index]);
+	},
+
+	/**
+	 * Returns the value of the first tick.
+	 * @param {number} value - The minimum not zero value.
+	 * @return {number} The first tick value.
+	 * @private
+	 */
+	_getFirstTickValue: function(value) {
+		var exp = Math.floor(log10(value));
+		var significand = Math.floor(value / Math.pow(10, exp));
+
+		return significand * Math.pow(10, exp);
+	},
+
+	_configure: function() {
+		var me = this;
+		var start = me.min;
+		var offset = 0;
+
+		core_scale.prototype._configure.call(me);
+
+		if (start === 0) {
+			start = me._getFirstTickValue(me.minNotZero);
+			offset = valueOrDefault$b(me.options.ticks.fontSize, core_defaults.global.defaultFontSize) / me._length;
+		}
+
+		me._startValue = log10(start);
+		me._valueOffset = offset;
+		me._valueRange = (log10(me.max) - log10(start)) / (1 - offset);
+	},
+
+	getPixelForValue: function(value) {
+		var me = this;
+		var decimal = 0;
+
+		value = +me.getRightValue(value);
+
+		if (value > me.min && value > 0) {
+			decimal = (log10(value) - me._startValue) / me._valueRange + me._valueOffset;
+		}
+		return me.getPixelForDecimal(decimal);
+	},
+
+	getValueForPixel: function(pixel) {
+		var me = this;
+		var decimal = me.getDecimalForPixel(pixel);
+		return decimal === 0 && me.min === 0
+			? 0
+			: Math.pow(10, me._startValue + (decimal - me._valueOffset) * me._valueRange);
+	}
+});
+
+// INTERNAL: static default options, registered in src/index.js
+var _defaults$2 = defaultConfig$2;
+scale_logarithmic._defaults = _defaults$2;
+
+var valueOrDefault$c = helpers$1.valueOrDefault;
+var valueAtIndexOrDefault$1 = helpers$1.valueAtIndexOrDefault;
+var resolve$4 = helpers$1.options.resolve;
+
+var defaultConfig$3 = {
+	display: true,
+
+	// Boolean - Whether to animate scaling the chart from the centre
+	animate: true,
+	position: 'chartArea',
+
+	angleLines: {
+		display: true,
+		color: 'rgba(0,0,0,0.1)',
+		lineWidth: 1,
+		borderDash: [],
+		borderDashOffset: 0.0
+	},
+
+	gridLines: {
+		circular: false
+	},
+
+	// label settings
+	ticks: {
+		// Boolean - Show a backdrop to the scale label
+		showLabelBackdrop: true,
+
+		// String - The colour of the label backdrop
+		backdropColor: 'rgba(255,255,255,0.75)',
+
+		// Number - The backdrop padding above & below the label in pixels
+		backdropPaddingY: 2,
+
+		// Number - The backdrop padding to the side of the label in pixels
+		backdropPaddingX: 2,
+
+		callback: core_ticks.formatters.linear
+	},
+
+	pointLabels: {
+		// Boolean - if true, show point labels
+		display: true,
+
+		// Number - Point label font size in pixels
+		fontSize: 10,
+
+		// Function - Used to convert point labels
+		callback: function(label) {
+			return label;
+		}
+	}
+};
+
+function getTickBackdropHeight(opts) {
+	var tickOpts = opts.ticks;
+
+	if (tickOpts.display && opts.display) {
+		return valueOrDefault$c(tickOpts.fontSize, core_defaults.global.defaultFontSize) + tickOpts.backdropPaddingY * 2;
+	}
+	return 0;
+}
+
+function measureLabelSize(ctx, lineHeight, label) {
+	if (helpers$1.isArray(label)) {
+		return {
+			w: helpers$1.longestText(ctx, ctx.font, label),
+			h: label.length * lineHeight
+		};
+	}
+
+	return {
+		w: ctx.measureText(label).width,
+		h: lineHeight
+	};
+}
+
+function determineLimits(angle, pos, size, min, max) {
+	if (angle === min || angle === max) {
+		return {
+			start: pos - (size / 2),
+			end: pos + (size / 2)
+		};
+	} else if (angle < min || angle > max) {
+		return {
+			start: pos - size,
+			end: pos
+		};
+	}
+
+	return {
+		start: pos,
+		end: pos + size
+	};
+}
+
+/**
+ * Helper function to fit a radial linear scale with point labels
+ */
+function fitWithPointLabels(scale) {
+
+	// Right, this is really confusing and there is a lot of maths going on here
+	// The gist of the problem is here: https://gist.github.com/nnnick/696cc9c55f4b0beb8fe9
+	//
+	// Reaction: https://dl.dropboxusercontent.com/u/34601363/toomuchscience.gif
+	//
+	// Solution:
+	//
+	// We assume the radius of the polygon is half the size of the canvas at first
+	// at each index we check if the text overlaps.
+	//
+	// Where it does, we store that angle and that index.
+	//
+	// After finding the largest index and angle we calculate how much we need to remove
+	// from the shape radius to move the point inwards by that x.
+	//
+	// We average the left and right distances to get the maximum shape radius that can fit in the box
+	// along with labels.
+	//
+	// Once we have that, we can find the centre point for the chart, by taking the x text protrusion
+	// on each side, removing that from the size, halving it and adding the left x protrusion width.
+	//
+	// This will mean we have a shape fitted to the canvas, as large as it can be with the labels
+	// and position it in the most space efficient manner
+	//
+	// https://dl.dropboxusercontent.com/u/34601363/yeahscience.gif
+
+	var plFont = helpers$1.options._parseFont(scale.options.pointLabels);
+
+	// Get maximum radius of the polygon. Either half the height (minus the text width) or half the width.
+	// Use this to calculate the offset + change. - Make sure L/R protrusion is at least 0 to stop issues with centre points
+	var furthestLimits = {
+		l: 0,
+		r: scale.width,
+		t: 0,
+		b: scale.height - scale.paddingTop
+	};
+	var furthestAngles = {};
+	var i, textSize, pointPosition;
+
+	scale.ctx.font = plFont.string;
+	scale._pointLabelSizes = [];
+
+	var valueCount = scale.chart.data.labels.length;
+	for (i = 0; i < valueCount; i++) {
+		pointPosition = scale.getPointPosition(i, scale.drawingArea + 5);
+		textSize = measureLabelSize(scale.ctx, plFont.lineHeight, scale.pointLabels[i]);
+		scale._pointLabelSizes[i] = textSize;
+
+		// Add quarter circle to make degree 0 mean top of circle
+		var angleRadians = scale.getIndexAngle(i);
+		var angle = helpers$1.toDegrees(angleRadians) % 360;
+		var hLimits = determineLimits(angle, pointPosition.x, textSize.w, 0, 180);
+		var vLimits = determineLimits(angle, pointPosition.y, textSize.h, 90, 270);
+
+		if (hLimits.start < furthestLimits.l) {
+			furthestLimits.l = hLimits.start;
+			furthestAngles.l = angleRadians;
+		}
+
+		if (hLimits.end > furthestLimits.r) {
+			furthestLimits.r = hLimits.end;
+			furthestAngles.r = angleRadians;
+		}
+
+		if (vLimits.start < furthestLimits.t) {
+			furthestLimits.t = vLimits.start;
+			furthestAngles.t = angleRadians;
+		}
+
+		if (vLimits.end > furthestLimits.b) {
+			furthestLimits.b = vLimits.end;
+			furthestAngles.b = angleRadians;
+		}
+	}
+
+	scale.setReductions(scale.drawingArea, furthestLimits, furthestAngles);
+}
+
+function getTextAlignForAngle(angle) {
+	if (angle === 0 || angle === 180) {
+		return 'center';
+	} else if (angle < 180) {
+		return 'left';
+	}
+
+	return 'right';
+}
+
+function fillText(ctx, text, position, lineHeight) {
+	var y = position.y + lineHeight / 2;
+	var i, ilen;
+
+	if (helpers$1.isArray(text)) {
+		for (i = 0, ilen = text.length; i < ilen; ++i) {
+			ctx.fillText(text[i], position.x, y);
+			y += lineHeight;
+		}
+	} else {
+		ctx.fillText(text, position.x, y);
+	}
+}
+
+function adjustPointPositionForLabelHeight(angle, textSize, position) {
+	if (angle === 90 || angle === 270) {
+		position.y -= (textSize.h / 2);
+	} else if (angle > 270 || angle < 90) {
+		position.y -= textSize.h;
+	}
+}
+
+function drawPointLabels(scale) {
+	var ctx = scale.ctx;
+	var opts = scale.options;
+	var pointLabelOpts = opts.pointLabels;
+	var tickBackdropHeight = getTickBackdropHeight(opts);
+	var outerDistance = scale.getDistanceFromCenterForValue(opts.ticks.reverse ? scale.min : scale.max);
+	var plFont = helpers$1.options._parseFont(pointLabelOpts);
+
+	ctx.save();
+
+	ctx.font = plFont.string;
+	ctx.textBaseline = 'middle';
+
+	for (var i = scale.chart.data.labels.length - 1; i >= 0; i--) {
+		// Extra pixels out for some label spacing
+		var extra = (i === 0 ? tickBackdropHeight / 2 : 0);
+		var pointLabelPosition = scale.getPointPosition(i, outerDistance + extra + 5);
+
+		// Keep this in loop since we may support array properties here
+		var pointLabelFontColor = valueAtIndexOrDefault$1(pointLabelOpts.fontColor, i, core_defaults.global.defaultFontColor);
+		ctx.fillStyle = pointLabelFontColor;
+
+		var angleRadians = scale.getIndexAngle(i);
+		var angle = helpers$1.toDegrees(angleRadians);
+		ctx.textAlign = getTextAlignForAngle(angle);
+		adjustPointPositionForLabelHeight(angle, scale._pointLabelSizes[i], pointLabelPosition);
+		fillText(ctx, scale.pointLabels[i], pointLabelPosition, plFont.lineHeight);
+	}
+	ctx.restore();
+}
+
+function drawRadiusLine(scale, gridLineOpts, radius, index) {
+	var ctx = scale.ctx;
+	var circular = gridLineOpts.circular;
+	var valueCount = scale.chart.data.labels.length;
+	var lineColor = valueAtIndexOrDefault$1(gridLineOpts.color, index - 1);
+	var lineWidth = valueAtIndexOrDefault$1(gridLineOpts.lineWidth, index - 1);
+	var pointPosition;
+
+	if ((!circular && !valueCount) || !lineColor || !lineWidth) {
+		return;
+	}
+
+	ctx.save();
+	ctx.strokeStyle = lineColor;
+	ctx.lineWidth = lineWidth;
+	if (ctx.setLineDash) {
+		ctx.setLineDash(gridLineOpts.borderDash || []);
+		ctx.lineDashOffset = gridLineOpts.borderDashOffset || 0.0;
+	}
+
+	ctx.beginPath();
+	if (circular) {
+		// Draw circular arcs between the points
+		ctx.arc(scale.xCenter, scale.yCenter, radius, 0, Math.PI * 2);
+	} else {
+		// Draw straight lines connecting each index
+		pointPosition = scale.getPointPosition(0, radius);
+		ctx.moveTo(pointPosition.x, pointPosition.y);
+
+		for (var i = 1; i < valueCount; i++) {
+			pointPosition = scale.getPointPosition(i, radius);
+			ctx.lineTo(pointPosition.x, pointPosition.y);
+		}
+	}
+	ctx.closePath();
+	ctx.stroke();
+	ctx.restore();
+}
+
+function numberOrZero(param) {
+	return helpers$1.isNumber(param) ? param : 0;
+}
+
+var scale_radialLinear = scale_linearbase.extend({
+	setDimensions: function() {
+		var me = this;
+
+		// Set the unconstrained dimension before label rotation
+		me.width = me.maxWidth;
+		me.height = me.maxHeight;
+		me.paddingTop = getTickBackdropHeight(me.options) / 2;
+		me.xCenter = Math.floor(me.width / 2);
+		me.yCenter = Math.floor((me.height - me.paddingTop) / 2);
+		me.drawingArea = Math.min(me.height - me.paddingTop, me.width) / 2;
+	},
+
+	determineDataLimits: function() {
+		var me = this;
+		var chart = me.chart;
+		var min = Number.POSITIVE_INFINITY;
+		var max = Number.NEGATIVE_INFINITY;
+
+		helpers$1.each(chart.data.datasets, function(dataset, datasetIndex) {
+			if (chart.isDatasetVisible(datasetIndex)) {
+				var meta = chart.getDatasetMeta(datasetIndex);
+
+				helpers$1.each(dataset.data, function(rawValue, index) {
+					var value = +me.getRightValue(rawValue);
+					if (isNaN(value) || meta.data[index].hidden) {
+						return;
+					}
+
+					min = Math.min(value, min);
+					max = Math.max(value, max);
+				});
+			}
+		});
+
+		me.min = (min === Number.POSITIVE_INFINITY ? 0 : min);
+		me.max = (max === Number.NEGATIVE_INFINITY ? 0 : max);
+
+		// Common base implementation to handle ticks.min, ticks.max, ticks.beginAtZero
+		me.handleTickRangeOptions();
+	},
+
+	// Returns the maximum number of ticks based on the scale dimension
+	_computeTickLimit: function() {
+		return Math.ceil(this.drawingArea / getTickBackdropHeight(this.options));
+	},
+
+	convertTicksToLabels: function() {
+		var me = this;
+
+		scale_linearbase.prototype.convertTicksToLabels.call(me);
+
+		// Point labels
+		me.pointLabels = me.chart.data.labels.map(function() {
+			var label = helpers$1.callback(me.options.pointLabels.callback, arguments, me);
+			return label || label === 0 ? label : '';
+		});
+	},
+
+	getLabelForIndex: function(index, datasetIndex) {
+		return +this.getRightValue(this.chart.data.datasets[datasetIndex].data[index]);
+	},
+
+	fit: function() {
+		var me = this;
+		var opts = me.options;
+
+		if (opts.display && opts.pointLabels.display) {
+			fitWithPointLabels(me);
+		} else {
+			me.setCenterPoint(0, 0, 0, 0);
+		}
+	},
+
+	/**
+	 * Set radius reductions and determine new radius and center point
+	 * @private
+	 */
+	setReductions: function(largestPossibleRadius, furthestLimits, furthestAngles) {
+		var me = this;
+		var radiusReductionLeft = furthestLimits.l / Math.sin(furthestAngles.l);
+		var radiusReductionRight = Math.max(furthestLimits.r - me.width, 0) / Math.sin(furthestAngles.r);
+		var radiusReductionTop = -furthestLimits.t / Math.cos(furthestAngles.t);
+		var radiusReductionBottom = -Math.max(furthestLimits.b - (me.height - me.paddingTop), 0) / Math.cos(furthestAngles.b);
+
+		radiusReductionLeft = numberOrZero(radiusReductionLeft);
+		radiusReductionRight = numberOrZero(radiusReductionRight);
+		radiusReductionTop = numberOrZero(radiusReductionTop);
+		radiusReductionBottom = numberOrZero(radiusReductionBottom);
+
+		me.drawingArea = Math.min(
+			Math.floor(largestPossibleRadius - (radiusReductionLeft + radiusReductionRight) / 2),
+			Math.floor(largestPossibleRadius - (radiusReductionTop + radiusReductionBottom) / 2));
+		me.setCenterPoint(radiusReductionLeft, radiusReductionRight, radiusReductionTop, radiusReductionBottom);
+	},
+
+	setCenterPoint: function(leftMovement, rightMovement, topMovement, bottomMovement) {
+		var me = this;
+		var maxRight = me.width - rightMovement - me.drawingArea;
+		var maxLeft = leftMovement + me.drawingArea;
+		var maxTop = topMovement + me.drawingArea;
+		var maxBottom = (me.height - me.paddingTop) - bottomMovement - me.drawingArea;
+
+		me.xCenter = Math.floor(((maxLeft + maxRight) / 2) + me.left);
+		me.yCenter = Math.floor(((maxTop + maxBottom) / 2) + me.top + me.paddingTop);
+	},
+
+	getIndexAngle: function(index) {
+		var chart = this.chart;
+		var angleMultiplier = 360 / chart.data.labels.length;
+		var options = chart.options || {};
+		var startAngle = options.startAngle || 0;
+
+		// Start from the top instead of right, so remove a quarter of the circle
+		var angle = (index * angleMultiplier + startAngle) % 360;
+
+		return (angle < 0 ? angle + 360 : angle) * Math.PI * 2 / 360;
+	},
+
+	getDistanceFromCenterForValue: function(value) {
+		var me = this;
+
+		if (helpers$1.isNullOrUndef(value)) {
+			return NaN;
+		}
+
+		// Take into account half font size + the yPadding of the top value
+		var scalingFactor = me.drawingArea / (me.max - me.min);
+		if (me.options.ticks.reverse) {
+			return (me.max - value) * scalingFactor;
+		}
+		return (value - me.min) * scalingFactor;
+	},
+
+	getPointPosition: function(index, distanceFromCenter) {
+		var me = this;
+		var thisAngle = me.getIndexAngle(index) - (Math.PI / 2);
+		return {
+			x: Math.cos(thisAngle) * distanceFromCenter + me.xCenter,
+			y: Math.sin(thisAngle) * distanceFromCenter + me.yCenter
+		};
+	},
+
+	getPointPositionForValue: function(index, value) {
+		return this.getPointPosition(index, this.getDistanceFromCenterForValue(value));
+	},
+
+	getBasePosition: function(index) {
+		var me = this;
+		var min = me.min;
+		var max = me.max;
+
+		return me.getPointPositionForValue(index || 0,
+			me.beginAtZero ? 0 :
+			min < 0 && max < 0 ? max :
+			min > 0 && max > 0 ? min :
+			0);
+	},
+
+	/**
+	 * @private
+	 */
+	_drawGrid: function() {
+		var me = this;
+		var ctx = me.ctx;
+		var opts = me.options;
+		var gridLineOpts = opts.gridLines;
+		var angleLineOpts = opts.angleLines;
+		var lineWidth = valueOrDefault$c(angleLineOpts.lineWidth, gridLineOpts.lineWidth);
+		var lineColor = valueOrDefault$c(angleLineOpts.color, gridLineOpts.color);
+		var i, offset, position;
+
+		if (opts.pointLabels.display) {
+			drawPointLabels(me);
+		}
+
+		if (gridLineOpts.display) {
+			helpers$1.each(me.ticks, function(label, index) {
+				if (index !== 0) {
+					offset = me.getDistanceFromCenterForValue(me.ticksAsNumbers[index]);
+					drawRadiusLine(me, gridLineOpts, offset, index);
+				}
+			});
+		}
+
+		if (angleLineOpts.display && lineWidth && lineColor) {
+			ctx.save();
+			ctx.lineWidth = lineWidth;
+			ctx.strokeStyle = lineColor;
+			if (ctx.setLineDash) {
+				ctx.setLineDash(resolve$4([angleLineOpts.borderDash, gridLineOpts.borderDash, []]));
+				ctx.lineDashOffset = resolve$4([angleLineOpts.borderDashOffset, gridLineOpts.borderDashOffset, 0.0]);
+			}
+
+			for (i = me.chart.data.labels.length - 1; i >= 0; i--) {
+				offset = me.getDistanceFromCenterForValue(opts.ticks.reverse ? me.min : me.max);
+				position = me.getPointPosition(i, offset);
+				ctx.beginPath();
+				ctx.moveTo(me.xCenter, me.yCenter);
+				ctx.lineTo(position.x, position.y);
+				ctx.stroke();
+			}
+
+			ctx.restore();
+		}
+	},
+
+	/**
+	 * @private
+	 */
+	_drawLabels: function() {
+		var me = this;
+		var ctx = me.ctx;
+		var opts = me.options;
+		var tickOpts = opts.ticks;
+
+		if (!tickOpts.display) {
+			return;
+		}
+
+		var startAngle = me.getIndexAngle(0);
+		var tickFont = helpers$1.options._parseFont(tickOpts);
+		var tickFontColor = valueOrDefault$c(tickOpts.fontColor, core_defaults.global.defaultFontColor);
+		var offset, width;
+
+		ctx.save();
+		ctx.font = tickFont.string;
+		ctx.translate(me.xCenter, me.yCenter);
+		ctx.rotate(startAngle);
+		ctx.textAlign = 'center';
+		ctx.textBaseline = 'middle';
+
+		helpers$1.each(me.ticks, function(label, index) {
+			if (index === 0 && !tickOpts.reverse) {
+				return;
+			}
+
+			offset = me.getDistanceFromCenterForValue(me.ticksAsNumbers[index]);
+
+			if (tickOpts.showLabelBackdrop) {
+				width = ctx.measureText(label).width;
+				ctx.fillStyle = tickOpts.backdropColor;
+
+				ctx.fillRect(
+					-width / 2 - tickOpts.backdropPaddingX,
+					-offset - tickFont.size / 2 - tickOpts.backdropPaddingY,
+					width + tickOpts.backdropPaddingX * 2,
+					tickFont.size + tickOpts.backdropPaddingY * 2
+				);
+			}
+
+			ctx.fillStyle = tickFontColor;
+			ctx.fillText(label, 0, -offset);
+		});
+
+		ctx.restore();
+	},
+
+	/**
+	 * @private
+	 */
+	_drawTitle: helpers$1.noop
+});
+
+// INTERNAL: static default options, registered in src/index.js
+var _defaults$3 = defaultConfig$3;
+scale_radialLinear._defaults = _defaults$3;
+
+var deprecated$1 = helpers$1._deprecated;
+var resolve$5 = helpers$1.options.resolve;
+var valueOrDefault$d = helpers$1.valueOrDefault;
+
+// Integer constants are from the ES6 spec.
+var MIN_INTEGER = Number.MIN_SAFE_INTEGER || -9007199254740991;
+var MAX_INTEGER = Number.MAX_SAFE_INTEGER || 9007199254740991;
+
+var INTERVALS = {
+	millisecond: {
+		common: true,
+		size: 1,
+		steps: 1000
+	},
+	second: {
+		common: true,
+		size: 1000,
+		steps: 60
+	},
+	minute: {
+		common: true,
+		size: 60000,
+		steps: 60
+	},
+	hour: {
+		common: true,
+		size: 3600000,
+		steps: 24
+	},
+	day: {
+		common: true,
+		size: 86400000,
+		steps: 30
+	},
+	week: {
+		common: false,
+		size: 604800000,
+		steps: 4
+	},
+	month: {
+		common: true,
+		size: 2.628e9,
+		steps: 12
+	},
+	quarter: {
+		common: false,
+		size: 7.884e9,
+		steps: 4
+	},
+	year: {
+		common: true,
+		size: 3.154e10
+	}
+};
+
+var UNITS = Object.keys(INTERVALS);
+
+function sorter(a, b) {
+	return a - b;
+}
+
+function arrayUnique(items) {
+	var hash = {};
+	var out = [];
+	var i, ilen, item;
+
+	for (i = 0, ilen = items.length; i < ilen; ++i) {
+		item = items[i];
+		if (!hash[item]) {
+			hash[item] = true;
+			out.push(item);
+		}
+	}
+
+	return out;
+}
+
+function getMin(options) {
+	return helpers$1.valueOrDefault(options.time.min, options.ticks.min);
+}
+
+function getMax(options) {
+	return helpers$1.valueOrDefault(options.time.max, options.ticks.max);
+}
+
+/**
+ * Returns an array of {time, pos} objects used to interpolate a specific `time` or position
+ * (`pos`) on the scale, by searching entries before and after the requested value. `pos` is
+ * a decimal between 0 and 1: 0 being the start of the scale (left or top) and 1 the other
+ * extremity (left + width or top + height). Note that it would be more optimized to directly
+ * store pre-computed pixels, but the scale dimensions are not guaranteed at the time we need
+ * to create the lookup table. The table ALWAYS contains at least two items: min and max.
+ *
+ * @param {number[]} timestamps - timestamps sorted from lowest to highest.
+ * @param {string} distribution - If 'linear', timestamps will be spread linearly along the min
+ * and max range, so basically, the table will contains only two items: {min, 0} and {max, 1}.
+ * If 'series', timestamps will be positioned at the same distance from each other. In this
+ * case, only timestamps that break the time linearity are registered, meaning that in the
+ * best case, all timestamps are linear, the table contains only min and max.
+ */
+function buildLookupTable(timestamps, min, max, distribution) {
+	if (distribution === 'linear' || !timestamps.length) {
+		return [
+			{time: min, pos: 0},
+			{time: max, pos: 1}
+		];
+	}
+
+	var table = [];
+	var items = [min];
+	var i, ilen, prev, curr, next;
+
+	for (i = 0, ilen = timestamps.length; i < ilen; ++i) {
+		curr = timestamps[i];
+		if (curr > min && curr < max) {
+			items.push(curr);
+		}
+	}
+
+	items.push(max);
+
+	for (i = 0, ilen = items.length; i < ilen; ++i) {
+		next = items[i + 1];
+		prev = items[i - 1];
+		curr = items[i];
+
+		// only add points that breaks the scale linearity
+		if (prev === undefined || next === undefined || Math.round((next + prev) / 2) !== curr) {
+			table.push({time: curr, pos: i / (ilen - 1)});
+		}
+	}
+
+	return table;
+}
+
+// @see adapted from https://www.anujgakhar.com/2014/03/01/binary-search-in-javascript/
+function lookup(table, key, value) {
+	var lo = 0;
+	var hi = table.length - 1;
+	var mid, i0, i1;
+
+	while (lo >= 0 && lo <= hi) {
+		mid = (lo + hi) >> 1;
+		i0 = table[mid - 1] || null;
+		i1 = table[mid];
+
+		if (!i0) {
+			// given value is outside table (before first item)
+			return {lo: null, hi: i1};
+		} else if (i1[key] < value) {
+			lo = mid + 1;
+		} else if (i0[key] > value) {
+			hi = mid - 1;
+		} else {
+			return {lo: i0, hi: i1};
+		}
+	}
+
+	// given value is outside table (after last item)
+	return {lo: i1, hi: null};
+}
+
+/**
+ * Linearly interpolates the given source `value` using the table items `skey` values and
+ * returns the associated `tkey` value. For example, interpolate(table, 'time', 42, 'pos')
+ * returns the position for a timestamp equal to 42. If value is out of bounds, values at
+ * index [0, 1] or [n - 1, n] are used for the interpolation.
+ */
+function interpolate$1(table, skey, sval, tkey) {
+	var range = lookup(table, skey, sval);
+
+	// Note: the lookup table ALWAYS contains at least 2 items (min and max)
+	var prev = !range.lo ? table[0] : !range.hi ? table[table.length - 2] : range.lo;
+	var next = !range.lo ? table[1] : !range.hi ? table[table.length - 1] : range.hi;
+
+	var span = next[skey] - prev[skey];
+	var ratio = span ? (sval - prev[skey]) / span : 0;
+	var offset = (next[tkey] - prev[tkey]) * ratio;
+
+	return prev[tkey] + offset;
+}
+
+function toTimestamp(scale, input) {
+	var adapter = scale._adapter;
+	var options = scale.options.time;
+	var parser = options.parser;
+	var format = parser || options.format;
+	var value = input;
+
+	if (typeof parser === 'function') {
+		value = parser(value);
+	}
+
+	// Only parse if its not a timestamp already
+	if (!helpers$1.isFinite(value)) {
+		value = typeof format === 'string'
+			? adapter.parse(value, format)
+			: adapter.parse(value);
+	}
+
+	if (value !== null) {
+		return +value;
+	}
+
+	// Labels are in an incompatible format and no `parser` has been provided.
+	// The user might still use the deprecated `format` option for parsing.
+	if (!parser && typeof format === 'function') {
+		value = format(input);
+
+		// `format` could return something else than a timestamp, if so, parse it
+		if (!helpers$1.isFinite(value)) {
+			value = adapter.parse(value);
+		}
+	}
+
+	return value;
+}
+
+function parse(scale, input) {
+	if (helpers$1.isNullOrUndef(input)) {
+		return null;
+	}
+
+	var options = scale.options.time;
+	var value = toTimestamp(scale, scale.getRightValue(input));
+	if (value === null) {
+		return value;
+	}
+
+	if (options.round) {
+		value = +scale._adapter.startOf(value, options.round);
+	}
+
+	return value;
+}
+
+/**
+ * Figures out what unit results in an appropriate number of auto-generated ticks
+ */
+function determineUnitForAutoTicks(minUnit, min, max, capacity) {
+	var ilen = UNITS.length;
+	var i, interval, factor;
+
+	for (i = UNITS.indexOf(minUnit); i < ilen - 1; ++i) {
+		interval = INTERVALS[UNITS[i]];
+		factor = interval.steps ? interval.steps : MAX_INTEGER;
+
+		if (interval.common && Math.ceil((max - min) / (factor * interval.size)) <= capacity) {
+			return UNITS[i];
+		}
+	}
+
+	return UNITS[ilen - 1];
+}
+
+/**
+ * Figures out what unit to format a set of ticks with
+ */
+function determineUnitForFormatting(scale, numTicks, minUnit, min, max) {
+	var i, unit;
+
+	for (i = UNITS.length - 1; i >= UNITS.indexOf(minUnit); i--) {
+		unit = UNITS[i];
+		if (INTERVALS[unit].common && scale._adapter.diff(max, min, unit) >= numTicks - 1) {
+			return unit;
+		}
+	}
+
+	return UNITS[minUnit ? UNITS.indexOf(minUnit) : 0];
+}
+
+function determineMajorUnit(unit) {
+	for (var i = UNITS.indexOf(unit) + 1, ilen = UNITS.length; i < ilen; ++i) {
+		if (INTERVALS[UNITS[i]].common) {
+			return UNITS[i];
+		}
+	}
+}
+
+/**
+ * Generates a maximum of `capacity` timestamps between min and max, rounded to the
+ * `minor` unit using the given scale time `options`.
+ * Important: this method can return ticks outside the min and max range, it's the
+ * responsibility of the calling code to clamp values if needed.
+ */
+function generate(scale, min, max, capacity) {
+	var adapter = scale._adapter;
+	var options = scale.options;
+	var timeOpts = options.time;
+	var minor = timeOpts.unit || determineUnitForAutoTicks(timeOpts.minUnit, min, max, capacity);
+	var stepSize = resolve$5([timeOpts.stepSize, timeOpts.unitStepSize, 1]);
+	var weekday = minor === 'week' ? timeOpts.isoWeekday : false;
+	var first = min;
+	var ticks = [];
+	var time;
+
+	// For 'week' unit, handle the first day of week option
+	if (weekday) {
+		first = +adapter.startOf(first, 'isoWeek', weekday);
+	}
+
+	// Align first ticks on unit
+	first = +adapter.startOf(first, weekday ? 'day' : minor);
+
+	// Prevent browser from freezing in case user options request millions of milliseconds
+	if (adapter.diff(max, min, minor) > 100000 * stepSize) {
+		throw min + ' and ' + max + ' are too far apart with stepSize of ' + stepSize + ' ' + minor;
+	}
+
+	for (time = first; time < max; time = +adapter.add(time, stepSize, minor)) {
+		ticks.push(time);
+	}
+
+	if (time === max || options.bounds === 'ticks') {
+		ticks.push(time);
+	}
+
+	return ticks;
+}
+
+/**
+ * Returns the start and end offsets from edges in the form of {start, end}
+ * where each value is a relative width to the scale and ranges between 0 and 1.
+ * They add extra margins on the both sides by scaling down the original scale.
+ * Offsets are added when the `offset` option is true.
+ */
+function computeOffsets(table, ticks, min, max, options) {
+	var start = 0;
+	var end = 0;
+	var first, last;
+
+	if (options.offset && ticks.length) {
+		first = interpolate$1(table, 'time', ticks[0], 'pos');
+		if (ticks.length === 1) {
+			start = 1 - first;
+		} else {
+			start = (interpolate$1(table, 'time', ticks[1], 'pos') - first) / 2;
+		}
+		last = interpolate$1(table, 'time', ticks[ticks.length - 1], 'pos');
+		if (ticks.length === 1) {
+			end = last;
+		} else {
+			end = (last - interpolate$1(table, 'time', ticks[ticks.length - 2], 'pos')) / 2;
+		}
+	}
+
+	return {start: start, end: end, factor: 1 / (start + 1 + end)};
+}
+
+function setMajorTicks(scale, ticks, map, majorUnit) {
+	var adapter = scale._adapter;
+	var first = +adapter.startOf(ticks[0].value, majorUnit);
+	var last = ticks[ticks.length - 1].value;
+	var major, index;
+
+	for (major = first; major <= last; major = +adapter.add(major, 1, majorUnit)) {
+		index = map[major];
+		if (index >= 0) {
+			ticks[index].major = true;
+		}
+	}
+	return ticks;
+}
+
+function ticksFromTimestamps(scale, values, majorUnit) {
+	var ticks = [];
+	var map = {};
+	var ilen = values.length;
+	var i, value;
+
+	for (i = 0; i < ilen; ++i) {
+		value = values[i];
+		map[value] = i;
+
+		ticks.push({
+			value: value,
+			major: false
+		});
+	}
+
+	// We set the major ticks separately from the above loop because calling startOf for every tick
+	// is expensive when there is a large number of ticks
+	return (ilen === 0 || !majorUnit) ? ticks : setMajorTicks(scale, ticks, map, majorUnit);
+}
+
+var defaultConfig$4 = {
+	position: 'bottom',
+
+	/**
+	 * Data distribution along the scale:
+	 * - 'linear': data are spread according to their time (distances can vary),
+	 * - 'series': data are spread at the same distance from each other.
+	 * @see https://github.com/chartjs/Chart.js/pull/4507
+	 * @since 2.7.0
+	 */
+	distribution: 'linear',
+
+	/**
+	 * Scale boundary strategy (bypassed by min/max time options)
+	 * - `data`: make sure data are fully visible, ticks outside are removed
+	 * - `ticks`: make sure ticks are fully visible, data outside are truncated
+	 * @see https://github.com/chartjs/Chart.js/pull/4556
+	 * @since 2.7.0
+	 */
+	bounds: 'data',
+
+	adapters: {},
+	time: {
+		parser: false, // false == a pattern string from https://momentjs.com/docs/#/parsing/string-format/ or a custom callback that converts its argument to a moment
+		unit: false, // false == automatic or override with week, month, year, etc.
+		round: false, // none, or override with week, month, year, etc.
+		displayFormat: false, // DEPRECATED
+		isoWeekday: false, // override week start day - see https://momentjs.com/docs/#/get-set/iso-weekday/
+		minUnit: 'millisecond',
+		displayFormats: {}
+	},
+	ticks: {
+		autoSkip: false,
+
+		/**
+		 * Ticks generation input values:
+		 * - 'auto': generates "optimal" ticks based on scale size and time options.
+		 * - 'data': generates ticks from data (including labels from data {t|x|y} objects).
+		 * - 'labels': generates ticks from user given `data.labels` values ONLY.
+		 * @see https://github.com/chartjs/Chart.js/pull/4507
+		 * @since 2.7.0
+		 */
+		source: 'auto',
+
+		major: {
+			enabled: false
+		}
+	}
+};
+
+var scale_time = core_scale.extend({
+	initialize: function() {
+		this.mergeTicksOptions();
+		core_scale.prototype.initialize.call(this);
+	},
+
+	update: function() {
+		var me = this;
+		var options = me.options;
+		var time = options.time || (options.time = {});
+		var adapter = me._adapter = new core_adapters._date(options.adapters.date);
+
+		// DEPRECATIONS: output a message only one time per update
+		deprecated$1('time scale', time.format, 'time.format', 'time.parser');
+		deprecated$1('time scale', time.min, 'time.min', 'ticks.min');
+		deprecated$1('time scale', time.max, 'time.max', 'ticks.max');
+
+		// Backward compatibility: before introducing adapter, `displayFormats` was
+		// supposed to contain *all* unit/string pairs but this can't be resolved
+		// when loading the scale (adapters are loaded afterward), so let's populate
+		// missing formats on update
+		helpers$1.mergeIf(time.displayFormats, adapter.formats());
+
+		return core_scale.prototype.update.apply(me, arguments);
+	},
+
+	/**
+	 * Allows data to be referenced via 't' attribute
+	 */
+	getRightValue: function(rawValue) {
+		if (rawValue && rawValue.t !== undefined) {
+			rawValue = rawValue.t;
+		}
+		return core_scale.prototype.getRightValue.call(this, rawValue);
+	},
+
+	determineDataLimits: function() {
+		var me = this;
+		var chart = me.chart;
+		var adapter = me._adapter;
+		var options = me.options;
+		var unit = options.time.unit || 'day';
+		var min = MAX_INTEGER;
+		var max = MIN_INTEGER;
+		var timestamps = [];
+		var datasets = [];
+		var labels = [];
+		var i, j, ilen, jlen, data, timestamp, labelsAdded;
+		var dataLabels = me._getLabels();
+
+		for (i = 0, ilen = dataLabels.length; i < ilen; ++i) {
+			labels.push(parse(me, dataLabels[i]));
+		}
+
+		for (i = 0, ilen = (chart.data.datasets || []).length; i < ilen; ++i) {
+			if (chart.isDatasetVisible(i)) {
+				data = chart.data.datasets[i].data;
+
+				// Let's consider that all data have the same format.
+				if (helpers$1.isObject(data[0])) {
+					datasets[i] = [];
+
+					for (j = 0, jlen = data.length; j < jlen; ++j) {
+						timestamp = parse(me, data[j]);
+						timestamps.push(timestamp);
+						datasets[i][j] = timestamp;
+					}
+				} else {
+					datasets[i] = labels.slice(0);
+					if (!labelsAdded) {
+						timestamps = timestamps.concat(labels);
+						labelsAdded = true;
+					}
+				}
+			} else {
+				datasets[i] = [];
+			}
+		}
+
+		if (labels.length) {
+			min = Math.min(min, labels[0]);
+			max = Math.max(max, labels[labels.length - 1]);
+		}
+
+		if (timestamps.length) {
+			timestamps = ilen > 1 ? arrayUnique(timestamps).sort(sorter) : timestamps.sort(sorter);
+			min = Math.min(min, timestamps[0]);
+			max = Math.max(max, timestamps[timestamps.length - 1]);
+		}
+
+		min = parse(me, getMin(options)) || min;
+		max = parse(me, getMax(options)) || max;
+
+		// In case there is no valid min/max, set limits based on unit time option
+		min = min === MAX_INTEGER ? +adapter.startOf(Date.now(), unit) : min;
+		max = max === MIN_INTEGER ? +adapter.endOf(Date.now(), unit) + 1 : max;
+
+		// Make sure that max is strictly higher than min (required by the lookup table)
+		me.min = Math.min(min, max);
+		me.max = Math.max(min + 1, max);
+
+		// PRIVATE
+		me._table = [];
+		me._timestamps = {
+			data: timestamps,
+			datasets: datasets,
+			labels: labels
+		};
+	},
+
+	buildTicks: function() {
+		var me = this;
+		var min = me.min;
+		var max = me.max;
+		var options = me.options;
+		var tickOpts = options.ticks;
+		var timeOpts = options.time;
+		var timestamps = me._timestamps;
+		var ticks = [];
+		var capacity = me.getLabelCapacity(min);
+		var source = tickOpts.source;
+		var distribution = options.distribution;
+		var i, ilen, timestamp;
+
+		if (source === 'data' || (source === 'auto' && distribution === 'series')) {
+			timestamps = timestamps.data;
+		} else if (source === 'labels') {
+			timestamps = timestamps.labels;
+		} else {
+			timestamps = generate(me, min, max, capacity);
+		}
+
+		if (options.bounds === 'ticks' && timestamps.length) {
+			min = timestamps[0];
+			max = timestamps[timestamps.length - 1];
+		}
+
+		// Enforce limits with user min/max options
+		min = parse(me, getMin(options)) || min;
+		max = parse(me, getMax(options)) || max;
+
+		// Remove ticks outside the min/max range
+		for (i = 0, ilen = timestamps.length; i < ilen; ++i) {
+			timestamp = timestamps[i];
+			if (timestamp >= min && timestamp <= max) {
+				ticks.push(timestamp);
+			}
+		}
+
+		me.min = min;
+		me.max = max;
+
+		// PRIVATE
+		// determineUnitForFormatting relies on the number of ticks so we don't use it when
+		// autoSkip is enabled because we don't yet know what the final number of ticks will be
+		me._unit = timeOpts.unit || (tickOpts.autoSkip
+			? determineUnitForAutoTicks(timeOpts.minUnit, me.min, me.max, capacity)
+			: determineUnitForFormatting(me, ticks.length, timeOpts.minUnit, me.min, me.max));
+		me._majorUnit = !tickOpts.major.enabled || me._unit === 'year' ? undefined
+			: determineMajorUnit(me._unit);
+		me._table = buildLookupTable(me._timestamps.data, min, max, distribution);
+		me._offsets = computeOffsets(me._table, ticks, min, max, options);
+
+		if (tickOpts.reverse) {
+			ticks.reverse();
+		}
+
+		return ticksFromTimestamps(me, ticks, me._majorUnit);
+	},
+
+	getLabelForIndex: function(index, datasetIndex) {
+		var me = this;
+		var adapter = me._adapter;
+		var data = me.chart.data;
+		var timeOpts = me.options.time;
+		var label = data.labels && index < data.labels.length ? data.labels[index] : '';
+		var value = data.datasets[datasetIndex].data[index];
+
+		if (helpers$1.isObject(value)) {
+			label = me.getRightValue(value);
+		}
+		if (timeOpts.tooltipFormat) {
+			return adapter.format(toTimestamp(me, label), timeOpts.tooltipFormat);
+		}
+		if (typeof label === 'string') {
+			return label;
+		}
+		return adapter.format(toTimestamp(me, label), timeOpts.displayFormats.datetime);
+	},
+
+	/**
+	 * Function to format an individual tick mark
+	 * @private
+	 */
+	tickFormatFunction: function(time, index, ticks, format) {
+		var me = this;
+		var adapter = me._adapter;
+		var options = me.options;
+		var formats = options.time.displayFormats;
+		var minorFormat = formats[me._unit];
+		var majorUnit = me._majorUnit;
+		var majorFormat = formats[majorUnit];
+		var tick = ticks[index];
+		var tickOpts = options.ticks;
+		var major = majorUnit && majorFormat && tick && tick.major;
+		var label = adapter.format(time, format ? format : major ? majorFormat : minorFormat);
+		var nestedTickOpts = major ? tickOpts.major : tickOpts.minor;
+		var formatter = resolve$5([
+			nestedTickOpts.callback,
+			nestedTickOpts.userCallback,
+			tickOpts.callback,
+			tickOpts.userCallback
+		]);
+
+		return formatter ? formatter(label, index, ticks) : label;
+	},
+
+	convertTicksToLabels: function(ticks) {
+		var labels = [];
+		var i, ilen;
+
+		for (i = 0, ilen = ticks.length; i < ilen; ++i) {
+			labels.push(this.tickFormatFunction(ticks[i].value, i, ticks));
+		}
+
+		return labels;
+	},
+
+	/**
+	 * @private
+	 */
+	getPixelForOffset: function(time) {
+		var me = this;
+		var offsets = me._offsets;
+		var pos = interpolate$1(me._table, 'time', time, 'pos');
+		return me.getPixelForDecimal((offsets.start + pos) * offsets.factor);
+	},
+
+	getPixelForValue: function(value, index, datasetIndex) {
+		var me = this;
+		var time = null;
+
+		if (index !== undefined && datasetIndex !== undefined) {
+			time = me._timestamps.datasets[datasetIndex][index];
+		}
+
+		if (time === null) {
+			time = parse(me, value);
+		}
+
+		if (time !== null) {
+			return me.getPixelForOffset(time);
+		}
+	},
+
+	getPixelForTick: function(index) {
+		var ticks = this.getTicks();
+		return index >= 0 && index < ticks.length ?
+			this.getPixelForOffset(ticks[index].value) :
+			null;
+	},
+
+	getValueForPixel: function(pixel) {
+		var me = this;
+		var offsets = me._offsets;
+		var pos = me.getDecimalForPixel(pixel) / offsets.factor - offsets.end;
+		var time = interpolate$1(me._table, 'pos', pos, 'time');
+
+		// DEPRECATION, we should return time directly
+		return me._adapter._create(time);
+	},
+
+	/**
+	 * @private
+	 */
+	_getLabelSize: function(label) {
+		var me = this;
+		var ticksOpts = me.options.ticks;
+		var tickLabelWidth = me.ctx.measureText(label).width;
+		var angle = helpers$1.toRadians(me.isHorizontal() ? ticksOpts.maxRotation : ticksOpts.minRotation);
+		var cosRotation = Math.cos(angle);
+		var sinRotation = Math.sin(angle);
+		var tickFontSize = valueOrDefault$d(ticksOpts.fontSize, core_defaults.global.defaultFontSize);
+
+		return {
+			w: (tickLabelWidth * cosRotation) + (tickFontSize * sinRotation),
+			h: (tickLabelWidth * sinRotation) + (tickFontSize * cosRotation)
+		};
+	},
+
+	/**
+	 * Crude approximation of what the label width might be
+	 * @private
+	 */
+	getLabelWidth: function(label) {
+		return this._getLabelSize(label).w;
+	},
+
+	/**
+	 * @private
+	 */
+	getLabelCapacity: function(exampleTime) {
+		var me = this;
+		var timeOpts = me.options.time;
+		var displayFormats = timeOpts.displayFormats;
+
+		// pick the longest format (milliseconds) for guestimation
+		var format = displayFormats[timeOpts.unit] || displayFormats.millisecond;
+		var exampleLabel = me.tickFormatFunction(exampleTime, 0, ticksFromTimestamps(me, [exampleTime], me._majorUnit), format);
+		var size = me._getLabelSize(exampleLabel);
+		var capacity = Math.floor(me.isHorizontal() ? me.width / size.w : me.height / size.h);
+
+		if (me.options.offset) {
+			capacity--;
+		}
+
+		return capacity > 0 ? capacity : 1;
+	}
+});
+
+// INTERNAL: static default options, registered in src/index.js
+var _defaults$4 = defaultConfig$4;
+scale_time._defaults = _defaults$4;
+
+var scales = {
+	category: scale_category,
+	linear: scale_linear,
+	logarithmic: scale_logarithmic,
+	radialLinear: scale_radialLinear,
+	time: scale_time
+};
+
+var FORMATS = {
+	datetime: 'MMM D, YYYY, h:mm:ss a',
+	millisecond: 'h:mm:ss.SSS a',
+	second: 'h:mm:ss a',
+	minute: 'h:mm a',
+	hour: 'hA',
+	day: 'MMM D',
+	week: 'll',
+	month: 'MMM YYYY',
+	quarter: '[Q]Q - YYYY',
+	year: 'YYYY'
+};
+
+core_adapters._date.override(typeof moment === 'function' ? {
+	_id: 'moment', // DEBUG ONLY
+
+	formats: function() {
+		return FORMATS;
+	},
+
+	parse: function(value, format) {
+		if (typeof value === 'string' && typeof format === 'string') {
+			value = moment(value, format);
+		} else if (!(value instanceof moment)) {
+			value = moment(value);
+		}
+		return value.isValid() ? value.valueOf() : null;
+	},
+
+	format: function(time, format) {
+		return moment(time).format(format);
+	},
+
+	add: function(time, amount, unit) {
+		return moment(time).add(amount, unit).valueOf();
+	},
+
+	diff: function(max, min, unit) {
+		return moment(max).diff(moment(min), unit);
+	},
+
+	startOf: function(time, unit, weekday) {
+		time = moment(time);
+		if (unit === 'isoWeek') {
+			return time.isoWeekday(weekday).valueOf();
+		}
+		return time.startOf(unit).valueOf();
+	},
+
+	endOf: function(time, unit) {
+		return moment(time).endOf(unit).valueOf();
+	},
+
+	// DEPRECATIONS
+
+	/**
+	 * Provided for backward compatibility with scale.getValueForPixel().
+	 * @deprecated since version 2.8.0
+	 * @todo remove at version 3
+	 * @private
+	 */
+	_create: function(time) {
+		return moment(time);
+	},
+} : {});
+
+core_defaults._set('global', {
+	plugins: {
+		filler: {
+			propagate: true
+		}
+	}
+});
+
+var mappers = {
+	dataset: function(source) {
+		var index = source.fill;
+		var chart = source.chart;
+		var meta = chart.getDatasetMeta(index);
+		var visible = meta && chart.isDatasetVisible(index);
+		var points = (visible && meta.dataset._children) || [];
+		var length = points.length || 0;
+
+		return !length ? null : function(point, i) {
+			return (i < length && points[i]._view) || null;
+		};
+	},
+
+	boundary: function(source) {
+		var boundary = source.boundary;
+		var x = boundary ? boundary.x : null;
+		var y = boundary ? boundary.y : null;
+
+		if (helpers$1.isArray(boundary)) {
+			return function(point, i) {
+				return boundary[i];
+			};
+		}
+
+		return function(point) {
+			return {
+				x: x === null ? point.x : x,
+				y: y === null ? point.y : y,
+			};
+		};
+	}
+};
+
+// @todo if (fill[0] === '#')
+function decodeFill(el, index, count) {
+	var model = el._model || {};
+	var fill = model.fill;
+	var target;
+
+	if (fill === undefined) {
+		fill = !!model.backgroundColor;
+	}
+
+	if (fill === false || fill === null) {
+		return false;
+	}
+
+	if (fill === true) {
+		return 'origin';
+	}
+
+	target = parseFloat(fill, 10);
+	if (isFinite(target) && Math.floor(target) === target) {
+		if (fill[0] === '-' || fill[0] === '+') {
+			target = index + target;
+		}
+
+		if (target === index || target < 0 || target >= count) {
+			return false;
+		}
+
+		return target;
+	}
+
+	switch (fill) {
+	// compatibility
+	case 'bottom':
+		return 'start';
+	case 'top':
+		return 'end';
+	case 'zero':
+		return 'origin';
+	// supported boundaries
+	case 'origin':
+	case 'start':
+	case 'end':
+		return fill;
+	// invalid fill values
+	default:
+		return false;
+	}
+}
+
+function computeLinearBoundary(source) {
+	var model = source.el._model || {};
+	var scale = source.el._scale || {};
+	var fill = source.fill;
+	var target = null;
+	var horizontal;
+
+	if (isFinite(fill)) {
+		return null;
+	}
+
+	// Backward compatibility: until v3, we still need to support boundary values set on
+	// the model (scaleTop, scaleBottom and scaleZero) because some external plugins and
+	// controllers might still use it (e.g. the Smith chart).
+
+	if (fill === 'start') {
+		target = model.scaleBottom === undefined ? scale.bottom : model.scaleBottom;
+	} else if (fill === 'end') {
+		target = model.scaleTop === undefined ? scale.top : model.scaleTop;
+	} else if (model.scaleZero !== undefined) {
+		target = model.scaleZero;
+	} else if (scale.getBasePixel) {
+		target = scale.getBasePixel();
+	}
+
+	if (target !== undefined && target !== null) {
+		if (target.x !== undefined && target.y !== undefined) {
+			return target;
+		}
+
+		if (helpers$1.isFinite(target)) {
+			horizontal = scale.isHorizontal();
+			return {
+				x: horizontal ? target : null,
+				y: horizontal ? null : target
+			};
+		}
+	}
+
+	return null;
+}
+
+function computeCircularBoundary(source) {
+	var scale = source.el._scale;
+	var options = scale.options;
+	var length = scale.chart.data.labels.length;
+	var fill = source.fill;
+	var target = [];
+	var start, end, center, i, point;
+
+	if (!length) {
+		return null;
+	}
+
+	start = options.ticks.reverse ? scale.max : scale.min;
+	end = options.ticks.reverse ? scale.min : scale.max;
+	center = scale.getPointPositionForValue(0, start);
+	for (i = 0; i < length; ++i) {
+		point = fill === 'start' || fill === 'end'
+			? scale.getPointPositionForValue(i, fill === 'start' ? start : end)
+			: scale.getBasePosition(i);
+		if (options.gridLines.circular) {
+			point.cx = center.x;
+			point.cy = center.y;
+			point.angle = scale.getIndexAngle(i) - Math.PI / 2;
+		}
+		target.push(point);
+	}
+	return target;
+}
+
+function computeBoundary(source) {
+	var scale = source.el._scale || {};
+
+	if (scale.getPointPositionForValue) {
+		return computeCircularBoundary(source);
+	}
+	return computeLinearBoundary(source);
+}
+
+function resolveTarget(sources, index, propagate) {
+	var source = sources[index];
+	var fill = source.fill;
+	var visited = [index];
+	var target;
+
+	if (!propagate) {
+		return fill;
+	}
+
+	while (fill !== false && visited.indexOf(fill) === -1) {
+		if (!isFinite(fill)) {
+			return fill;
+		}
+
+		target = sources[fill];
+		if (!target) {
+			return false;
+		}
+
+		if (target.visible) {
+			return fill;
+		}
+
+		visited.push(fill);
+		fill = target.fill;
+	}
+
+	return false;
+}
+
+function createMapper(source) {
+	var fill = source.fill;
+	var type = 'dataset';
+
+	if (fill === false) {
+		return null;
+	}
+
+	if (!isFinite(fill)) {
+		type = 'boundary';
+	}
+
+	return mappers[type](source);
+}
+
+function isDrawable(point) {
+	return point && !point.skip;
+}
+
+function drawArea(ctx, curve0, curve1, len0, len1) {
+	var i, cx, cy, r;
+
+	if (!len0 || !len1) {
+		return;
+	}
+
+	// building first area curve (normal)
+	ctx.moveTo(curve0[0].x, curve0[0].y);
+	for (i = 1; i < len0; ++i) {
+		helpers$1.canvas.lineTo(ctx, curve0[i - 1], curve0[i]);
+	}
+
+	if (curve1[0].angle !== undefined) {
+		cx = curve1[0].cx;
+		cy = curve1[0].cy;
+		r = Math.sqrt(Math.pow(curve1[0].x - cx, 2) + Math.pow(curve1[0].y - cy, 2));
+		for (i = len1 - 1; i > 0; --i) {
+			ctx.arc(cx, cy, r, curve1[i].angle, curve1[i - 1].angle, true);
+		}
+		return;
+	}
+
+	// joining the two area curves
+	ctx.lineTo(curve1[len1 - 1].x, curve1[len1 - 1].y);
+
+	// building opposite area curve (reverse)
+	for (i = len1 - 1; i > 0; --i) {
+		helpers$1.canvas.lineTo(ctx, curve1[i], curve1[i - 1], true);
+	}
+}
+
+function doFill(ctx, points, mapper, view, color, loop) {
+	var count = points.length;
+	var span = view.spanGaps;
+	var curve0 = [];
+	var curve1 = [];
+	var len0 = 0;
+	var len1 = 0;
+	var i, ilen, index, p0, p1, d0, d1, loopOffset;
+
+	ctx.beginPath();
+
+	for (i = 0, ilen = count; i < ilen; ++i) {
+		index = i % count;
+		p0 = points[index]._view;
+		p1 = mapper(p0, index, view);
+		d0 = isDrawable(p0);
+		d1 = isDrawable(p1);
+
+		if (loop && loopOffset === undefined && d0) {
+			loopOffset = i + 1;
+			ilen = count + loopOffset;
+		}
+
+		if (d0 && d1) {
+			len0 = curve0.push(p0);
+			len1 = curve1.push(p1);
+		} else if (len0 && len1) {
+			if (!span) {
+				drawArea(ctx, curve0, curve1, len0, len1);
+				len0 = len1 = 0;
+				curve0 = [];
+				curve1 = [];
+			} else {
+				if (d0) {
+					curve0.push(p0);
+				}
+				if (d1) {
+					curve1.push(p1);
+				}
+			}
+		}
+	}
+
+	drawArea(ctx, curve0, curve1, len0, len1);
+
+	ctx.closePath();
+	ctx.fillStyle = color;
+	ctx.fill();
+}
+
+var plugin_filler = {
+	id: 'filler',
+
+	afterDatasetsUpdate: function(chart, options) {
+		var count = (chart.data.datasets || []).length;
+		var propagate = options.propagate;
+		var sources = [];
+		var meta, i, el, source;
+
+		for (i = 0; i < count; ++i) {
+			meta = chart.getDatasetMeta(i);
+			el = meta.dataset;
+			source = null;
+
+			if (el && el._model && el instanceof elements.Line) {
+				source = {
+					visible: chart.isDatasetVisible(i),
+					fill: decodeFill(el, i, count),
+					chart: chart,
+					el: el
+				};
+			}
+
+			meta.$filler = source;
+			sources.push(source);
+		}
+
+		for (i = 0; i < count; ++i) {
+			source = sources[i];
+			if (!source) {
+				continue;
+			}
+
+			source.fill = resolveTarget(sources, i, propagate);
+			source.boundary = computeBoundary(source);
+			source.mapper = createMapper(source);
+		}
+	},
+
+	beforeDatasetsDraw: function(chart) {
+		var metasets = chart._getSortedVisibleDatasetMetas();
+		var ctx = chart.ctx;
+		var meta, i, el, view, points, mapper, color;
+
+		for (i = metasets.length - 1; i >= 0; --i) {
+			meta = metasets[i].$filler;
+
+			if (!meta || !meta.visible) {
+				continue;
+			}
+
+			el = meta.el;
+			view = el._view;
+			points = el._children || [];
+			mapper = meta.mapper;
+			color = view.backgroundColor || core_defaults.global.defaultColor;
+
+			if (mapper && color && points.length) {
+				helpers$1.canvas.clipArea(ctx, chart.chartArea);
+				doFill(ctx, points, mapper, view, color, el._loop);
+				helpers$1.canvas.unclipArea(ctx);
+			}
+		}
+	}
+};
+
+var getRtlHelper$1 = helpers$1.rtl.getRtlAdapter;
+var noop$1 = helpers$1.noop;
+var valueOrDefault$e = helpers$1.valueOrDefault;
+
+core_defaults._set('global', {
+	legend: {
+		display: true,
+		position: 'top',
+		align: 'center',
+		fullWidth: true,
+		reverse: false,
+		weight: 1000,
+
+		// a callback that will handle
+		onClick: function(e, legendItem) {
+			var index = legendItem.datasetIndex;
+			var ci = this.chart;
+			var meta = ci.getDatasetMeta(index);
+
+			// See controller.isDatasetVisible comment
+			meta.hidden = meta.hidden === null ? !ci.data.datasets[index].hidden : null;
+
+			// We hid a dataset ... rerender the chart
+			ci.update();
+		},
+
+		onHover: null,
+		onLeave: null,
+
+		labels: {
+			boxWidth: 40,
+			padding: 10,
+			// Generates labels shown in the legend
+			// Valid properties to return:
+			// text : text to display
+			// fillStyle : fill of coloured box
+			// strokeStyle: stroke of coloured box
+			// hidden : if this legend item refers to a hidden item
+			// lineCap : cap style for line
+			// lineDash
+			// lineDashOffset :
+			// lineJoin :
+			// lineWidth :
+			generateLabels: function(chart) {
+				var datasets = chart.data.datasets;
+				var options = chart.options.legend || {};
+				var usePointStyle = options.labels && options.labels.usePointStyle;
+
+				return chart._getSortedDatasetMetas().map(function(meta) {
+					var style = meta.controller.getStyle(usePointStyle ? 0 : undefined);
+
+					return {
+						text: datasets[meta.index].label,
+						fillStyle: style.backgroundColor,
+						hidden: !chart.isDatasetVisible(meta.index),
+						lineCap: style.borderCapStyle,
+						lineDash: style.borderDash,
+						lineDashOffset: style.borderDashOffset,
+						lineJoin: style.borderJoinStyle,
+						lineWidth: style.borderWidth,
+						strokeStyle: style.borderColor,
+						pointStyle: style.pointStyle,
+						rotation: style.rotation,
+
+						// Below is extra data used for toggling the datasets
+						datasetIndex: meta.index
+					};
+				}, this);
+			}
+		}
+	},
+
+	legendCallback: function(chart) {
+		var list = document.createElement('ul');
+		var datasets = chart.data.datasets;
+		var i, ilen, listItem, listItemSpan;
+
+		list.setAttribute('class', chart.id + '-legend');
+
+		for (i = 0, ilen = datasets.length; i < ilen; i++) {
+			listItem = list.appendChild(document.createElement('li'));
+			listItemSpan = listItem.appendChild(document.createElement('span'));
+			listItemSpan.style.backgroundColor = datasets[i].backgroundColor;
+			if (datasets[i].label) {
+				listItem.appendChild(document.createTextNode(datasets[i].label));
+			}
+		}
+
+		return list.outerHTML;
+	}
+});
+
+/**
+ * Helper function to get the box width based on the usePointStyle option
+ * @param {object} labelopts - the label options on the legend
+ * @param {number} fontSize - the label font size
+ * @return {number} width of the color box area
+ */
+function getBoxWidth(labelOpts, fontSize) {
+	return labelOpts.usePointStyle && labelOpts.boxWidth > fontSize ?
+		fontSize :
+		labelOpts.boxWidth;
+}
+
+/**
+ * IMPORTANT: this class is exposed publicly as Chart.Legend, backward compatibility required!
+ */
+var Legend = core_element.extend({
+
+	initialize: function(config) {
+		var me = this;
+		helpers$1.extend(me, config);
+
+		// Contains hit boxes for each dataset (in dataset order)
+		me.legendHitBoxes = [];
+
+		/**
+ 		 * @private
+ 		 */
+		me._hoveredItem = null;
+
+		// Are we in doughnut mode which has a different data type
+		me.doughnutMode = false;
+	},
+
+	// These methods are ordered by lifecycle. Utilities then follow.
+	// Any function defined here is inherited by all legend types.
+	// Any function can be extended by the legend type
+
+	beforeUpdate: noop$1,
+	update: function(maxWidth, maxHeight, margins) {
+		var me = this;
+
+		// Update Lifecycle - Probably don't want to ever extend or overwrite this function ;)
+		me.beforeUpdate();
+
+		// Absorb the master measurements
+		me.maxWidth = maxWidth;
+		me.maxHeight = maxHeight;
+		me.margins = margins;
+
+		// Dimensions
+		me.beforeSetDimensions();
+		me.setDimensions();
+		me.afterSetDimensions();
+		// Labels
+		me.beforeBuildLabels();
+		me.buildLabels();
+		me.afterBuildLabels();
+
+		// Fit
+		me.beforeFit();
+		me.fit();
+		me.afterFit();
+		//
+		me.afterUpdate();
+
+		return me.minSize;
+	},
+	afterUpdate: noop$1,
+
+	//
+
+	beforeSetDimensions: noop$1,
+	setDimensions: function() {
+		var me = this;
+		// Set the unconstrained dimension before label rotation
+		if (me.isHorizontal()) {
+			// Reset position before calculating rotation
+			me.width = me.maxWidth;
+			me.left = 0;
+			me.right = me.width;
+		} else {
+			me.height = me.maxHeight;
+
+			// Reset position before calculating rotation
+			me.top = 0;
+			me.bottom = me.height;
+		}
+
+		// Reset padding
+		me.paddingLeft = 0;
+		me.paddingTop = 0;
+		me.paddingRight = 0;
+		me.paddingBottom = 0;
+
+		// Reset minSize
+		me.minSize = {
+			width: 0,
+			height: 0
+		};
+	},
+	afterSetDimensions: noop$1,
+
+	//
+
+	beforeBuildLabels: noop$1,
+	buildLabels: function() {
+		var me = this;
+		var labelOpts = me.options.labels || {};
+		var legendItems = helpers$1.callback(labelOpts.generateLabels, [me.chart], me) || [];
+
+		if (labelOpts.filter) {
+			legendItems = legendItems.filter(function(item) {
+				return labelOpts.filter(item, me.chart.data);
+			});
+		}
+
+		if (me.options.reverse) {
+			legendItems.reverse();
+		}
+
+		me.legendItems = legendItems;
+	},
+	afterBuildLabels: noop$1,
+
+	//
+
+	beforeFit: noop$1,
+	fit: function() {
+		var me = this;
+		var opts = me.options;
+		var labelOpts = opts.labels;
+		var display = opts.display;
+
+		var ctx = me.ctx;
+
+		var labelFont = helpers$1.options._parseFont(labelOpts);
+		var fontSize = labelFont.size;
+
+		// Reset hit boxes
+		var hitboxes = me.legendHitBoxes = [];
+
+		var minSize = me.minSize;
+		var isHorizontal = me.isHorizontal();
+
+		if (isHorizontal) {
+			minSize.width = me.maxWidth; // fill all the width
+			minSize.height = display ? 10 : 0;
+		} else {
+			minSize.width = display ? 10 : 0;
+			minSize.height = me.maxHeight; // fill all the height
+		}
+
+		// Increase sizes here
+		if (!display) {
+			me.width = minSize.width = me.height = minSize.height = 0;
+			return;
+		}
+		ctx.font = labelFont.string;
+
+		if (isHorizontal) {
+			// Labels
+
+			// Width of each line of legend boxes. Labels wrap onto multiple lines when there are too many to fit on one
+			var lineWidths = me.lineWidths = [0];
+			var totalHeight = 0;
+
+			ctx.textAlign = 'left';
+			ctx.textBaseline = 'middle';
+
+			helpers$1.each(me.legendItems, function(legendItem, i) {
+				var boxWidth = getBoxWidth(labelOpts, fontSize);
+				var width = boxWidth + (fontSize / 2) + ctx.measureText(legendItem.text).width;
+
+				if (i === 0 || lineWidths[lineWidths.length - 1] + width + 2 * labelOpts.padding > minSize.width) {
+					totalHeight += fontSize + labelOpts.padding;
+					lineWidths[lineWidths.length - (i > 0 ? 0 : 1)] = 0;
+				}
+
+				// Store the hitbox width and height here. Final position will be updated in `draw`
+				hitboxes[i] = {
+					left: 0,
+					top: 0,
+					width: width,
+					height: fontSize
+				};
+
+				lineWidths[lineWidths.length - 1] += width + labelOpts.padding;
+			});
+
+			minSize.height += totalHeight;
+
+		} else {
+			var vPadding = labelOpts.padding;
+			var columnWidths = me.columnWidths = [];
+			var columnHeights = me.columnHeights = [];
+			var totalWidth = labelOpts.padding;
+			var currentColWidth = 0;
+			var currentColHeight = 0;
+
+			helpers$1.each(me.legendItems, function(legendItem, i) {
+				var boxWidth = getBoxWidth(labelOpts, fontSize);
+				var itemWidth = boxWidth + (fontSize / 2) + ctx.measureText(legendItem.text).width;
+
+				// If too tall, go to new column
+				if (i > 0 && currentColHeight + fontSize + 2 * vPadding > minSize.height) {
+					totalWidth += currentColWidth + labelOpts.padding;
+					columnWidths.push(currentColWidth); // previous column width
+					columnHeights.push(currentColHeight);
+					currentColWidth = 0;
+					currentColHeight = 0;
+				}
+
+				// Get max width
+				currentColWidth = Math.max(currentColWidth, itemWidth);
+				currentColHeight += fontSize + vPadding;
+
+				// Store the hitbox width and height here. Final position will be updated in `draw`
+				hitboxes[i] = {
+					left: 0,
+					top: 0,
+					width: itemWidth,
+					height: fontSize
+				};
+			});
+
+			totalWidth += currentColWidth;
+			columnWidths.push(currentColWidth);
+			columnHeights.push(currentColHeight);
+			minSize.width += totalWidth;
+		}
+
+		me.width = minSize.width;
+		me.height = minSize.height;
+	},
+	afterFit: noop$1,
+
+	// Shared Methods
+	isHorizontal: function() {
+		return this.options.position === 'top' || this.options.position === 'bottom';
+	},
+
+	// Actually draw the legend on the canvas
+	draw: function() {
+		var me = this;
+		var opts = me.options;
+		var labelOpts = opts.labels;
+		var globalDefaults = core_defaults.global;
+		var defaultColor = globalDefaults.defaultColor;
+		var lineDefault = globalDefaults.elements.line;
+		var legendHeight = me.height;
+		var columnHeights = me.columnHeights;
+		var legendWidth = me.width;
+		var lineWidths = me.lineWidths;
+
+		if (!opts.display) {
+			return;
+		}
+
+		var rtlHelper = getRtlHelper$1(opts.rtl, me.left, me.minSize.width);
+		var ctx = me.ctx;
+		var fontColor = valueOrDefault$e(labelOpts.fontColor, globalDefaults.defaultFontColor);
+		var labelFont = helpers$1.options._parseFont(labelOpts);
+		var fontSize = labelFont.size;
+		var cursor;
+
+		// Canvas setup
+		ctx.textAlign = rtlHelper.textAlign('left');
+		ctx.textBaseline = 'middle';
+		ctx.lineWidth = 0.5;
+		ctx.strokeStyle = fontColor; // for strikethrough effect
+		ctx.fillStyle = fontColor; // render in correct colour
+		ctx.font = labelFont.string;
+
+		var boxWidth = getBoxWidth(labelOpts, fontSize);
+		var hitboxes = me.legendHitBoxes;
+
+		// current position
+		var drawLegendBox = function(x, y, legendItem) {
+			if (isNaN(boxWidth) || boxWidth <= 0) {
+				return;
+			}
+
+			// Set the ctx for the box
+			ctx.save();
+
+			var lineWidth = valueOrDefault$e(legendItem.lineWidth, lineDefault.borderWidth);
+			ctx.fillStyle = valueOrDefault$e(legendItem.fillStyle, defaultColor);
+			ctx.lineCap = valueOrDefault$e(legendItem.lineCap, lineDefault.borderCapStyle);
+			ctx.lineDashOffset = valueOrDefault$e(legendItem.lineDashOffset, lineDefault.borderDashOffset);
+			ctx.lineJoin = valueOrDefault$e(legendItem.lineJoin, lineDefault.borderJoinStyle);
+			ctx.lineWidth = lineWidth;
+			ctx.strokeStyle = valueOrDefault$e(legendItem.strokeStyle, defaultColor);
+
+			if (ctx.setLineDash) {
+				// IE 9 and 10 do not support line dash
+				ctx.setLineDash(valueOrDefault$e(legendItem.lineDash, lineDefault.borderDash));
+			}
+
+			if (labelOpts && labelOpts.usePointStyle) {
+				// Recalculate x and y for drawPoint() because its expecting
+				// x and y to be center of figure (instead of top left)
+				var radius = boxWidth * Math.SQRT2 / 2;
+				var centerX = rtlHelper.xPlus(x, boxWidth / 2);
+				var centerY = y + fontSize / 2;
+
+				// Draw pointStyle as legend symbol
+				helpers$1.canvas.drawPoint(ctx, legendItem.pointStyle, radius, centerX, centerY, legendItem.rotation);
+			} else {
+				// Draw box as legend symbol
+				ctx.fillRect(rtlHelper.leftForLtr(x, boxWidth), y, boxWidth, fontSize);
+				if (lineWidth !== 0) {
+					ctx.strokeRect(rtlHelper.leftForLtr(x, boxWidth), y, boxWidth, fontSize);
+				}
+			}
+
+			ctx.restore();
+		};
+
+		var fillText = function(x, y, legendItem, textWidth) {
+			var halfFontSize = fontSize / 2;
+			var xLeft = rtlHelper.xPlus(x, boxWidth + halfFontSize);
+			var yMiddle = y + halfFontSize;
+
+			ctx.fillText(legendItem.text, xLeft, yMiddle);
+
+			if (legendItem.hidden) {
+				// Strikethrough the text if hidden
+				ctx.beginPath();
+				ctx.lineWidth = 2;
+				ctx.moveTo(xLeft, yMiddle);
+				ctx.lineTo(rtlHelper.xPlus(xLeft, textWidth), yMiddle);
+				ctx.stroke();
+			}
+		};
+
+		var alignmentOffset = function(dimension, blockSize) {
+			switch (opts.align) {
+			case 'start':
+				return labelOpts.padding;
+			case 'end':
+				return dimension - blockSize;
+			default: // center
+				return (dimension - blockSize + labelOpts.padding) / 2;
+			}
+		};
+
+		// Horizontal
+		var isHorizontal = me.isHorizontal();
+		if (isHorizontal) {
+			cursor = {
+				x: me.left + alignmentOffset(legendWidth, lineWidths[0]),
+				y: me.top + labelOpts.padding,
+				line: 0
+			};
+		} else {
+			cursor = {
+				x: me.left + labelOpts.padding,
+				y: me.top + alignmentOffset(legendHeight, columnHeights[0]),
+				line: 0
+			};
+		}
+
+		helpers$1.rtl.overrideTextDirection(me.ctx, opts.textDirection);
+
+		var itemHeight = fontSize + labelOpts.padding;
+		helpers$1.each(me.legendItems, function(legendItem, i) {
+			var textWidth = ctx.measureText(legendItem.text).width;
+			var width = boxWidth + (fontSize / 2) + textWidth;
+			var x = cursor.x;
+			var y = cursor.y;
+
+			rtlHelper.setWidth(me.minSize.width);
+
+			// Use (me.left + me.minSize.width) and (me.top + me.minSize.height)
+			// instead of me.right and me.bottom because me.width and me.height
+			// may have been changed since me.minSize was calculated
+			if (isHorizontal) {
+				if (i > 0 && x + width + labelOpts.padding > me.left + me.minSize.width) {
+					y = cursor.y += itemHeight;
+					cursor.line++;
+					x = cursor.x = me.left + alignmentOffset(legendWidth, lineWidths[cursor.line]);
+				}
+			} else if (i > 0 && y + itemHeight > me.top + me.minSize.height) {
+				x = cursor.x = x + me.columnWidths[cursor.line] + labelOpts.padding;
+				cursor.line++;
+				y = cursor.y = me.top + alignmentOffset(legendHeight, columnHeights[cursor.line]);
+			}
+
+			var realX = rtlHelper.x(x);
+
+			drawLegendBox(realX, y, legendItem);
+
+			hitboxes[i].left = rtlHelper.leftForLtr(realX, hitboxes[i].width);
+			hitboxes[i].top = y;
+
+			// Fill the actual label
+			fillText(realX, y, legendItem, textWidth);
+
+			if (isHorizontal) {
+				cursor.x += width + labelOpts.padding;
+			} else {
+				cursor.y += itemHeight;
+			}
+		});
+
+		helpers$1.rtl.restoreTextDirection(me.ctx, opts.textDirection);
+	},
+
+	/**
+	 * @private
+	 */
+	_getLegendItemAt: function(x, y) {
+		var me = this;
+		var i, hitBox, lh;
+
+		if (x >= me.left && x <= me.right && y >= me.top && y <= me.bottom) {
+			// See if we are touching one of the dataset boxes
+			lh = me.legendHitBoxes;
+			for (i = 0; i < lh.length; ++i) {
+				hitBox = lh[i];
+
+				if (x >= hitBox.left && x <= hitBox.left + hitBox.width && y >= hitBox.top && y <= hitBox.top + hitBox.height) {
+					// Touching an element
+					return me.legendItems[i];
+				}
+			}
+		}
+
+		return null;
+	},
+
+	/**
+	 * Handle an event
+	 * @private
+	 * @param {IEvent} event - The event to handle
+	 */
+	handleEvent: function(e) {
+		var me = this;
+		var opts = me.options;
+		var type = e.type === 'mouseup' ? 'click' : e.type;
+		var hoveredItem;
+
+		if (type === 'mousemove') {
+			if (!opts.onHover && !opts.onLeave) {
+				return;
+			}
+		} else if (type === 'click') {
+			if (!opts.onClick) {
+				return;
+			}
+		} else {
+			return;
+		}
+
+		// Chart event already has relative position in it
+		hoveredItem = me._getLegendItemAt(e.x, e.y);
+
+		if (type === 'click') {
+			if (hoveredItem && opts.onClick) {
+				// use e.native for backwards compatibility
+				opts.onClick.call(me, e.native, hoveredItem);
+			}
+		} else {
+			if (opts.onLeave && hoveredItem !== me._hoveredItem) {
+				if (me._hoveredItem) {
+					opts.onLeave.call(me, e.native, me._hoveredItem);
+				}
+				me._hoveredItem = hoveredItem;
+			}
+
+			if (opts.onHover && hoveredItem) {
+				// use e.native for backwards compatibility
+				opts.onHover.call(me, e.native, hoveredItem);
+			}
+		}
+	}
+});
+
+function createNewLegendAndAttach(chart, legendOpts) {
+	var legend = new Legend({
+		ctx: chart.ctx,
+		options: legendOpts,
+		chart: chart
+	});
+
+	core_layouts.configure(chart, legend, legendOpts);
+	core_layouts.addBox(chart, legend);
+	chart.legend = legend;
+}
+
+var plugin_legend = {
+	id: 'legend',
+
+	/**
+	 * Backward compatibility: since 2.1.5, the legend is registered as a plugin, making
+	 * Chart.Legend obsolete. To avoid a breaking change, we export the Legend as part of
+	 * the plugin, which one will be re-exposed in the chart.js file.
+	 * https://github.com/chartjs/Chart.js/pull/2640
+	 * @private
+	 */
+	_element: Legend,
+
+	beforeInit: function(chart) {
+		var legendOpts = chart.options.legend;
+
+		if (legendOpts) {
+			createNewLegendAndAttach(chart, legendOpts);
+		}
+	},
+
+	beforeUpdate: function(chart) {
+		var legendOpts = chart.options.legend;
+		var legend = chart.legend;
+
+		if (legendOpts) {
+			helpers$1.mergeIf(legendOpts, core_defaults.global.legend);
+
+			if (legend) {
+				core_layouts.configure(chart, legend, legendOpts);
+				legend.options = legendOpts;
+			} else {
+				createNewLegendAndAttach(chart, legendOpts);
+			}
+		} else if (legend) {
+			core_layouts.removeBox(chart, legend);
+			delete chart.legend;
+		}
+	},
+
+	afterEvent: function(chart, e) {
+		var legend = chart.legend;
+		if (legend) {
+			legend.handleEvent(e);
+		}
+	}
+};
+
+var noop$2 = helpers$1.noop;
+
+core_defaults._set('global', {
+	title: {
+		display: false,
+		fontStyle: 'bold',
+		fullWidth: true,
+		padding: 10,
+		position: 'top',
+		text: '',
+		weight: 2000         // by default greater than legend (1000) to be above
+	}
+});
+
+/**
+ * IMPORTANT: this class is exposed publicly as Chart.Legend, backward compatibility required!
+ */
+var Title = core_element.extend({
+	initialize: function(config) {
+		var me = this;
+		helpers$1.extend(me, config);
+
+		// Contains hit boxes for each dataset (in dataset order)
+		me.legendHitBoxes = [];
+	},
+
+	// These methods are ordered by lifecycle. Utilities then follow.
+
+	beforeUpdate: noop$2,
+	update: function(maxWidth, maxHeight, margins) {
+		var me = this;
+
+		// Update Lifecycle - Probably don't want to ever extend or overwrite this function ;)
+		me.beforeUpdate();
+
+		// Absorb the master measurements
+		me.maxWidth = maxWidth;
+		me.maxHeight = maxHeight;
+		me.margins = margins;
+
+		// Dimensions
+		me.beforeSetDimensions();
+		me.setDimensions();
+		me.afterSetDimensions();
+		// Labels
+		me.beforeBuildLabels();
+		me.buildLabels();
+		me.afterBuildLabels();
+
+		// Fit
+		me.beforeFit();
+		me.fit();
+		me.afterFit();
+		//
+		me.afterUpdate();
+
+		return me.minSize;
+
+	},
+	afterUpdate: noop$2,
+
+	//
+
+	beforeSetDimensions: noop$2,
+	setDimensions: function() {
+		var me = this;
+		// Set the unconstrained dimension before label rotation
+		if (me.isHorizontal()) {
+			// Reset position before calculating rotation
+			me.width = me.maxWidth;
+			me.left = 0;
+			me.right = me.width;
+		} else {
+			me.height = me.maxHeight;
+
+			// Reset position before calculating rotation
+			me.top = 0;
+			me.bottom = me.height;
+		}
+
+		// Reset padding
+		me.paddingLeft = 0;
+		me.paddingTop = 0;
+		me.paddingRight = 0;
+		me.paddingBottom = 0;
+
+		// Reset minSize
+		me.minSize = {
+			width: 0,
+			height: 0
+		};
+	},
+	afterSetDimensions: noop$2,
+
+	//
+
+	beforeBuildLabels: noop$2,
+	buildLabels: noop$2,
+	afterBuildLabels: noop$2,
+
+	//
+
+	beforeFit: noop$2,
+	fit: function() {
+		var me = this;
+		var opts = me.options;
+		var minSize = me.minSize = {};
+		var isHorizontal = me.isHorizontal();
+		var lineCount, textSize;
+
+		if (!opts.display) {
+			me.width = minSize.width = me.height = minSize.height = 0;
+			return;
+		}
+
+		lineCount = helpers$1.isArray(opts.text) ? opts.text.length : 1;
+		textSize = lineCount * helpers$1.options._parseFont(opts).lineHeight + opts.padding * 2;
+
+		me.width = minSize.width = isHorizontal ? me.maxWidth : textSize;
+		me.height = minSize.height = isHorizontal ? textSize : me.maxHeight;
+	},
+	afterFit: noop$2,
+
+	// Shared Methods
+	isHorizontal: function() {
+		var pos = this.options.position;
+		return pos === 'top' || pos === 'bottom';
+	},
+
+	// Actually draw the title block on the canvas
+	draw: function() {
+		var me = this;
+		var ctx = me.ctx;
+		var opts = me.options;
+
+		if (!opts.display) {
+			return;
+		}
+
+		var fontOpts = helpers$1.options._parseFont(opts);
+		var lineHeight = fontOpts.lineHeight;
+		var offset = lineHeight / 2 + opts.padding;
+		var rotation = 0;
+		var top = me.top;
+		var left = me.left;
+		var bottom = me.bottom;
+		var right = me.right;
+		var maxWidth, titleX, titleY;
+
+		ctx.fillStyle = helpers$1.valueOrDefault(opts.fontColor, core_defaults.global.defaultFontColor); // render in correct colour
+		ctx.font = fontOpts.string;
+
+		// Horizontal
+		if (me.isHorizontal()) {
+			titleX = left + ((right - left) / 2); // midpoint of the width
+			titleY = top + offset;
+			maxWidth = right - left;
+		} else {
+			titleX = opts.position === 'left' ? left + offset : right - offset;
+			titleY = top + ((bottom - top) / 2);
+			maxWidth = bottom - top;
+			rotation = Math.PI * (opts.position === 'left' ? -0.5 : 0.5);
+		}
+
+		ctx.save();
+		ctx.translate(titleX, titleY);
+		ctx.rotate(rotation);
+		ctx.textAlign = 'center';
+		ctx.textBaseline = 'middle';
+
+		var text = opts.text;
+		if (helpers$1.isArray(text)) {
+			var y = 0;
+			for (var i = 0; i < text.length; ++i) {
+				ctx.fillText(text[i], 0, y, maxWidth);
+				y += lineHeight;
+			}
+		} else {
+			ctx.fillText(text, 0, 0, maxWidth);
+		}
+
+		ctx.restore();
+	}
+});
+
+function createNewTitleBlockAndAttach(chart, titleOpts) {
+	var title = new Title({
+		ctx: chart.ctx,
+		options: titleOpts,
+		chart: chart
+	});
+
+	core_layouts.configure(chart, title, titleOpts);
+	core_layouts.addBox(chart, title);
+	chart.titleBlock = title;
+}
+
+var plugin_title = {
+	id: 'title',
+
+	/**
+	 * Backward compatibility: since 2.1.5, the title is registered as a plugin, making
+	 * Chart.Title obsolete. To avoid a breaking change, we export the Title as part of
+	 * the plugin, which one will be re-exposed in the chart.js file.
+	 * https://github.com/chartjs/Chart.js/pull/2640
+	 * @private
+	 */
+	_element: Title,
+
+	beforeInit: function(chart) {
+		var titleOpts = chart.options.title;
+
+		if (titleOpts) {
+			createNewTitleBlockAndAttach(chart, titleOpts);
+		}
+	},
+
+	beforeUpdate: function(chart) {
+		var titleOpts = chart.options.title;
+		var titleBlock = chart.titleBlock;
+
+		if (titleOpts) {
+			helpers$1.mergeIf(titleOpts, core_defaults.global.title);
+
+			if (titleBlock) {
+				core_layouts.configure(chart, titleBlock, titleOpts);
+				titleBlock.options = titleOpts;
+			} else {
+				createNewTitleBlockAndAttach(chart, titleOpts);
+			}
+		} else if (titleBlock) {
+			core_layouts.removeBox(chart, titleBlock);
+			delete chart.titleBlock;
+		}
+	}
+};
+
+var plugins = {};
+var filler = plugin_filler;
+var legend = plugin_legend;
+var title = plugin_title;
+plugins.filler = filler;
+plugins.legend = legend;
+plugins.title = title;
+
+/**
+ * @namespace Chart
+ */
+
+
+core_controller.helpers = helpers$1;
+
+// @todo dispatch these helpers into appropriated helpers/helpers.* file and write unit tests!
+core_helpers();
+
+core_controller._adapters = core_adapters;
+core_controller.Animation = core_animation;
+core_controller.animationService = core_animations;
+core_controller.controllers = controllers;
+core_controller.DatasetController = core_datasetController;
+core_controller.defaults = core_defaults;
+core_controller.Element = core_element;
+core_controller.elements = elements;
+core_controller.Interaction = core_interaction;
+core_controller.layouts = core_layouts;
+core_controller.platform = platform;
+core_controller.plugins = core_plugins;
+core_controller.Scale = core_scale;
+core_controller.scaleService = core_scaleService;
+core_controller.Ticks = core_ticks;
+core_controller.Tooltip = core_tooltip;
+
+// Register built-in scales
+
+core_controller.helpers.each(scales, function(scale, type) {
+	core_controller.scaleService.registerScaleType(type, scale, scale._defaults);
+});
+
+// Load to register built-in adapters (as side effects)
+
+
+// Loading built-in plugins
+
+for (var k in plugins) {
+	if (plugins.hasOwnProperty(k)) {
+		core_controller.plugins.register(plugins[k]);
+	}
+}
+
+core_controller.platform.initialize();
+
+var src = core_controller;
+if (typeof window !== 'undefined') {
+	window.Chart = core_controller;
+}
+
+// DEPRECATIONS
+
+/**
+ * Provided for backward compatibility, not available anymore
+ * @namespace Chart.Chart
+ * @deprecated since version 2.8.0
+ * @todo remove at version 3
+ * @private
+ */
+core_controller.Chart = core_controller;
+
+/**
+ * Provided for backward compatibility, not available anymore
+ * @namespace Chart.Legend
+ * @deprecated since version 2.1.5
+ * @todo remove at version 3
+ * @private
+ */
+core_controller.Legend = plugins.legend._element;
+
+/**
+ * Provided for backward compatibility, not available anymore
+ * @namespace Chart.Title
+ * @deprecated since version 2.1.5
+ * @todo remove at version 3
+ * @private
+ */
+core_controller.Title = plugins.title._element;
+
+/**
+ * Provided for backward compatibility, use Chart.plugins instead
+ * @namespace Chart.pluginService
+ * @deprecated since version 2.1.5
+ * @todo remove at version 3
+ * @private
+ */
+core_controller.pluginService = core_controller.plugins;
+
+/**
+ * Provided for backward compatibility, inheriting from Chart.PlugingBase has no
+ * effect, instead simply create/register plugins via plain JavaScript objects.
+ * @interface Chart.PluginBase
+ * @deprecated since version 2.5.0
+ * @todo remove at version 3
+ * @private
+ */
+core_controller.PluginBase = core_controller.Element.extend({});
+
+/**
+ * Provided for backward compatibility, use Chart.helpers.canvas instead.
+ * @namespace Chart.canvasHelpers
+ * @deprecated since version 2.6.0
+ * @todo remove at version 3
+ * @private
+ */
+core_controller.canvasHelpers = core_controller.helpers.canvas;
+
+/**
+ * Provided for backward compatibility, use Chart.layouts instead.
+ * @namespace Chart.layoutService
+ * @deprecated since version 2.7.3
+ * @todo remove at version 3
+ * @private
+ */
+core_controller.layoutService = core_controller.layouts;
+
+/**
+ * Provided for backward compatibility, not available anymore.
+ * @namespace Chart.LinearScaleBase
+ * @deprecated since version 2.8
+ * @todo remove at version 3
+ * @private
+ */
+core_controller.LinearScaleBase = scale_linearbase;
+
+/**
+ * Provided for backward compatibility, instead we should create a new Chart
+ * by setting the type in the config (`new Chart(id, {type: '{chart-type}'}`).
+ * @deprecated since version 2.8.0
+ * @todo remove at version 3
+ */
+core_controller.helpers.each(
+	[
+		'Bar',
+		'Bubble',
+		'Doughnut',
+		'Line',
+		'PolarArea',
+		'Radar',
+		'Scatter'
+	],
+	function(klass) {
+		core_controller[klass] = function(ctx, cfg) {
+			return new core_controller(ctx, core_controller.helpers.merge(cfg || {}, {
+				type: klass.charAt(0).toLowerCase() + klass.slice(1)
+			}));
+		};
+	}
+);
+
+return src;
+
+})));
+
+
+/***/ }),
+
+/***/ "./node_modules/chroma-js/chroma.js":
+/*!******************************************!*\
+  !*** ./node_modules/chroma-js/chroma.js ***!
+  \******************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+/* WEBPACK VAR INJECTION */(function(module) {var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;
+/**
+ * @license
+ *
+ * chroma.js - JavaScript library for color conversions
+ * 
+ * Copyright (c) 2011-2017, Gregor Aisch
+ * All rights reserved.
+ * 
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ * 
+ * 1. Redistributions of source code must retain the above copyright notice, this
+ *    list of conditions and the following disclaimer.
+ * 
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ *    this list of conditions and the following disclaimer in the documentation
+ *    and/or other materials provided with the distribution.
+ * 
+ * 3. The name Gregor Aisch may not be used to endorse or promote products
+ *    derived from this software without specific prior written permission.
+ * 
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL GREGOR AISCH OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
+ * INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+ * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+ * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY
+ * OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+ * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
+ * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ */
+
+(function() {
+  var Color, DEG2RAD, LAB_CONSTANTS, PI, PITHIRD, RAD2DEG, TWOPI, _average_lrgb, _guess_formats, _guess_formats_sorted, _input, _interpolators, abs, atan2, bezier, blend, blend_f, brewer, burn, chroma, clip_rgb, cmyk2rgb, colors, cos, css2rgb, darken, dodge, each, floor, hcg2rgb, hex2rgb, hsi2rgb, hsl2css, hsl2rgb, hsv2rgb, interpolate, interpolate_hsx, interpolate_lab, interpolate_lrgb, interpolate_num, interpolate_rgb, lab2lch, lab2rgb, lab_xyz, lch2lab, lch2rgb, lighten, limit, log, luminance_x, m, max, multiply, normal, num2rgb, overlay, pow, rgb2cmyk, rgb2css, rgb2hcg, rgb2hex, rgb2hsi, rgb2hsl, rgb2hsv, rgb2lab, rgb2lch, rgb2luminance, rgb2num, rgb2temperature, rgb2xyz, rgb_xyz, rnd, root, round, screen, sin, sqrt, temperature2rgb, type, unpack, w3cx11, xyz_lab, xyz_rgb,
+    slice = [].slice;
+
+  type = (function() {
+
+    /*
+    for browser-safe type checking+
+    ported from jQuery's $.type
+     */
+    var classToType, len, name, o, ref;
+    classToType = {};
+    ref = "Boolean Number String Function Array Date RegExp Undefined Null".split(" ");
+    for (o = 0, len = ref.length; o < len; o++) {
+      name = ref[o];
+      classToType["[object " + name + "]"] = name.toLowerCase();
+    }
+    return function(obj) {
+      var strType;
+      strType = Object.prototype.toString.call(obj);
+      return classToType[strType] || "object";
+    };
+  })();
+
+  limit = function(x, min, max) {
+    if (min == null) {
+      min = 0;
+    }
+    if (max == null) {
+      max = 1;
+    }
+    if (x < min) {
+      x = min;
+    }
+    if (x > max) {
+      x = max;
+    }
+    return x;
+  };
+
+  unpack = function(args) {
+    if (args.length >= 3) {
+      return Array.prototype.slice.call(args);
+    } else {
+      return args[0];
+    }
+  };
+
+  clip_rgb = function(rgb) {
+    var i, o;
+    rgb._clipped = false;
+    rgb._unclipped = rgb.slice(0);
+    for (i = o = 0; o < 3; i = ++o) {
+      if (i < 3) {
+        if (rgb[i] < 0 || rgb[i] > 255) {
+          rgb._clipped = true;
+        }
+        if (rgb[i] < 0) {
+          rgb[i] = 0;
+        }
+        if (rgb[i] > 255) {
+          rgb[i] = 255;
+        }
+      } else if (i === 3) {
+        if (rgb[i] < 0) {
+          rgb[i] = 0;
+        }
+        if (rgb[i] > 1) {
+          rgb[i] = 1;
+        }
+      }
+    }
+    if (!rgb._clipped) {
+      delete rgb._unclipped;
+    }
+    return rgb;
+  };
+
+  PI = Math.PI, round = Math.round, cos = Math.cos, floor = Math.floor, pow = Math.pow, log = Math.log, sin = Math.sin, sqrt = Math.sqrt, atan2 = Math.atan2, max = Math.max, abs = Math.abs;
+
+  TWOPI = PI * 2;
+
+  PITHIRD = PI / 3;
+
+  DEG2RAD = PI / 180;
+
+  RAD2DEG = 180 / PI;
+
+  chroma = function() {
+    if (arguments[0] instanceof Color) {
+      return arguments[0];
+    }
+    return (function(func, args, ctor) {
+      ctor.prototype = func.prototype;
+      var child = new ctor, result = func.apply(child, args);
+      return Object(result) === result ? result : child;
+    })(Color, arguments, function(){});
+  };
+
+  chroma["default"] = chroma;
+
+  _interpolators = [];
+
+  if (( true && module !== null) && (module.exports != null)) {
+    module.exports = chroma;
+  }
+
+  if (true) {
+    !(__WEBPACK_AMD_DEFINE_ARRAY__ = [], __WEBPACK_AMD_DEFINE_RESULT__ = (function() {
+      return chroma;
+    }).apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__),
+				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+  } else {}
+
+  chroma.version = '1.4.1';
+
+  _input = {};
+
+  _guess_formats = [];
+
+  _guess_formats_sorted = false;
+
+  Color = (function() {
+    function Color() {
+      var arg, args, chk, len, len1, me, mode, o, w;
+      me = this;
+      args = [];
+      for (o = 0, len = arguments.length; o < len; o++) {
+        arg = arguments[o];
+        if (arg != null) {
+          args.push(arg);
+        }
+      }
+      if (args.length > 1) {
+        mode = args[args.length - 1];
+      }
+      if (_input[mode] != null) {
+        me._rgb = clip_rgb(_input[mode](unpack(args.slice(0, -1))));
+      } else {
+        if (!_guess_formats_sorted) {
+          _guess_formats = _guess_formats.sort(function(a, b) {
+            return b.p - a.p;
+          });
+          _guess_formats_sorted = true;
+        }
+        for (w = 0, len1 = _guess_formats.length; w < len1; w++) {
+          chk = _guess_formats[w];
+          mode = chk.test.apply(chk, args);
+          if (mode) {
+            break;
+          }
+        }
+        if (mode) {
+          me._rgb = clip_rgb(_input[mode].apply(_input, args));
+        }
+      }
+      if (me._rgb == null) {
+        console.warn('unknown format: ' + args);
+      }
+      if (me._rgb == null) {
+        me._rgb = [0, 0, 0];
+      }
+      if (me._rgb.length === 3) {
+        me._rgb.push(1);
+      }
+    }
+
+    Color.prototype.toString = function() {
+      return this.hex();
+    };
+
+    return Color;
+
+  })();
+
+  chroma._input = _input;
+
+
+  /**
+  	ColorBrewer colors for chroma.js
+  
+  	Copyright (c) 2002 Cynthia Brewer, Mark Harrower, and The 
+  	Pennsylvania State University.
+  
+  	Licensed under the Apache License, Version 2.0 (the "License"); 
+  	you may not use this file except in compliance with the License.
+  	You may obtain a copy of the License at	
+  	http://www.apache.org/licenses/LICENSE-2.0
+  
+  	Unless required by applicable law or agreed to in writing, software distributed
+  	under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+  	CONDITIONS OF ANY KIND, either express or implied. See the License for the
+  	specific language governing permissions and limitations under the License.
+  
+      @preserve
+   */
+
+  chroma.brewer = brewer = {
+    OrRd: ['#fff7ec', '#fee8c8', '#fdd49e', '#fdbb84', '#fc8d59', '#ef6548', '#d7301f', '#b30000', '#7f0000'],
+    PuBu: ['#fff7fb', '#ece7f2', '#d0d1e6', '#a6bddb', '#74a9cf', '#3690c0', '#0570b0', '#045a8d', '#023858'],
+    BuPu: ['#f7fcfd', '#e0ecf4', '#bfd3e6', '#9ebcda', '#8c96c6', '#8c6bb1', '#88419d', '#810f7c', '#4d004b'],
+    Oranges: ['#fff5eb', '#fee6ce', '#fdd0a2', '#fdae6b', '#fd8d3c', '#f16913', '#d94801', '#a63603', '#7f2704'],
+    BuGn: ['#f7fcfd', '#e5f5f9', '#ccece6', '#99d8c9', '#66c2a4', '#41ae76', '#238b45', '#006d2c', '#00441b'],
+    YlOrBr: ['#ffffe5', '#fff7bc', '#fee391', '#fec44f', '#fe9929', '#ec7014', '#cc4c02', '#993404', '#662506'],
+    YlGn: ['#ffffe5', '#f7fcb9', '#d9f0a3', '#addd8e', '#78c679', '#41ab5d', '#238443', '#006837', '#004529'],
+    Reds: ['#fff5f0', '#fee0d2', '#fcbba1', '#fc9272', '#fb6a4a', '#ef3b2c', '#cb181d', '#a50f15', '#67000d'],
+    RdPu: ['#fff7f3', '#fde0dd', '#fcc5c0', '#fa9fb5', '#f768a1', '#dd3497', '#ae017e', '#7a0177', '#49006a'],
+    Greens: ['#f7fcf5', '#e5f5e0', '#c7e9c0', '#a1d99b', '#74c476', '#41ab5d', '#238b45', '#006d2c', '#00441b'],
+    YlGnBu: ['#ffffd9', '#edf8b1', '#c7e9b4', '#7fcdbb', '#41b6c4', '#1d91c0', '#225ea8', '#253494', '#081d58'],
+    Purples: ['#fcfbfd', '#efedf5', '#dadaeb', '#bcbddc', '#9e9ac8', '#807dba', '#6a51a3', '#54278f', '#3f007d'],
+    GnBu: ['#f7fcf0', '#e0f3db', '#ccebc5', '#a8ddb5', '#7bccc4', '#4eb3d3', '#2b8cbe', '#0868ac', '#084081'],
+    Greys: ['#ffffff', '#f0f0f0', '#d9d9d9', '#bdbdbd', '#969696', '#737373', '#525252', '#252525', '#000000'],
+    YlOrRd: ['#ffffcc', '#ffeda0', '#fed976', '#feb24c', '#fd8d3c', '#fc4e2a', '#e31a1c', '#bd0026', '#800026'],
+    PuRd: ['#f7f4f9', '#e7e1ef', '#d4b9da', '#c994c7', '#df65b0', '#e7298a', '#ce1256', '#980043', '#67001f'],
+    Blues: ['#f7fbff', '#deebf7', '#c6dbef', '#9ecae1', '#6baed6', '#4292c6', '#2171b5', '#08519c', '#08306b'],
+    PuBuGn: ['#fff7fb', '#ece2f0', '#d0d1e6', '#a6bddb', '#67a9cf', '#3690c0', '#02818a', '#016c59', '#014636'],
+    Viridis: ['#440154', '#482777', '#3f4a8a', '#31678e', '#26838f', '#1f9d8a', '#6cce5a', '#b6de2b', '#fee825'],
+    Spectral: ['#9e0142', '#d53e4f', '#f46d43', '#fdae61', '#fee08b', '#ffffbf', '#e6f598', '#abdda4', '#66c2a5', '#3288bd', '#5e4fa2'],
+    RdYlGn: ['#a50026', '#d73027', '#f46d43', '#fdae61', '#fee08b', '#ffffbf', '#d9ef8b', '#a6d96a', '#66bd63', '#1a9850', '#006837'],
+    RdBu: ['#67001f', '#b2182b', '#d6604d', '#f4a582', '#fddbc7', '#f7f7f7', '#d1e5f0', '#92c5de', '#4393c3', '#2166ac', '#053061'],
+    PiYG: ['#8e0152', '#c51b7d', '#de77ae', '#f1b6da', '#fde0ef', '#f7f7f7', '#e6f5d0', '#b8e186', '#7fbc41', '#4d9221', '#276419'],
+    PRGn: ['#40004b', '#762a83', '#9970ab', '#c2a5cf', '#e7d4e8', '#f7f7f7', '#d9f0d3', '#a6dba0', '#5aae61', '#1b7837', '#00441b'],
+    RdYlBu: ['#a50026', '#d73027', '#f46d43', '#fdae61', '#fee090', '#ffffbf', '#e0f3f8', '#abd9e9', '#74add1', '#4575b4', '#313695'],
+    BrBG: ['#543005', '#8c510a', '#bf812d', '#dfc27d', '#f6e8c3', '#f5f5f5', '#c7eae5', '#80cdc1', '#35978f', '#01665e', '#003c30'],
+    RdGy: ['#67001f', '#b2182b', '#d6604d', '#f4a582', '#fddbc7', '#ffffff', '#e0e0e0', '#bababa', '#878787', '#4d4d4d', '#1a1a1a'],
+    PuOr: ['#7f3b08', '#b35806', '#e08214', '#fdb863', '#fee0b6', '#f7f7f7', '#d8daeb', '#b2abd2', '#8073ac', '#542788', '#2d004b'],
+    Set2: ['#66c2a5', '#fc8d62', '#8da0cb', '#e78ac3', '#a6d854', '#ffd92f', '#e5c494', '#b3b3b3'],
+    Accent: ['#7fc97f', '#beaed4', '#fdc086', '#ffff99', '#386cb0', '#f0027f', '#bf5b17', '#666666'],
+    Set1: ['#e41a1c', '#377eb8', '#4daf4a', '#984ea3', '#ff7f00', '#ffff33', '#a65628', '#f781bf', '#999999'],
+    Set3: ['#8dd3c7', '#ffffb3', '#bebada', '#fb8072', '#80b1d3', '#fdb462', '#b3de69', '#fccde5', '#d9d9d9', '#bc80bd', '#ccebc5', '#ffed6f'],
+    Dark2: ['#1b9e77', '#d95f02', '#7570b3', '#e7298a', '#66a61e', '#e6ab02', '#a6761d', '#666666'],
+    Paired: ['#a6cee3', '#1f78b4', '#b2df8a', '#33a02c', '#fb9a99', '#e31a1c', '#fdbf6f', '#ff7f00', '#cab2d6', '#6a3d9a', '#ffff99', '#b15928'],
+    Pastel2: ['#b3e2cd', '#fdcdac', '#cbd5e8', '#f4cae4', '#e6f5c9', '#fff2ae', '#f1e2cc', '#cccccc'],
+    Pastel1: ['#fbb4ae', '#b3cde3', '#ccebc5', '#decbe4', '#fed9a6', '#ffffcc', '#e5d8bd', '#fddaec', '#f2f2f2']
+  };
+
+  (function() {
+    var key, results;
+    results = [];
+    for (key in brewer) {
+      results.push(brewer[key.toLowerCase()] = brewer[key]);
+    }
+    return results;
+  })();
+
+
+  /**
+  	X11 color names
+  
+  	http://www.w3.org/TR/css3-color/#svg-color
+   */
+
+  w3cx11 = {
+    aliceblue: '#f0f8ff',
+    antiquewhite: '#faebd7',
+    aqua: '#00ffff',
+    aquamarine: '#7fffd4',
+    azure: '#f0ffff',
+    beige: '#f5f5dc',
+    bisque: '#ffe4c4',
+    black: '#000000',
+    blanchedalmond: '#ffebcd',
+    blue: '#0000ff',
+    blueviolet: '#8a2be2',
+    brown: '#a52a2a',
+    burlywood: '#deb887',
+    cadetblue: '#5f9ea0',
+    chartreuse: '#7fff00',
+    chocolate: '#d2691e',
+    coral: '#ff7f50',
+    cornflower: '#6495ed',
+    cornflowerblue: '#6495ed',
+    cornsilk: '#fff8dc',
+    crimson: '#dc143c',
+    cyan: '#00ffff',
+    darkblue: '#00008b',
+    darkcyan: '#008b8b',
+    darkgoldenrod: '#b8860b',
+    darkgray: '#a9a9a9',
+    darkgreen: '#006400',
+    darkgrey: '#a9a9a9',
+    darkkhaki: '#bdb76b',
+    darkmagenta: '#8b008b',
+    darkolivegreen: '#556b2f',
+    darkorange: '#ff8c00',
+    darkorchid: '#9932cc',
+    darkred: '#8b0000',
+    darksalmon: '#e9967a',
+    darkseagreen: '#8fbc8f',
+    darkslateblue: '#483d8b',
+    darkslategray: '#2f4f4f',
+    darkslategrey: '#2f4f4f',
+    darkturquoise: '#00ced1',
+    darkviolet: '#9400d3',
+    deeppink: '#ff1493',
+    deepskyblue: '#00bfff',
+    dimgray: '#696969',
+    dimgrey: '#696969',
+    dodgerblue: '#1e90ff',
+    firebrick: '#b22222',
+    floralwhite: '#fffaf0',
+    forestgreen: '#228b22',
+    fuchsia: '#ff00ff',
+    gainsboro: '#dcdcdc',
+    ghostwhite: '#f8f8ff',
+    gold: '#ffd700',
+    goldenrod: '#daa520',
+    gray: '#808080',
+    green: '#008000',
+    greenyellow: '#adff2f',
+    grey: '#808080',
+    honeydew: '#f0fff0',
+    hotpink: '#ff69b4',
+    indianred: '#cd5c5c',
+    indigo: '#4b0082',
+    ivory: '#fffff0',
+    khaki: '#f0e68c',
+    laserlemon: '#ffff54',
+    lavender: '#e6e6fa',
+    lavenderblush: '#fff0f5',
+    lawngreen: '#7cfc00',
+    lemonchiffon: '#fffacd',
+    lightblue: '#add8e6',
+    lightcoral: '#f08080',
+    lightcyan: '#e0ffff',
+    lightgoldenrod: '#fafad2',
+    lightgoldenrodyellow: '#fafad2',
+    lightgray: '#d3d3d3',
+    lightgreen: '#90ee90',
+    lightgrey: '#d3d3d3',
+    lightpink: '#ffb6c1',
+    lightsalmon: '#ffa07a',
+    lightseagreen: '#20b2aa',
+    lightskyblue: '#87cefa',
+    lightslategray: '#778899',
+    lightslategrey: '#778899',
+    lightsteelblue: '#b0c4de',
+    lightyellow: '#ffffe0',
+    lime: '#00ff00',
+    limegreen: '#32cd32',
+    linen: '#faf0e6',
+    magenta: '#ff00ff',
+    maroon: '#800000',
+    maroon2: '#7f0000',
+    maroon3: '#b03060',
+    mediumaquamarine: '#66cdaa',
+    mediumblue: '#0000cd',
+    mediumorchid: '#ba55d3',
+    mediumpurple: '#9370db',
+    mediumseagreen: '#3cb371',
+    mediumslateblue: '#7b68ee',
+    mediumspringgreen: '#00fa9a',
+    mediumturquoise: '#48d1cc',
+    mediumvioletred: '#c71585',
+    midnightblue: '#191970',
+    mintcream: '#f5fffa',
+    mistyrose: '#ffe4e1',
+    moccasin: '#ffe4b5',
+    navajowhite: '#ffdead',
+    navy: '#000080',
+    oldlace: '#fdf5e6',
+    olive: '#808000',
+    olivedrab: '#6b8e23',
+    orange: '#ffa500',
+    orangered: '#ff4500',
+    orchid: '#da70d6',
+    palegoldenrod: '#eee8aa',
+    palegreen: '#98fb98',
+    paleturquoise: '#afeeee',
+    palevioletred: '#db7093',
+    papayawhip: '#ffefd5',
+    peachpuff: '#ffdab9',
+    peru: '#cd853f',
+    pink: '#ffc0cb',
+    plum: '#dda0dd',
+    powderblue: '#b0e0e6',
+    purple: '#800080',
+    purple2: '#7f007f',
+    purple3: '#a020f0',
+    rebeccapurple: '#663399',
+    red: '#ff0000',
+    rosybrown: '#bc8f8f',
+    royalblue: '#4169e1',
+    saddlebrown: '#8b4513',
+    salmon: '#fa8072',
+    sandybrown: '#f4a460',
+    seagreen: '#2e8b57',
+    seashell: '#fff5ee',
+    sienna: '#a0522d',
+    silver: '#c0c0c0',
+    skyblue: '#87ceeb',
+    slateblue: '#6a5acd',
+    slategray: '#708090',
+    slategrey: '#708090',
+    snow: '#fffafa',
+    springgreen: '#00ff7f',
+    steelblue: '#4682b4',
+    tan: '#d2b48c',
+    teal: '#008080',
+    thistle: '#d8bfd8',
+    tomato: '#ff6347',
+    turquoise: '#40e0d0',
+    violet: '#ee82ee',
+    wheat: '#f5deb3',
+    white: '#ffffff',
+    whitesmoke: '#f5f5f5',
+    yellow: '#ffff00',
+    yellowgreen: '#9acd32'
+  };
+
+  chroma.colors = colors = w3cx11;
+
+  lab2rgb = function() {
+    var a, args, b, g, l, r, x, y, z;
+    args = unpack(arguments);
+    l = args[0], a = args[1], b = args[2];
+    y = (l + 16) / 116;
+    x = isNaN(a) ? y : y + a / 500;
+    z = isNaN(b) ? y : y - b / 200;
+    y = LAB_CONSTANTS.Yn * lab_xyz(y);
+    x = LAB_CONSTANTS.Xn * lab_xyz(x);
+    z = LAB_CONSTANTS.Zn * lab_xyz(z);
+    r = xyz_rgb(3.2404542 * x - 1.5371385 * y - 0.4985314 * z);
+    g = xyz_rgb(-0.9692660 * x + 1.8760108 * y + 0.0415560 * z);
+    b = xyz_rgb(0.0556434 * x - 0.2040259 * y + 1.0572252 * z);
+    return [r, g, b, args.length > 3 ? args[3] : 1];
+  };
+
+  xyz_rgb = function(r) {
+    return 255 * (r <= 0.00304 ? 12.92 * r : 1.055 * pow(r, 1 / 2.4) - 0.055);
+  };
+
+  lab_xyz = function(t) {
+    if (t > LAB_CONSTANTS.t1) {
+      return t * t * t;
+    } else {
+      return LAB_CONSTANTS.t2 * (t - LAB_CONSTANTS.t0);
+    }
+  };
+
+  LAB_CONSTANTS = {
+    Kn: 18,
+    Xn: 0.950470,
+    Yn: 1,
+    Zn: 1.088830,
+    t0: 0.137931034,
+    t1: 0.206896552,
+    t2: 0.12841855,
+    t3: 0.008856452
+  };
+
+  rgb2lab = function() {
+    var b, g, r, ref, ref1, x, y, z;
+    ref = unpack(arguments), r = ref[0], g = ref[1], b = ref[2];
+    ref1 = rgb2xyz(r, g, b), x = ref1[0], y = ref1[1], z = ref1[2];
+    return [116 * y - 16, 500 * (x - y), 200 * (y - z)];
+  };
+
+  rgb_xyz = function(r) {
+    if ((r /= 255) <= 0.04045) {
+      return r / 12.92;
+    } else {
+      return pow((r + 0.055) / 1.055, 2.4);
+    }
+  };
+
+  xyz_lab = function(t) {
+    if (t > LAB_CONSTANTS.t3) {
+      return pow(t, 1 / 3);
+    } else {
+      return t / LAB_CONSTANTS.t2 + LAB_CONSTANTS.t0;
+    }
+  };
+
+  rgb2xyz = function() {
+    var b, g, r, ref, x, y, z;
+    ref = unpack(arguments), r = ref[0], g = ref[1], b = ref[2];
+    r = rgb_xyz(r);
+    g = rgb_xyz(g);
+    b = rgb_xyz(b);
+    x = xyz_lab((0.4124564 * r + 0.3575761 * g + 0.1804375 * b) / LAB_CONSTANTS.Xn);
+    y = xyz_lab((0.2126729 * r + 0.7151522 * g + 0.0721750 * b) / LAB_CONSTANTS.Yn);
+    z = xyz_lab((0.0193339 * r + 0.1191920 * g + 0.9503041 * b) / LAB_CONSTANTS.Zn);
+    return [x, y, z];
+  };
+
+  chroma.lab = function() {
+    return (function(func, args, ctor) {
+      ctor.prototype = func.prototype;
+      var child = new ctor, result = func.apply(child, args);
+      return Object(result) === result ? result : child;
+    })(Color, slice.call(arguments).concat(['lab']), function(){});
+  };
+
+  _input.lab = lab2rgb;
+
+  Color.prototype.lab = function() {
+    return rgb2lab(this._rgb);
+  };
+
+  bezier = function(colors) {
+    var I, I0, I1, c, lab0, lab1, lab2, lab3, ref, ref1, ref2;
+    colors = (function() {
+      var len, o, results;
+      results = [];
+      for (o = 0, len = colors.length; o < len; o++) {
+        c = colors[o];
+        results.push(chroma(c));
+      }
+      return results;
+    })();
+    if (colors.length === 2) {
+      ref = (function() {
+        var len, o, results;
+        results = [];
+        for (o = 0, len = colors.length; o < len; o++) {
+          c = colors[o];
+          results.push(c.lab());
+        }
+        return results;
+      })(), lab0 = ref[0], lab1 = ref[1];
+      I = function(t) {
+        var i, lab;
+        lab = (function() {
+          var o, results;
+          results = [];
+          for (i = o = 0; o <= 2; i = ++o) {
+            results.push(lab0[i] + t * (lab1[i] - lab0[i]));
+          }
+          return results;
+        })();
+        return chroma.lab.apply(chroma, lab);
+      };
+    } else if (colors.length === 3) {
+      ref1 = (function() {
+        var len, o, results;
+        results = [];
+        for (o = 0, len = colors.length; o < len; o++) {
+          c = colors[o];
+          results.push(c.lab());
+        }
+        return results;
+      })(), lab0 = ref1[0], lab1 = ref1[1], lab2 = ref1[2];
+      I = function(t) {
+        var i, lab;
+        lab = (function() {
+          var o, results;
+          results = [];
+          for (i = o = 0; o <= 2; i = ++o) {
+            results.push((1 - t) * (1 - t) * lab0[i] + 2 * (1 - t) * t * lab1[i] + t * t * lab2[i]);
+          }
+          return results;
+        })();
+        return chroma.lab.apply(chroma, lab);
+      };
+    } else if (colors.length === 4) {
+      ref2 = (function() {
+        var len, o, results;
+        results = [];
+        for (o = 0, len = colors.length; o < len; o++) {
+          c = colors[o];
+          results.push(c.lab());
+        }
+        return results;
+      })(), lab0 = ref2[0], lab1 = ref2[1], lab2 = ref2[2], lab3 = ref2[3];
+      I = function(t) {
+        var i, lab;
+        lab = (function() {
+          var o, results;
+          results = [];
+          for (i = o = 0; o <= 2; i = ++o) {
+            results.push((1 - t) * (1 - t) * (1 - t) * lab0[i] + 3 * (1 - t) * (1 - t) * t * lab1[i] + 3 * (1 - t) * t * t * lab2[i] + t * t * t * lab3[i]);
+          }
+          return results;
+        })();
+        return chroma.lab.apply(chroma, lab);
+      };
+    } else if (colors.length === 5) {
+      I0 = bezier(colors.slice(0, 3));
+      I1 = bezier(colors.slice(2, 5));
+      I = function(t) {
+        if (t < 0.5) {
+          return I0(t * 2);
+        } else {
+          return I1((t - 0.5) * 2);
+        }
+      };
+    }
+    return I;
+  };
+
+  chroma.bezier = function(colors) {
+    var f;
+    f = bezier(colors);
+    f.scale = function() {
+      return chroma.scale(f);
+    };
+    return f;
+  };
+
+  chroma.cubehelix = function(start, rotations, hue, gamma, lightness) {
+    var dh, dl, f;
+    if (start == null) {
+      start = 300;
+    }
+    if (rotations == null) {
+      rotations = -1.5;
+    }
+    if (hue == null) {
+      hue = 1;
+    }
+    if (gamma == null) {
+      gamma = 1;
+    }
+    if (lightness == null) {
+      lightness = [0, 1];
+    }
+    dh = 0;
+    if (type(lightness) === 'array') {
+      dl = lightness[1] - lightness[0];
+    } else {
+      dl = 0;
+      lightness = [lightness, lightness];
+    }
+    f = function(fract) {
+      var a, amp, b, cos_a, g, h, l, r, sin_a;
+      a = TWOPI * ((start + 120) / 360 + rotations * fract);
+      l = pow(lightness[0] + dl * fract, gamma);
+      h = dh !== 0 ? hue[0] + fract * dh : hue;
+      amp = h * l * (1 - l) / 2;
+      cos_a = cos(a);
+      sin_a = sin(a);
+      r = l + amp * (-0.14861 * cos_a + 1.78277 * sin_a);
+      g = l + amp * (-0.29227 * cos_a - 0.90649 * sin_a);
+      b = l + amp * (+1.97294 * cos_a);
+      return chroma(clip_rgb([r * 255, g * 255, b * 255, 1]));
+    };
+    f.start = function(s) {
+      if (s == null) {
+        return start;
+      }
+      start = s;
+      return f;
+    };
+    f.rotations = function(r) {
+      if (r == null) {
+        return rotations;
+      }
+      rotations = r;
+      return f;
+    };
+    f.gamma = function(g) {
+      if (g == null) {
+        return gamma;
+      }
+      gamma = g;
+      return f;
+    };
+    f.hue = function(h) {
+      if (h == null) {
+        return hue;
+      }
+      hue = h;
+      if (type(hue) === 'array') {
+        dh = hue[1] - hue[0];
+        if (dh === 0) {
+          hue = hue[1];
+        }
+      } else {
+        dh = 0;
+      }
+      return f;
+    };
+    f.lightness = function(h) {
+      if (h == null) {
+        return lightness;
+      }
+      if (type(h) === 'array') {
+        lightness = h;
+        dl = h[1] - h[0];
+      } else {
+        lightness = [h, h];
+        dl = 0;
+      }
+      return f;
+    };
+    f.scale = function() {
+      return chroma.scale(f);
+    };
+    f.hue(hue);
+    return f;
+  };
+
+  chroma.random = function() {
+    var code, digits, i, o;
+    digits = '0123456789abcdef';
+    code = '#';
+    for (i = o = 0; o < 6; i = ++o) {
+      code += digits.charAt(floor(Math.random() * 16));
+    }
+    return new Color(code);
+  };
+
+  _interpolators = [];
+
+  interpolate = function(col1, col2, f, m) {
+    var interpol, len, o, res;
+    if (f == null) {
+      f = 0.5;
+    }
+    if (m == null) {
+      m = 'rgb';
+    }
+
+    /*
+    interpolates between colors
+    f = 0 --> me
+    f = 1 --> col
+     */
+    if (type(col1) !== 'object') {
+      col1 = chroma(col1);
+    }
+    if (type(col2) !== 'object') {
+      col2 = chroma(col2);
+    }
+    for (o = 0, len = _interpolators.length; o < len; o++) {
+      interpol = _interpolators[o];
+      if (m === interpol[0]) {
+        res = interpol[1](col1, col2, f, m);
+        break;
+      }
+    }
+    if (res == null) {
+      throw "color mode " + m + " is not supported";
+    }
+    return res.alpha(col1.alpha() + f * (col2.alpha() - col1.alpha()));
+  };
+
+  chroma.interpolate = interpolate;
+
+  Color.prototype.interpolate = function(col2, f, m) {
+    return interpolate(this, col2, f, m);
+  };
+
+  chroma.mix = interpolate;
+
+  Color.prototype.mix = Color.prototype.interpolate;
+
+  _input.rgb = function() {
+    var k, ref, results, v;
+    ref = unpack(arguments);
+    results = [];
+    for (k in ref) {
+      v = ref[k];
+      results.push(v);
+    }
+    return results;
+  };
+
+  chroma.rgb = function() {
+    return (function(func, args, ctor) {
+      ctor.prototype = func.prototype;
+      var child = new ctor, result = func.apply(child, args);
+      return Object(result) === result ? result : child;
+    })(Color, slice.call(arguments).concat(['rgb']), function(){});
+  };
+
+  Color.prototype.rgb = function(round) {
+    if (round == null) {
+      round = true;
+    }
+    if (round) {
+      return this._rgb.map(Math.round).slice(0, 3);
+    } else {
+      return this._rgb.slice(0, 3);
+    }
+  };
+
+  Color.prototype.rgba = function(round) {
+    if (round == null) {
+      round = true;
+    }
+    if (!round) {
+      return this._rgb.slice(0);
+    }
+    return [Math.round(this._rgb[0]), Math.round(this._rgb[1]), Math.round(this._rgb[2]), this._rgb[3]];
+  };
+
+  _guess_formats.push({
+    p: 3,
+    test: function(n) {
+      var a;
+      a = unpack(arguments);
+      if (type(a) === 'array' && a.length === 3) {
+        return 'rgb';
+      }
+      if (a.length === 4 && type(a[3]) === "number" && a[3] >= 0 && a[3] <= 1) {
+        return 'rgb';
+      }
+    }
+  });
+
+  _input.lrgb = _input.rgb;
+
+  interpolate_lrgb = function(col1, col2, f, m) {
+    var xyz0, xyz1;
+    xyz0 = col1._rgb;
+    xyz1 = col2._rgb;
+    return new Color(sqrt(pow(xyz0[0], 2) * (1 - f) + pow(xyz1[0], 2) * f), sqrt(pow(xyz0[1], 2) * (1 - f) + pow(xyz1[1], 2) * f), sqrt(pow(xyz0[2], 2) * (1 - f) + pow(xyz1[2], 2) * f), m);
+  };
+
+  _average_lrgb = function(colors) {
+    var col, f, len, o, rgb, xyz;
+    f = 1 / colors.length;
+    xyz = [0, 0, 0, 0];
+    for (o = 0, len = colors.length; o < len; o++) {
+      col = colors[o];
+      rgb = col._rgb;
+      xyz[0] += pow(rgb[0], 2) * f;
+      xyz[1] += pow(rgb[1], 2) * f;
+      xyz[2] += pow(rgb[2], 2) * f;
+      xyz[3] += rgb[3] * f;
+    }
+    xyz[0] = sqrt(xyz[0]);
+    xyz[1] = sqrt(xyz[1]);
+    xyz[2] = sqrt(xyz[2]);
+    if (xyz[3] > 1) {
+      xyz[3] = 1;
+    }
+    return new Color(clip_rgb(xyz));
+  };
+
+  _interpolators.push(['lrgb', interpolate_lrgb]);
+
+  chroma.average = function(colors, mode) {
+    var A, alpha, c, cnt, dx, dy, first, i, l, len, o, xyz, xyz2;
+    if (mode == null) {
+      mode = 'rgb';
+    }
+    l = colors.length;
+    colors = colors.map(function(c) {
+      return chroma(c);
+    });
+    first = colors.splice(0, 1)[0];
+    if (mode === 'lrgb') {
+      return _average_lrgb(colors);
+    }
+    xyz = first.get(mode);
+    cnt = [];
+    dx = 0;
+    dy = 0;
+    for (i in xyz) {
+      xyz[i] = xyz[i] || 0;
+      cnt.push(isNaN(xyz[i]) ? 0 : 1);
+      if (mode.charAt(i) === 'h' && !isNaN(xyz[i])) {
+        A = xyz[i] / 180 * PI;
+        dx += cos(A);
+        dy += sin(A);
+      }
+    }
+    alpha = first.alpha();
+    for (o = 0, len = colors.length; o < len; o++) {
+      c = colors[o];
+      xyz2 = c.get(mode);
+      alpha += c.alpha();
+      for (i in xyz) {
+        if (!isNaN(xyz2[i])) {
+          cnt[i] += 1;
+          if (mode.charAt(i) === 'h') {
+            A = xyz2[i] / 180 * PI;
+            dx += cos(A);
+            dy += sin(A);
+          } else {
+            xyz[i] += xyz2[i];
+          }
+        }
+      }
+    }
+    for (i in xyz) {
+      if (mode.charAt(i) === 'h') {
+        A = atan2(dy / cnt[i], dx / cnt[i]) / PI * 180;
+        while (A < 0) {
+          A += 360;
+        }
+        while (A >= 360) {
+          A -= 360;
+        }
+        xyz[i] = A;
+      } else {
+        xyz[i] = xyz[i] / cnt[i];
+      }
+    }
+    return chroma(xyz, mode).alpha(alpha / l);
+  };
+
+  hex2rgb = function(hex) {
+    var a, b, g, r, rgb, u;
+    if (hex.match(/^#?([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/)) {
+      if (hex.length === 4 || hex.length === 7) {
+        hex = hex.substr(1);
+      }
+      if (hex.length === 3) {
+        hex = hex.split("");
+        hex = hex[0] + hex[0] + hex[1] + hex[1] + hex[2] + hex[2];
+      }
+      u = parseInt(hex, 16);
+      r = u >> 16;
+      g = u >> 8 & 0xFF;
+      b = u & 0xFF;
+      return [r, g, b, 1];
+    }
+    if (hex.match(/^#?([A-Fa-f0-9]{8})$/)) {
+      if (hex.length === 9) {
+        hex = hex.substr(1);
+      }
+      u = parseInt(hex, 16);
+      r = u >> 24 & 0xFF;
+      g = u >> 16 & 0xFF;
+      b = u >> 8 & 0xFF;
+      a = round((u & 0xFF) / 0xFF * 100) / 100;
+      return [r, g, b, a];
+    }
+    if ((_input.css != null) && (rgb = _input.css(hex))) {
+      return rgb;
+    }
+    throw "unknown color: " + hex;
+  };
+
+  rgb2hex = function(channels, mode) {
+    var a, b, g, hxa, r, str, u;
+    if (mode == null) {
+      mode = 'auto';
+    }
+    r = channels[0], g = channels[1], b = channels[2], a = channels[3];
+    if (mode === 'auto') {
+      mode = a < 1 ? 'rgba' : 'rgb';
+    }
+    r = Math.round(r);
+    g = Math.round(g);
+    b = Math.round(b);
+    u = r << 16 | g << 8 | b;
+    str = "000000" + u.toString(16);
+    str = str.substr(str.length - 6);
+    hxa = '0' + round(a * 255).toString(16);
+    hxa = hxa.substr(hxa.length - 2);
+    return "#" + (function() {
+      switch (mode.toLowerCase()) {
+        case 'rgba':
+          return str + hxa;
+        case 'argb':
+          return hxa + str;
+        default:
+          return str;
+      }
+    })();
+  };
+
+  _input.hex = function(h) {
+    return hex2rgb(h);
+  };
+
+  chroma.hex = function() {
+    return (function(func, args, ctor) {
+      ctor.prototype = func.prototype;
+      var child = new ctor, result = func.apply(child, args);
+      return Object(result) === result ? result : child;
+    })(Color, slice.call(arguments).concat(['hex']), function(){});
+  };
+
+  Color.prototype.hex = function(mode) {
+    if (mode == null) {
+      mode = 'auto';
+    }
+    return rgb2hex(this._rgb, mode);
+  };
+
+  _guess_formats.push({
+    p: 4,
+    test: function(n) {
+      if (arguments.length === 1 && type(n) === "string") {
+        return 'hex';
+      }
+    }
+  });
+
+  hsl2rgb = function() {
+    var args, b, c, g, h, i, l, o, r, ref, s, t1, t2, t3;
+    args = unpack(arguments);
+    h = args[0], s = args[1], l = args[2];
+    if (s === 0) {
+      r = g = b = l * 255;
+    } else {
+      t3 = [0, 0, 0];
+      c = [0, 0, 0];
+      t2 = l < 0.5 ? l * (1 + s) : l + s - l * s;
+      t1 = 2 * l - t2;
+      h /= 360;
+      t3[0] = h + 1 / 3;
+      t3[1] = h;
+      t3[2] = h - 1 / 3;
+      for (i = o = 0; o <= 2; i = ++o) {
+        if (t3[i] < 0) {
+          t3[i] += 1;
+        }
+        if (t3[i] > 1) {
+          t3[i] -= 1;
+        }
+        if (6 * t3[i] < 1) {
+          c[i] = t1 + (t2 - t1) * 6 * t3[i];
+        } else if (2 * t3[i] < 1) {
+          c[i] = t2;
+        } else if (3 * t3[i] < 2) {
+          c[i] = t1 + (t2 - t1) * ((2 / 3) - t3[i]) * 6;
+        } else {
+          c[i] = t1;
+        }
+      }
+      ref = [round(c[0] * 255), round(c[1] * 255), round(c[2] * 255)], r = ref[0], g = ref[1], b = ref[2];
+    }
+    if (args.length > 3) {
+      return [r, g, b, args[3]];
+    } else {
+      return [r, g, b];
+    }
+  };
+
+  rgb2hsl = function(r, g, b) {
+    var h, l, min, ref, s;
+    if (r !== void 0 && r.length >= 3) {
+      ref = r, r = ref[0], g = ref[1], b = ref[2];
+    }
+    r /= 255;
+    g /= 255;
+    b /= 255;
+    min = Math.min(r, g, b);
+    max = Math.max(r, g, b);
+    l = (max + min) / 2;
+    if (max === min) {
+      s = 0;
+      h = Number.NaN;
+    } else {
+      s = l < 0.5 ? (max - min) / (max + min) : (max - min) / (2 - max - min);
+    }
+    if (r === max) {
+      h = (g - b) / (max - min);
+    } else if (g === max) {
+      h = 2 + (b - r) / (max - min);
+    } else if (b === max) {
+      h = 4 + (r - g) / (max - min);
+    }
+    h *= 60;
+    if (h < 0) {
+      h += 360;
+    }
+    return [h, s, l];
+  };
+
+  chroma.hsl = function() {
+    return (function(func, args, ctor) {
+      ctor.prototype = func.prototype;
+      var child = new ctor, result = func.apply(child, args);
+      return Object(result) === result ? result : child;
+    })(Color, slice.call(arguments).concat(['hsl']), function(){});
+  };
+
+  _input.hsl = hsl2rgb;
+
+  Color.prototype.hsl = function() {
+    return rgb2hsl(this._rgb);
+  };
+
+  hsv2rgb = function() {
+    var args, b, f, g, h, i, p, q, r, ref, ref1, ref2, ref3, ref4, ref5, s, t, v;
+    args = unpack(arguments);
+    h = args[0], s = args[1], v = args[2];
+    v *= 255;
+    if (s === 0) {
+      r = g = b = v;
+    } else {
+      if (h === 360) {
+        h = 0;
+      }
+      if (h > 360) {
+        h -= 360;
+      }
+      if (h < 0) {
+        h += 360;
+      }
+      h /= 60;
+      i = floor(h);
+      f = h - i;
+      p = v * (1 - s);
+      q = v * (1 - s * f);
+      t = v * (1 - s * (1 - f));
+      switch (i) {
+        case 0:
+          ref = [v, t, p], r = ref[0], g = ref[1], b = ref[2];
+          break;
+        case 1:
+          ref1 = [q, v, p], r = ref1[0], g = ref1[1], b = ref1[2];
+          break;
+        case 2:
+          ref2 = [p, v, t], r = ref2[0], g = ref2[1], b = ref2[2];
+          break;
+        case 3:
+          ref3 = [p, q, v], r = ref3[0], g = ref3[1], b = ref3[2];
+          break;
+        case 4:
+          ref4 = [t, p, v], r = ref4[0], g = ref4[1], b = ref4[2];
+          break;
+        case 5:
+          ref5 = [v, p, q], r = ref5[0], g = ref5[1], b = ref5[2];
+      }
+    }
+    return [r, g, b, args.length > 3 ? args[3] : 1];
+  };
+
+  rgb2hsv = function() {
+    var b, delta, g, h, min, r, ref, s, v;
+    ref = unpack(arguments), r = ref[0], g = ref[1], b = ref[2];
+    min = Math.min(r, g, b);
+    max = Math.max(r, g, b);
+    delta = max - min;
+    v = max / 255.0;
+    if (max === 0) {
+      h = Number.NaN;
+      s = 0;
+    } else {
+      s = delta / max;
+      if (r === max) {
+        h = (g - b) / delta;
+      }
+      if (g === max) {
+        h = 2 + (b - r) / delta;
+      }
+      if (b === max) {
+        h = 4 + (r - g) / delta;
+      }
+      h *= 60;
+      if (h < 0) {
+        h += 360;
+      }
+    }
+    return [h, s, v];
+  };
+
+  chroma.hsv = function() {
+    return (function(func, args, ctor) {
+      ctor.prototype = func.prototype;
+      var child = new ctor, result = func.apply(child, args);
+      return Object(result) === result ? result : child;
+    })(Color, slice.call(arguments).concat(['hsv']), function(){});
+  };
+
+  _input.hsv = hsv2rgb;
+
+  Color.prototype.hsv = function() {
+    return rgb2hsv(this._rgb);
+  };
+
+  num2rgb = function(num) {
+    var b, g, r;
+    if (type(num) === "number" && num >= 0 && num <= 0xFFFFFF) {
+      r = num >> 16;
+      g = (num >> 8) & 0xFF;
+      b = num & 0xFF;
+      return [r, g, b, 1];
+    }
+    console.warn("unknown num color: " + num);
+    return [0, 0, 0, 1];
+  };
+
+  rgb2num = function() {
+    var b, g, r, ref;
+    ref = unpack(arguments), r = ref[0], g = ref[1], b = ref[2];
+    return (r << 16) + (g << 8) + b;
+  };
+
+  chroma.num = function(num) {
+    return new Color(num, 'num');
+  };
+
+  Color.prototype.num = function(mode) {
+    if (mode == null) {
+      mode = 'rgb';
+    }
+    return rgb2num(this._rgb, mode);
+  };
+
+  _input.num = num2rgb;
+
+  _guess_formats.push({
+    p: 1,
+    test: function(n) {
+      if (arguments.length === 1 && type(n) === "number" && n >= 0 && n <= 0xFFFFFF) {
+        return 'num';
+      }
+    }
+  });
+
+  hcg2rgb = function() {
+    var _c, _g, args, b, c, f, g, h, i, p, q, r, ref, ref1, ref2, ref3, ref4, ref5, t, v;
+    args = unpack(arguments);
+    h = args[0], c = args[1], _g = args[2];
+    c = c / 100;
+    g = g / 100 * 255;
+    _c = c * 255;
+    if (c === 0) {
+      r = g = b = _g;
+    } else {
+      if (h === 360) {
+        h = 0;
+      }
+      if (h > 360) {
+        h -= 360;
+      }
+      if (h < 0) {
+        h += 360;
+      }
+      h /= 60;
+      i = floor(h);
+      f = h - i;
+      p = _g * (1 - c);
+      q = p + _c * (1 - f);
+      t = p + _c * f;
+      v = p + _c;
+      switch (i) {
+        case 0:
+          ref = [v, t, p], r = ref[0], g = ref[1], b = ref[2];
+          break;
+        case 1:
+          ref1 = [q, v, p], r = ref1[0], g = ref1[1], b = ref1[2];
+          break;
+        case 2:
+          ref2 = [p, v, t], r = ref2[0], g = ref2[1], b = ref2[2];
+          break;
+        case 3:
+          ref3 = [p, q, v], r = ref3[0], g = ref3[1], b = ref3[2];
+          break;
+        case 4:
+          ref4 = [t, p, v], r = ref4[0], g = ref4[1], b = ref4[2];
+          break;
+        case 5:
+          ref5 = [v, p, q], r = ref5[0], g = ref5[1], b = ref5[2];
+      }
+    }
+    return [r, g, b, args.length > 3 ? args[3] : 1];
+  };
+
+  rgb2hcg = function() {
+    var _g, b, c, delta, g, h, min, r, ref;
+    ref = unpack(arguments), r = ref[0], g = ref[1], b = ref[2];
+    min = Math.min(r, g, b);
+    max = Math.max(r, g, b);
+    delta = max - min;
+    c = delta * 100 / 255;
+    _g = min / (255 - delta) * 100;
+    if (delta === 0) {
+      h = Number.NaN;
+    } else {
+      if (r === max) {
+        h = (g - b) / delta;
+      }
+      if (g === max) {
+        h = 2 + (b - r) / delta;
+      }
+      if (b === max) {
+        h = 4 + (r - g) / delta;
+      }
+      h *= 60;
+      if (h < 0) {
+        h += 360;
+      }
+    }
+    return [h, c, _g];
+  };
+
+  chroma.hcg = function() {
+    return (function(func, args, ctor) {
+      ctor.prototype = func.prototype;
+      var child = new ctor, result = func.apply(child, args);
+      return Object(result) === result ? result : child;
+    })(Color, slice.call(arguments).concat(['hcg']), function(){});
+  };
+
+  _input.hcg = hcg2rgb;
+
+  Color.prototype.hcg = function() {
+    return rgb2hcg(this._rgb);
+  };
+
+  css2rgb = function(css) {
+    var aa, ab, hsl, i, m, o, rgb, w;
+    css = css.toLowerCase();
+    if ((chroma.colors != null) && chroma.colors[css]) {
+      return hex2rgb(chroma.colors[css]);
+    }
+    if (m = css.match(/rgb\(\s*(\-?\d+),\s*(\-?\d+)\s*,\s*(\-?\d+)\s*\)/)) {
+      rgb = m.slice(1, 4);
+      for (i = o = 0; o <= 2; i = ++o) {
+        rgb[i] = +rgb[i];
+      }
+      rgb[3] = 1;
+    } else if (m = css.match(/rgba\(\s*(\-?\d+),\s*(\-?\d+)\s*,\s*(\-?\d+)\s*,\s*([01]|[01]?\.\d+)\)/)) {
+      rgb = m.slice(1, 5);
+      for (i = w = 0; w <= 3; i = ++w) {
+        rgb[i] = +rgb[i];
+      }
+    } else if (m = css.match(/rgb\(\s*(\-?\d+(?:\.\d+)?)%,\s*(\-?\d+(?:\.\d+)?)%\s*,\s*(\-?\d+(?:\.\d+)?)%\s*\)/)) {
+      rgb = m.slice(1, 4);
+      for (i = aa = 0; aa <= 2; i = ++aa) {
+        rgb[i] = round(rgb[i] * 2.55);
+      }
+      rgb[3] = 1;
+    } else if (m = css.match(/rgba\(\s*(\-?\d+(?:\.\d+)?)%,\s*(\-?\d+(?:\.\d+)?)%\s*,\s*(\-?\d+(?:\.\d+)?)%\s*,\s*([01]|[01]?\.\d+)\)/)) {
+      rgb = m.slice(1, 5);
+      for (i = ab = 0; ab <= 2; i = ++ab) {
+        rgb[i] = round(rgb[i] * 2.55);
+      }
+      rgb[3] = +rgb[3];
+    } else if (m = css.match(/hsl\(\s*(\-?\d+(?:\.\d+)?),\s*(\-?\d+(?:\.\d+)?)%\s*,\s*(\-?\d+(?:\.\d+)?)%\s*\)/)) {
+      hsl = m.slice(1, 4);
+      hsl[1] *= 0.01;
+      hsl[2] *= 0.01;
+      rgb = hsl2rgb(hsl);
+      rgb[3] = 1;
+    } else if (m = css.match(/hsla\(\s*(\-?\d+(?:\.\d+)?),\s*(\-?\d+(?:\.\d+)?)%\s*,\s*(\-?\d+(?:\.\d+)?)%\s*,\s*([01]|[01]?\.\d+)\)/)) {
+      hsl = m.slice(1, 4);
+      hsl[1] *= 0.01;
+      hsl[2] *= 0.01;
+      rgb = hsl2rgb(hsl);
+      rgb[3] = +m[4];
+    }
+    return rgb;
+  };
+
+  rgb2css = function(rgba) {
+    var mode;
+    mode = rgba[3] < 1 ? 'rgba' : 'rgb';
+    if (mode === 'rgb') {
+      return mode + '(' + rgba.slice(0, 3).map(round).join(',') + ')';
+    } else if (mode === 'rgba') {
+      return mode + '(' + rgba.slice(0, 3).map(round).join(',') + ',' + rgba[3] + ')';
+    } else {
+
+    }
+  };
+
+  rnd = function(a) {
+    return round(a * 100) / 100;
+  };
+
+  hsl2css = function(hsl, alpha) {
+    var mode;
+    mode = alpha < 1 ? 'hsla' : 'hsl';
+    hsl[0] = rnd(hsl[0] || 0);
+    hsl[1] = rnd(hsl[1] * 100) + '%';
+    hsl[2] = rnd(hsl[2] * 100) + '%';
+    if (mode === 'hsla') {
+      hsl[3] = alpha;
+    }
+    return mode + '(' + hsl.join(',') + ')';
+  };
+
+  _input.css = function(h) {
+    return css2rgb(h);
+  };
+
+  chroma.css = function() {
+    return (function(func, args, ctor) {
+      ctor.prototype = func.prototype;
+      var child = new ctor, result = func.apply(child, args);
+      return Object(result) === result ? result : child;
+    })(Color, slice.call(arguments).concat(['css']), function(){});
+  };
+
+  Color.prototype.css = function(mode) {
+    if (mode == null) {
+      mode = 'rgb';
+    }
+    if (mode.slice(0, 3) === 'rgb') {
+      return rgb2css(this._rgb);
+    } else if (mode.slice(0, 3) === 'hsl') {
+      return hsl2css(this.hsl(), this.alpha());
+    }
+  };
+
+  _input.named = function(name) {
+    return hex2rgb(w3cx11[name]);
+  };
+
+  _guess_formats.push({
+    p: 5,
+    test: function(n) {
+      if (arguments.length === 1 && (w3cx11[n] != null)) {
+        return 'named';
+      }
+    }
+  });
+
+  Color.prototype.name = function(n) {
+    var h, k;
+    if (arguments.length) {
+      if (w3cx11[n]) {
+        this._rgb = hex2rgb(w3cx11[n]);
+      }
+      this._rgb[3] = 1;
+      this;
+    }
+    h = this.hex('rgb');
+    for (k in w3cx11) {
+      if (h === w3cx11[k]) {
+        return k;
+      }
+    }
+    return h;
+  };
+
+  lch2lab = function() {
+
+    /*
+    Convert from a qualitative parameter h and a quantitative parameter l to a 24-bit pixel.
+    These formulas were invented by David Dalrymple to obtain maximum contrast without going
+    out of gamut if the parameters are in the range 0-1.
+    
+    A saturation multiplier was added by Gregor Aisch
+     */
+    var c, h, l, ref;
+    ref = unpack(arguments), l = ref[0], c = ref[1], h = ref[2];
+    h = h * DEG2RAD;
+    return [l, cos(h) * c, sin(h) * c];
+  };
+
+  lch2rgb = function() {
+    var L, a, args, b, c, g, h, l, r, ref, ref1;
+    args = unpack(arguments);
+    l = args[0], c = args[1], h = args[2];
+    ref = lch2lab(l, c, h), L = ref[0], a = ref[1], b = ref[2];
+    ref1 = lab2rgb(L, a, b), r = ref1[0], g = ref1[1], b = ref1[2];
+    return [r, g, b, args.length > 3 ? args[3] : 1];
+  };
+
+  lab2lch = function() {
+    var a, b, c, h, l, ref;
+    ref = unpack(arguments), l = ref[0], a = ref[1], b = ref[2];
+    c = sqrt(a * a + b * b);
+    h = (atan2(b, a) * RAD2DEG + 360) % 360;
+    if (round(c * 10000) === 0) {
+      h = Number.NaN;
+    }
+    return [l, c, h];
+  };
+
+  rgb2lch = function() {
+    var a, b, g, l, r, ref, ref1;
+    ref = unpack(arguments), r = ref[0], g = ref[1], b = ref[2];
+    ref1 = rgb2lab(r, g, b), l = ref1[0], a = ref1[1], b = ref1[2];
+    return lab2lch(l, a, b);
+  };
+
+  chroma.lch = function() {
+    var args;
+    args = unpack(arguments);
+    return new Color(args, 'lch');
+  };
+
+  chroma.hcl = function() {
+    var args;
+    args = unpack(arguments);
+    return new Color(args, 'hcl');
+  };
+
+  _input.lch = lch2rgb;
+
+  _input.hcl = function() {
+    var c, h, l, ref;
+    ref = unpack(arguments), h = ref[0], c = ref[1], l = ref[2];
+    return lch2rgb([l, c, h]);
+  };
+
+  Color.prototype.lch = function() {
+    return rgb2lch(this._rgb);
+  };
+
+  Color.prototype.hcl = function() {
+    return rgb2lch(this._rgb).reverse();
+  };
+
+  rgb2cmyk = function(mode) {
+    var b, c, f, g, k, m, r, ref, y;
+    if (mode == null) {
+      mode = 'rgb';
+    }
+    ref = unpack(arguments), r = ref[0], g = ref[1], b = ref[2];
+    r = r / 255;
+    g = g / 255;
+    b = b / 255;
+    k = 1 - Math.max(r, Math.max(g, b));
+    f = k < 1 ? 1 / (1 - k) : 0;
+    c = (1 - r - k) * f;
+    m = (1 - g - k) * f;
+    y = (1 - b - k) * f;
+    return [c, m, y, k];
+  };
+
+  cmyk2rgb = function() {
+    var alpha, args, b, c, g, k, m, r, y;
+    args = unpack(arguments);
+    c = args[0], m = args[1], y = args[2], k = args[3];
+    alpha = args.length > 4 ? args[4] : 1;
+    if (k === 1) {
+      return [0, 0, 0, alpha];
+    }
+    r = c >= 1 ? 0 : 255 * (1 - c) * (1 - k);
+    g = m >= 1 ? 0 : 255 * (1 - m) * (1 - k);
+    b = y >= 1 ? 0 : 255 * (1 - y) * (1 - k);
+    return [r, g, b, alpha];
+  };
+
+  _input.cmyk = function() {
+    return cmyk2rgb(unpack(arguments));
+  };
+
+  chroma.cmyk = function() {
+    return (function(func, args, ctor) {
+      ctor.prototype = func.prototype;
+      var child = new ctor, result = func.apply(child, args);
+      return Object(result) === result ? result : child;
+    })(Color, slice.call(arguments).concat(['cmyk']), function(){});
+  };
+
+  Color.prototype.cmyk = function() {
+    return rgb2cmyk(this._rgb);
+  };
+
+  _input.gl = function() {
+    var i, k, o, rgb, v;
+    rgb = (function() {
+      var ref, results;
+      ref = unpack(arguments);
+      results = [];
+      for (k in ref) {
+        v = ref[k];
+        results.push(v);
+      }
+      return results;
+    }).apply(this, arguments);
+    for (i = o = 0; o <= 2; i = ++o) {
+      rgb[i] *= 255;
+    }
+    return rgb;
+  };
+
+  chroma.gl = function() {
+    return (function(func, args, ctor) {
+      ctor.prototype = func.prototype;
+      var child = new ctor, result = func.apply(child, args);
+      return Object(result) === result ? result : child;
+    })(Color, slice.call(arguments).concat(['gl']), function(){});
+  };
+
+  Color.prototype.gl = function() {
+    var rgb;
+    rgb = this._rgb;
+    return [rgb[0] / 255, rgb[1] / 255, rgb[2] / 255, rgb[3]];
+  };
+
+  rgb2luminance = function(r, g, b) {
+    var ref;
+    ref = unpack(arguments), r = ref[0], g = ref[1], b = ref[2];
+    r = luminance_x(r);
+    g = luminance_x(g);
+    b = luminance_x(b);
+    return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+  };
+
+  luminance_x = function(x) {
+    x /= 255;
+    if (x <= 0.03928) {
+      return x / 12.92;
+    } else {
+      return pow((x + 0.055) / 1.055, 2.4);
+    }
+  };
+
+  interpolate_rgb = function(col1, col2, f, m) {
+    var xyz0, xyz1;
+    xyz0 = col1._rgb;
+    xyz1 = col2._rgb;
+    return new Color(xyz0[0] + f * (xyz1[0] - xyz0[0]), xyz0[1] + f * (xyz1[1] - xyz0[1]), xyz0[2] + f * (xyz1[2] - xyz0[2]), m);
+  };
+
+  _interpolators.push(['rgb', interpolate_rgb]);
+
+  Color.prototype.luminance = function(lum, mode) {
+    var cur_lum, eps, max_iter, rgba, test;
+    if (mode == null) {
+      mode = 'rgb';
+    }
+    if (!arguments.length) {
+      return rgb2luminance(this._rgb);
+    }
+    rgba = this._rgb;
+    if (lum === 0) {
+      rgba = [0, 0, 0, this._rgb[3]];
+    } else if (lum === 1) {
+      rgba = [255, 255, 255, this[3]];
+    } else {
+      cur_lum = rgb2luminance(this._rgb);
+      eps = 1e-7;
+      max_iter = 20;
+      test = function(l, h) {
+        var lm, m;
+        m = l.interpolate(h, 0.5, mode);
+        lm = m.luminance();
+        if (Math.abs(lum - lm) < eps || !max_iter--) {
+          return m;
+        }
+        if (lm > lum) {
+          return test(l, m);
+        }
+        return test(m, h);
+      };
+      if (cur_lum > lum) {
+        rgba = test(chroma('black'), this).rgba();
+      } else {
+        rgba = test(this, chroma('white')).rgba();
+      }
+    }
+    return chroma(rgba).alpha(this.alpha());
+  };
+
+  temperature2rgb = function(kelvin) {
+    var b, g, r, temp;
+    temp = kelvin / 100;
+    if (temp < 66) {
+      r = 255;
+      g = -155.25485562709179 - 0.44596950469579133 * (g = temp - 2) + 104.49216199393888 * log(g);
+      b = temp < 20 ? 0 : -254.76935184120902 + 0.8274096064007395 * (b = temp - 10) + 115.67994401066147 * log(b);
+    } else {
+      r = 351.97690566805693 + 0.114206453784165 * (r = temp - 55) - 40.25366309332127 * log(r);
+      g = 325.4494125711974 + 0.07943456536662342 * (g = temp - 50) - 28.0852963507957 * log(g);
+      b = 255;
+    }
+    return [r, g, b];
+  };
+
+  rgb2temperature = function() {
+    var b, eps, g, maxTemp, minTemp, r, ref, rgb, temp;
+    ref = unpack(arguments), r = ref[0], g = ref[1], b = ref[2];
+    minTemp = 1000;
+    maxTemp = 40000;
+    eps = 0.4;
+    while (maxTemp - minTemp > eps) {
+      temp = (maxTemp + minTemp) * 0.5;
+      rgb = temperature2rgb(temp);
+      if ((rgb[2] / rgb[0]) >= (b / r)) {
+        maxTemp = temp;
+      } else {
+        minTemp = temp;
+      }
+    }
+    return round(temp);
+  };
+
+  chroma.temperature = chroma.kelvin = function() {
+    return (function(func, args, ctor) {
+      ctor.prototype = func.prototype;
+      var child = new ctor, result = func.apply(child, args);
+      return Object(result) === result ? result : child;
+    })(Color, slice.call(arguments).concat(['temperature']), function(){});
+  };
+
+  _input.temperature = _input.kelvin = _input.K = temperature2rgb;
+
+  Color.prototype.temperature = function() {
+    return rgb2temperature(this._rgb);
+  };
+
+  Color.prototype.kelvin = Color.prototype.temperature;
+
+  chroma.contrast = function(a, b) {
+    var l1, l2, ref, ref1;
+    if ((ref = type(a)) === 'string' || ref === 'number') {
+      a = new Color(a);
+    }
+    if ((ref1 = type(b)) === 'string' || ref1 === 'number') {
+      b = new Color(b);
+    }
+    l1 = a.luminance();
+    l2 = b.luminance();
+    if (l1 > l2) {
+      return (l1 + 0.05) / (l2 + 0.05);
+    } else {
+      return (l2 + 0.05) / (l1 + 0.05);
+    }
+  };
+
+  chroma.distance = function(a, b, mode) {
+    var d, i, l1, l2, ref, ref1, sum_sq;
+    if (mode == null) {
+      mode = 'lab';
+    }
+    if ((ref = type(a)) === 'string' || ref === 'number') {
+      a = new Color(a);
+    }
+    if ((ref1 = type(b)) === 'string' || ref1 === 'number') {
+      b = new Color(b);
+    }
+    l1 = a.get(mode);
+    l2 = b.get(mode);
+    sum_sq = 0;
+    for (i in l1) {
+      d = (l1[i] || 0) - (l2[i] || 0);
+      sum_sq += d * d;
+    }
+    return Math.sqrt(sum_sq);
+  };
+
+  chroma.deltaE = function(a, b, L, C) {
+    var L1, L2, a1, a2, b1, b2, c1, c2, c4, dH2, delA, delB, delC, delL, f, h1, ref, ref1, ref2, ref3, sc, sh, sl, t, v1, v2, v3;
+    if (L == null) {
+      L = 1;
+    }
+    if (C == null) {
+      C = 1;
+    }
+    if ((ref = type(a)) === 'string' || ref === 'number') {
+      a = new Color(a);
+    }
+    if ((ref1 = type(b)) === 'string' || ref1 === 'number') {
+      b = new Color(b);
+    }
+    ref2 = a.lab(), L1 = ref2[0], a1 = ref2[1], b1 = ref2[2];
+    ref3 = b.lab(), L2 = ref3[0], a2 = ref3[1], b2 = ref3[2];
+    c1 = sqrt(a1 * a1 + b1 * b1);
+    c2 = sqrt(a2 * a2 + b2 * b2);
+    sl = L1 < 16.0 ? 0.511 : (0.040975 * L1) / (1.0 + 0.01765 * L1);
+    sc = (0.0638 * c1) / (1.0 + 0.0131 * c1) + 0.638;
+    h1 = c1 < 0.000001 ? 0.0 : (atan2(b1, a1) * 180.0) / PI;
+    while (h1 < 0) {
+      h1 += 360;
+    }
+    while (h1 >= 360) {
+      h1 -= 360;
+    }
+    t = (h1 >= 164.0) && (h1 <= 345.0) ? 0.56 + abs(0.2 * cos((PI * (h1 + 168.0)) / 180.0)) : 0.36 + abs(0.4 * cos((PI * (h1 + 35.0)) / 180.0));
+    c4 = c1 * c1 * c1 * c1;
+    f = sqrt(c4 / (c4 + 1900.0));
+    sh = sc * (f * t + 1.0 - f);
+    delL = L1 - L2;
+    delC = c1 - c2;
+    delA = a1 - a2;
+    delB = b1 - b2;
+    dH2 = delA * delA + delB * delB - delC * delC;
+    v1 = delL / (L * sl);
+    v2 = delC / (C * sc);
+    v3 = sh;
+    return sqrt(v1 * v1 + v2 * v2 + (dH2 / (v3 * v3)));
+  };
+
+  Color.prototype.get = function(modechan) {
+    var channel, i, me, mode, ref, src;
+    me = this;
+    ref = modechan.split('.'), mode = ref[0], channel = ref[1];
+    src = me[mode]();
+    if (channel) {
+      i = mode.indexOf(channel);
+      if (i > -1) {
+        return src[i];
+      } else {
+        return console.warn('unknown channel ' + channel + ' in mode ' + mode);
+      }
+    } else {
+      return src;
+    }
+  };
+
+  Color.prototype.set = function(modechan, value) {
+    var channel, i, me, mode, ref, src;
+    me = this;
+    ref = modechan.split('.'), mode = ref[0], channel = ref[1];
+    if (channel) {
+      src = me[mode]();
+      i = mode.indexOf(channel);
+      if (i > -1) {
+        if (type(value) === 'string') {
+          switch (value.charAt(0)) {
+            case '+':
+              src[i] += +value;
+              break;
+            case '-':
+              src[i] += +value;
+              break;
+            case '*':
+              src[i] *= +(value.substr(1));
+              break;
+            case '/':
+              src[i] /= +(value.substr(1));
+              break;
+            default:
+              src[i] = +value;
+          }
+        } else {
+          src[i] = value;
+        }
+      } else {
+        console.warn('unknown channel ' + channel + ' in mode ' + mode);
+      }
+    } else {
+      src = value;
+    }
+    return chroma(src, mode).alpha(me.alpha());
+  };
+
+  Color.prototype.clipped = function() {
+    return this._rgb._clipped || false;
+  };
+
+  Color.prototype.alpha = function(a) {
+    if (arguments.length) {
+      return chroma.rgb([this._rgb[0], this._rgb[1], this._rgb[2], a]);
+    }
+    return this._rgb[3];
+  };
+
+  Color.prototype.darken = function(amount) {
+    var lab, me;
+    if (amount == null) {
+      amount = 1;
+    }
+    me = this;
+    lab = me.lab();
+    lab[0] -= LAB_CONSTANTS.Kn * amount;
+    return chroma.lab(lab).alpha(me.alpha());
+  };
+
+  Color.prototype.brighten = function(amount) {
+    if (amount == null) {
+      amount = 1;
+    }
+    return this.darken(-amount);
+  };
+
+  Color.prototype.darker = Color.prototype.darken;
+
+  Color.prototype.brighter = Color.prototype.brighten;
+
+  Color.prototype.saturate = function(amount) {
+    var lch, me;
+    if (amount == null) {
+      amount = 1;
+    }
+    me = this;
+    lch = me.lch();
+    lch[1] += amount * LAB_CONSTANTS.Kn;
+    if (lch[1] < 0) {
+      lch[1] = 0;
+    }
+    return chroma.lch(lch).alpha(me.alpha());
+  };
+
+  Color.prototype.desaturate = function(amount) {
+    if (amount == null) {
+      amount = 1;
+    }
+    return this.saturate(-amount);
+  };
+
+  Color.prototype.premultiply = function() {
+    var a, rgb;
+    rgb = this.rgb();
+    a = this.alpha();
+    return chroma(rgb[0] * a, rgb[1] * a, rgb[2] * a, a);
+  };
+
+  blend = function(bottom, top, mode) {
+    if (!blend[mode]) {
+      throw 'unknown blend mode ' + mode;
+    }
+    return blend[mode](bottom, top);
+  };
+
+  blend_f = function(f) {
+    return function(bottom, top) {
+      var c0, c1;
+      c0 = chroma(top).rgb();
+      c1 = chroma(bottom).rgb();
+      return chroma(f(c0, c1), 'rgb');
+    };
+  };
+
+  each = function(f) {
+    return function(c0, c1) {
+      var i, o, out;
+      out = [];
+      for (i = o = 0; o <= 3; i = ++o) {
+        out[i] = f(c0[i], c1[i]);
+      }
+      return out;
+    };
+  };
+
+  normal = function(a, b) {
+    return a;
+  };
+
+  multiply = function(a, b) {
+    return a * b / 255;
+  };
+
+  darken = function(a, b) {
+    if (a > b) {
+      return b;
+    } else {
+      return a;
+    }
+  };
+
+  lighten = function(a, b) {
+    if (a > b) {
+      return a;
+    } else {
+      return b;
+    }
+  };
+
+  screen = function(a, b) {
+    return 255 * (1 - (1 - a / 255) * (1 - b / 255));
+  };
+
+  overlay = function(a, b) {
+    if (b < 128) {
+      return 2 * a * b / 255;
+    } else {
+      return 255 * (1 - 2 * (1 - a / 255) * (1 - b / 255));
+    }
+  };
+
+  burn = function(a, b) {
+    return 255 * (1 - (1 - b / 255) / (a / 255));
+  };
+
+  dodge = function(a, b) {
+    if (a === 255) {
+      return 255;
+    }
+    a = 255 * (b / 255) / (1 - a / 255);
+    if (a > 255) {
+      return 255;
+    } else {
+      return a;
+    }
+  };
+
+  blend.normal = blend_f(each(normal));
+
+  blend.multiply = blend_f(each(multiply));
+
+  blend.screen = blend_f(each(screen));
+
+  blend.overlay = blend_f(each(overlay));
+
+  blend.darken = blend_f(each(darken));
+
+  blend.lighten = blend_f(each(lighten));
+
+  blend.dodge = blend_f(each(dodge));
+
+  blend.burn = blend_f(each(burn));
+
+  chroma.blend = blend;
+
+  chroma.analyze = function(data) {
+    var len, o, r, val;
+    r = {
+      min: Number.MAX_VALUE,
+      max: Number.MAX_VALUE * -1,
+      sum: 0,
+      values: [],
+      count: 0
+    };
+    for (o = 0, len = data.length; o < len; o++) {
+      val = data[o];
+      if ((val != null) && !isNaN(val)) {
+        r.values.push(val);
+        r.sum += val;
+        if (val < r.min) {
+          r.min = val;
+        }
+        if (val > r.max) {
+          r.max = val;
+        }
+        r.count += 1;
+      }
+    }
+    r.domain = [r.min, r.max];
+    r.limits = function(mode, num) {
+      return chroma.limits(r, mode, num);
+    };
+    return r;
+  };
+
+  chroma.scale = function(colors, positions) {
+    var _classes, _colorCache, _colors, _correctLightness, _domain, _fixed, _gamma, _max, _min, _mode, _nacol, _out, _padding, _pos, _spread, _useCache, classifyValue, f, getClass, getColor, resetCache, setColors, tmap;
+    _mode = 'rgb';
+    _nacol = chroma('#ccc');
+    _spread = 0;
+    _fixed = false;
+    _domain = [0, 1];
+    _pos = [];
+    _padding = [0, 0];
+    _classes = false;
+    _colors = [];
+    _out = false;
+    _min = 0;
+    _max = 1;
+    _correctLightness = false;
+    _colorCache = {};
+    _useCache = true;
+    _gamma = 1;
+    setColors = function(colors) {
+      var c, col, o, ref, ref1, w;
+      if (colors == null) {
+        colors = ['#fff', '#000'];
+      }
+      if ((colors != null) && type(colors) === 'string' && (chroma.brewer != null)) {
+        colors = chroma.brewer[colors] || chroma.brewer[colors.toLowerCase()] || colors;
+      }
+      if (type(colors) === 'array') {
+        if (colors.length === 1) {
+          colors = [colors[0], colors[0]];
+        }
+        colors = colors.slice(0);
+        for (c = o = 0, ref = colors.length - 1; 0 <= ref ? o <= ref : o >= ref; c = 0 <= ref ? ++o : --o) {
+          col = colors[c];
+          if (type(col) === "string") {
+            colors[c] = chroma(col);
+          }
+        }
+        _pos.length = 0;
+        for (c = w = 0, ref1 = colors.length - 1; 0 <= ref1 ? w <= ref1 : w >= ref1; c = 0 <= ref1 ? ++w : --w) {
+          _pos.push(c / (colors.length - 1));
+        }
+      }
+      resetCache();
+      return _colors = colors;
+    };
+    getClass = function(value) {
+      var i, n;
+      if (_classes != null) {
+        n = _classes.length - 1;
+        i = 0;
+        while (i < n && value >= _classes[i]) {
+          i++;
+        }
+        return i - 1;
+      }
+      return 0;
+    };
+    tmap = function(t) {
+      return t;
+    };
+    classifyValue = function(value) {
+      var i, maxc, minc, n, val;
+      val = value;
+      if (_classes.length > 2) {
+        n = _classes.length - 1;
+        i = getClass(value);
+        minc = _classes[0] + (_classes[1] - _classes[0]) * (0 + _spread * 0.5);
+        maxc = _classes[n - 1] + (_classes[n] - _classes[n - 1]) * (1 - _spread * 0.5);
+        val = _min + ((_classes[i] + (_classes[i + 1] - _classes[i]) * 0.5 - minc) / (maxc - minc)) * (_max - _min);
+      }
+      return val;
+    };
+    getColor = function(val, bypassMap) {
+      var c, col, i, k, o, p, ref, t;
+      if (bypassMap == null) {
+        bypassMap = false;
+      }
+      if (isNaN(val) || val === null) {
+        return _nacol;
+      }
+      if (!bypassMap) {
+        if (_classes && _classes.length > 2) {
+          c = getClass(val);
+          t = c / (_classes.length - 2);
+        } else if (_max !== _min) {
+          t = (val - _min) / (_max - _min);
+        } else {
+          t = 1;
+        }
+      } else {
+        t = val;
+      }
+      if (!bypassMap) {
+        t = tmap(t);
+      }
+      if (_gamma !== 1) {
+        t = pow(t, _gamma);
+      }
+      t = _padding[0] + (t * (1 - _padding[0] - _padding[1]));
+      t = Math.min(1, Math.max(0, t));
+      k = Math.floor(t * 10000);
+      if (_useCache && _colorCache[k]) {
+        col = _colorCache[k];
+      } else {
+        if (type(_colors) === 'array') {
+          for (i = o = 0, ref = _pos.length - 1; 0 <= ref ? o <= ref : o >= ref; i = 0 <= ref ? ++o : --o) {
+            p = _pos[i];
+            if (t <= p) {
+              col = _colors[i];
+              break;
+            }
+            if (t >= p && i === _pos.length - 1) {
+              col = _colors[i];
+              break;
+            }
+            if (t > p && t < _pos[i + 1]) {
+              t = (t - p) / (_pos[i + 1] - p);
+              col = chroma.interpolate(_colors[i], _colors[i + 1], t, _mode);
+              break;
+            }
+          }
+        } else if (type(_colors) === 'function') {
+          col = _colors(t);
+        }
+        if (_useCache) {
+          _colorCache[k] = col;
+        }
+      }
+      return col;
+    };
+    resetCache = function() {
+      return _colorCache = {};
+    };
+    setColors(colors);
+    f = function(v) {
+      var c;
+      c = chroma(getColor(v));
+      if (_out && c[_out]) {
+        return c[_out]();
+      } else {
+        return c;
+      }
+    };
+    f.classes = function(classes) {
+      var d;
+      if (classes != null) {
+        if (type(classes) === 'array') {
+          _classes = classes;
+          _domain = [classes[0], classes[classes.length - 1]];
+        } else {
+          d = chroma.analyze(_domain);
+          if (classes === 0) {
+            _classes = [d.min, d.max];
+          } else {
+            _classes = chroma.limits(d, 'e', classes);
+          }
+        }
+        return f;
+      }
+      return _classes;
+    };
+    f.domain = function(domain) {
+      var c, d, k, len, o, ref, w;
+      if (!arguments.length) {
+        return _domain;
+      }
+      _min = domain[0];
+      _max = domain[domain.length - 1];
+      _pos = [];
+      k = _colors.length;
+      if (domain.length === k && _min !== _max) {
+        for (o = 0, len = domain.length; o < len; o++) {
+          d = domain[o];
+          _pos.push((d - _min) / (_max - _min));
+        }
+      } else {
+        for (c = w = 0, ref = k - 1; 0 <= ref ? w <= ref : w >= ref; c = 0 <= ref ? ++w : --w) {
+          _pos.push(c / (k - 1));
+        }
+      }
+      _domain = [_min, _max];
+      return f;
+    };
+    f.mode = function(_m) {
+      if (!arguments.length) {
+        return _mode;
+      }
+      _mode = _m;
+      resetCache();
+      return f;
+    };
+    f.range = function(colors, _pos) {
+      setColors(colors, _pos);
+      return f;
+    };
+    f.out = function(_o) {
+      _out = _o;
+      return f;
+    };
+    f.spread = function(val) {
+      if (!arguments.length) {
+        return _spread;
+      }
+      _spread = val;
+      return f;
+    };
+    f.correctLightness = function(v) {
+      if (v == null) {
+        v = true;
+      }
+      _correctLightness = v;
+      resetCache();
+      if (_correctLightness) {
+        tmap = function(t) {
+          var L0, L1, L_actual, L_diff, L_ideal, max_iter, pol, t0, t1;
+          L0 = getColor(0, true).lab()[0];
+          L1 = getColor(1, true).lab()[0];
+          pol = L0 > L1;
+          L_actual = getColor(t, true).lab()[0];
+          L_ideal = L0 + (L1 - L0) * t;
+          L_diff = L_actual - L_ideal;
+          t0 = 0;
+          t1 = 1;
+          max_iter = 20;
+          while (Math.abs(L_diff) > 1e-2 && max_iter-- > 0) {
+            (function() {
+              if (pol) {
+                L_diff *= -1;
+              }
+              if (L_diff < 0) {
+                t0 = t;
+                t += (t1 - t) * 0.5;
+              } else {
+                t1 = t;
+                t += (t0 - t) * 0.5;
+              }
+              L_actual = getColor(t, true).lab()[0];
+              return L_diff = L_actual - L_ideal;
+            })();
+          }
+          return t;
+        };
+      } else {
+        tmap = function(t) {
+          return t;
+        };
+      }
+      return f;
+    };
+    f.padding = function(p) {
+      if (p != null) {
+        if (type(p) === 'number') {
+          p = [p, p];
+        }
+        _padding = p;
+        return f;
+      } else {
+        return _padding;
+      }
+    };
+    f.colors = function(numColors, out) {
+      var dd, dm, i, o, ref, result, results, samples, w;
+      if (arguments.length < 2) {
+        out = 'hex';
+      }
+      result = [];
+      if (arguments.length === 0) {
+        result = _colors.slice(0);
+      } else if (numColors === 1) {
+        result = [f(0.5)];
+      } else if (numColors > 1) {
+        dm = _domain[0];
+        dd = _domain[1] - dm;
+        result = (function() {
+          results = [];
+          for (var o = 0; 0 <= numColors ? o < numColors : o > numColors; 0 <= numColors ? o++ : o--){ results.push(o); }
+          return results;
+        }).apply(this).map(function(i) {
+          return f(dm + i / (numColors - 1) * dd);
+        });
+      } else {
+        colors = [];
+        samples = [];
+        if (_classes && _classes.length > 2) {
+          for (i = w = 1, ref = _classes.length; 1 <= ref ? w < ref : w > ref; i = 1 <= ref ? ++w : --w) {
+            samples.push((_classes[i - 1] + _classes[i]) * 0.5);
+          }
+        } else {
+          samples = _domain;
+        }
+        result = samples.map(function(v) {
+          return f(v);
+        });
+      }
+      if (chroma[out]) {
+        result = result.map(function(c) {
+          return c[out]();
+        });
+      }
+      return result;
+    };
+    f.cache = function(c) {
+      if (c != null) {
+        _useCache = c;
+        return f;
+      } else {
+        return _useCache;
+      }
+    };
+    f.gamma = function(g) {
+      if (g != null) {
+        _gamma = g;
+        return f;
+      } else {
+        return _gamma;
+      }
+    };
+    f.nodata = function(d) {
+      if (d != null) {
+        _nacol = chroma(d);
+        return f;
+      } else {
+        return _nacol;
+      }
+    };
+    return f;
+  };
+
+  if (chroma.scales == null) {
+    chroma.scales = {};
+  }
+
+  chroma.scales.cool = function() {
+    return chroma.scale([chroma.hsl(180, 1, .9), chroma.hsl(250, .7, .4)]);
+  };
+
+  chroma.scales.hot = function() {
+    return chroma.scale(['#000', '#f00', '#ff0', '#fff'], [0, .25, .75, 1]).mode('rgb');
+  };
+
+  chroma.analyze = function(data, key, filter) {
+    var add, k, len, o, r, val, visit;
+    r = {
+      min: Number.MAX_VALUE,
+      max: Number.MAX_VALUE * -1,
+      sum: 0,
+      values: [],
+      count: 0
+    };
+    if (filter == null) {
+      filter = function() {
+        return true;
+      };
+    }
+    add = function(val) {
+      if ((val != null) && !isNaN(val)) {
+        r.values.push(val);
+        r.sum += val;
+        if (val < r.min) {
+          r.min = val;
+        }
+        if (val > r.max) {
+          r.max = val;
+        }
+        r.count += 1;
+      }
+    };
+    visit = function(val, k) {
+      if (filter(val, k)) {
+        if ((key != null) && type(key) === 'function') {
+          return add(key(val));
+        } else if ((key != null) && type(key) === 'string' || type(key) === 'number') {
+          return add(val[key]);
+        } else {
+          return add(val);
+        }
+      }
+    };
+    if (type(data) === 'array') {
+      for (o = 0, len = data.length; o < len; o++) {
+        val = data[o];
+        visit(val);
+      }
+    } else {
+      for (k in data) {
+        val = data[k];
+        visit(val, k);
+      }
+    }
+    r.domain = [r.min, r.max];
+    r.limits = function(mode, num) {
+      return chroma.limits(r, mode, num);
+    };
+    return r;
+  };
+
+  chroma.limits = function(data, mode, num) {
+    var aa, ab, ac, ad, ae, af, ag, ah, ai, aj, ak, al, am, assignments, best, centroids, cluster, clusterSizes, dist, i, j, kClusters, limits, max_log, min, min_log, mindist, n, nb_iters, newCentroids, o, p, pb, pr, ref, ref1, ref10, ref11, ref12, ref13, ref14, ref2, ref3, ref4, ref5, ref6, ref7, ref8, ref9, repeat, sum, tmpKMeansBreaks, v, value, values, w;
+    if (mode == null) {
+      mode = 'equal';
+    }
+    if (num == null) {
+      num = 7;
+    }
+    if (type(data) === 'array') {
+      data = chroma.analyze(data);
+    }
+    min = data.min;
+    max = data.max;
+    sum = data.sum;
+    values = data.values.sort(function(a, b) {
+      return a - b;
+    });
+    if (num === 1) {
+      return [min, max];
+    }
+    limits = [];
+    if (mode.substr(0, 1) === 'c') {
+      limits.push(min);
+      limits.push(max);
+    }
+    if (mode.substr(0, 1) === 'e') {
+      limits.push(min);
+      for (i = o = 1, ref = num - 1; 1 <= ref ? o <= ref : o >= ref; i = 1 <= ref ? ++o : --o) {
+        limits.push(min + (i / num) * (max - min));
+      }
+      limits.push(max);
+    } else if (mode.substr(0, 1) === 'l') {
+      if (min <= 0) {
+        throw 'Logarithmic scales are only possible for values > 0';
+      }
+      min_log = Math.LOG10E * log(min);
+      max_log = Math.LOG10E * log(max);
+      limits.push(min);
+      for (i = w = 1, ref1 = num - 1; 1 <= ref1 ? w <= ref1 : w >= ref1; i = 1 <= ref1 ? ++w : --w) {
+        limits.push(pow(10, min_log + (i / num) * (max_log - min_log)));
+      }
+      limits.push(max);
+    } else if (mode.substr(0, 1) === 'q') {
+      limits.push(min);
+      for (i = aa = 1, ref2 = num - 1; 1 <= ref2 ? aa <= ref2 : aa >= ref2; i = 1 <= ref2 ? ++aa : --aa) {
+        p = (values.length - 1) * i / num;
+        pb = floor(p);
+        if (pb === p) {
+          limits.push(values[pb]);
+        } else {
+          pr = p - pb;
+          limits.push(values[pb] * (1 - pr) + values[pb + 1] * pr);
+        }
+      }
+      limits.push(max);
+    } else if (mode.substr(0, 1) === 'k') {
+
+      /*
+      implementation based on
+      http://code.google.com/p/figue/source/browse/trunk/figue.js#336
+      simplified for 1-d input values
+       */
+      n = values.length;
+      assignments = new Array(n);
+      clusterSizes = new Array(num);
+      repeat = true;
+      nb_iters = 0;
+      centroids = null;
+      centroids = [];
+      centroids.push(min);
+      for (i = ab = 1, ref3 = num - 1; 1 <= ref3 ? ab <= ref3 : ab >= ref3; i = 1 <= ref3 ? ++ab : --ab) {
+        centroids.push(min + (i / num) * (max - min));
+      }
+      centroids.push(max);
+      while (repeat) {
+        for (j = ac = 0, ref4 = num - 1; 0 <= ref4 ? ac <= ref4 : ac >= ref4; j = 0 <= ref4 ? ++ac : --ac) {
+          clusterSizes[j] = 0;
+        }
+        for (i = ad = 0, ref5 = n - 1; 0 <= ref5 ? ad <= ref5 : ad >= ref5; i = 0 <= ref5 ? ++ad : --ad) {
+          value = values[i];
+          mindist = Number.MAX_VALUE;
+          for (j = ae = 0, ref6 = num - 1; 0 <= ref6 ? ae <= ref6 : ae >= ref6; j = 0 <= ref6 ? ++ae : --ae) {
+            dist = abs(centroids[j] - value);
+            if (dist < mindist) {
+              mindist = dist;
+              best = j;
+            }
+          }
+          clusterSizes[best]++;
+          assignments[i] = best;
+        }
+        newCentroids = new Array(num);
+        for (j = af = 0, ref7 = num - 1; 0 <= ref7 ? af <= ref7 : af >= ref7; j = 0 <= ref7 ? ++af : --af) {
+          newCentroids[j] = null;
+        }
+        for (i = ag = 0, ref8 = n - 1; 0 <= ref8 ? ag <= ref8 : ag >= ref8; i = 0 <= ref8 ? ++ag : --ag) {
+          cluster = assignments[i];
+          if (newCentroids[cluster] === null) {
+            newCentroids[cluster] = values[i];
+          } else {
+            newCentroids[cluster] += values[i];
+          }
+        }
+        for (j = ah = 0, ref9 = num - 1; 0 <= ref9 ? ah <= ref9 : ah >= ref9; j = 0 <= ref9 ? ++ah : --ah) {
+          newCentroids[j] *= 1 / clusterSizes[j];
+        }
+        repeat = false;
+        for (j = ai = 0, ref10 = num - 1; 0 <= ref10 ? ai <= ref10 : ai >= ref10; j = 0 <= ref10 ? ++ai : --ai) {
+          if (newCentroids[j] !== centroids[i]) {
+            repeat = true;
+            break;
+          }
+        }
+        centroids = newCentroids;
+        nb_iters++;
+        if (nb_iters > 200) {
+          repeat = false;
+        }
+      }
+      kClusters = {};
+      for (j = aj = 0, ref11 = num - 1; 0 <= ref11 ? aj <= ref11 : aj >= ref11; j = 0 <= ref11 ? ++aj : --aj) {
+        kClusters[j] = [];
+      }
+      for (i = ak = 0, ref12 = n - 1; 0 <= ref12 ? ak <= ref12 : ak >= ref12; i = 0 <= ref12 ? ++ak : --ak) {
+        cluster = assignments[i];
+        kClusters[cluster].push(values[i]);
+      }
+      tmpKMeansBreaks = [];
+      for (j = al = 0, ref13 = num - 1; 0 <= ref13 ? al <= ref13 : al >= ref13; j = 0 <= ref13 ? ++al : --al) {
+        tmpKMeansBreaks.push(kClusters[j][0]);
+        tmpKMeansBreaks.push(kClusters[j][kClusters[j].length - 1]);
+      }
+      tmpKMeansBreaks = tmpKMeansBreaks.sort(function(a, b) {
+        return a - b;
+      });
+      limits.push(tmpKMeansBreaks[0]);
+      for (i = am = 1, ref14 = tmpKMeansBreaks.length - 1; am <= ref14; i = am += 2) {
+        v = tmpKMeansBreaks[i];
+        if (!isNaN(v) && limits.indexOf(v) === -1) {
+          limits.push(v);
+        }
+      }
+    }
+    return limits;
+  };
+
+  hsi2rgb = function(h, s, i) {
+
+    /*
+    borrowed from here:
+    http://hummer.stanford.edu/museinfo/doc/examples/humdrum/keyscape2/hsi2rgb.cpp
+     */
+    var args, b, g, r;
+    args = unpack(arguments);
+    h = args[0], s = args[1], i = args[2];
+    if (isNaN(h)) {
+      h = 0;
+    }
+    h /= 360;
+    if (h < 1 / 3) {
+      b = (1 - s) / 3;
+      r = (1 + s * cos(TWOPI * h) / cos(PITHIRD - TWOPI * h)) / 3;
+      g = 1 - (b + r);
+    } else if (h < 2 / 3) {
+      h -= 1 / 3;
+      r = (1 - s) / 3;
+      g = (1 + s * cos(TWOPI * h) / cos(PITHIRD - TWOPI * h)) / 3;
+      b = 1 - (r + g);
+    } else {
+      h -= 2 / 3;
+      g = (1 - s) / 3;
+      b = (1 + s * cos(TWOPI * h) / cos(PITHIRD - TWOPI * h)) / 3;
+      r = 1 - (g + b);
+    }
+    r = limit(i * r * 3);
+    g = limit(i * g * 3);
+    b = limit(i * b * 3);
+    return [r * 255, g * 255, b * 255, args.length > 3 ? args[3] : 1];
+  };
+
+  rgb2hsi = function() {
+
+    /*
+    borrowed from here:
+    http://hummer.stanford.edu/museinfo/doc/examples/humdrum/keyscape2/rgb2hsi.cpp
+     */
+    var b, g, h, i, min, r, ref, s;
+    ref = unpack(arguments), r = ref[0], g = ref[1], b = ref[2];
+    TWOPI = Math.PI * 2;
+    r /= 255;
+    g /= 255;
+    b /= 255;
+    min = Math.min(r, g, b);
+    i = (r + g + b) / 3;
+    s = 1 - min / i;
+    if (s === 0) {
+      h = 0;
+    } else {
+      h = ((r - g) + (r - b)) / 2;
+      h /= Math.sqrt((r - g) * (r - g) + (r - b) * (g - b));
+      h = Math.acos(h);
+      if (b > g) {
+        h = TWOPI - h;
+      }
+      h /= TWOPI;
+    }
+    return [h * 360, s, i];
+  };
+
+  chroma.hsi = function() {
+    return (function(func, args, ctor) {
+      ctor.prototype = func.prototype;
+      var child = new ctor, result = func.apply(child, args);
+      return Object(result) === result ? result : child;
+    })(Color, slice.call(arguments).concat(['hsi']), function(){});
+  };
+
+  _input.hsi = hsi2rgb;
+
+  Color.prototype.hsi = function() {
+    return rgb2hsi(this._rgb);
+  };
+
+  interpolate_hsx = function(col1, col2, f, m) {
+    var dh, hue, hue0, hue1, lbv, lbv0, lbv1, res, sat, sat0, sat1, xyz0, xyz1;
+    if (m === 'hsl') {
+      xyz0 = col1.hsl();
+      xyz1 = col2.hsl();
+    } else if (m === 'hsv') {
+      xyz0 = col1.hsv();
+      xyz1 = col2.hsv();
+    } else if (m === 'hcg') {
+      xyz0 = col1.hcg();
+      xyz1 = col2.hcg();
+    } else if (m === 'hsi') {
+      xyz0 = col1.hsi();
+      xyz1 = col2.hsi();
+    } else if (m === 'lch' || m === 'hcl') {
+      m = 'hcl';
+      xyz0 = col1.hcl();
+      xyz1 = col2.hcl();
+    }
+    if (m.substr(0, 1) === 'h') {
+      hue0 = xyz0[0], sat0 = xyz0[1], lbv0 = xyz0[2];
+      hue1 = xyz1[0], sat1 = xyz1[1], lbv1 = xyz1[2];
+    }
+    if (!isNaN(hue0) && !isNaN(hue1)) {
+      if (hue1 > hue0 && hue1 - hue0 > 180) {
+        dh = hue1 - (hue0 + 360);
+      } else if (hue1 < hue0 && hue0 - hue1 > 180) {
+        dh = hue1 + 360 - hue0;
+      } else {
+        dh = hue1 - hue0;
+      }
+      hue = hue0 + f * dh;
+    } else if (!isNaN(hue0)) {
+      hue = hue0;
+      if ((lbv1 === 1 || lbv1 === 0) && m !== 'hsv') {
+        sat = sat0;
+      }
+    } else if (!isNaN(hue1)) {
+      hue = hue1;
+      if ((lbv0 === 1 || lbv0 === 0) && m !== 'hsv') {
+        sat = sat1;
+      }
+    } else {
+      hue = Number.NaN;
+    }
+    if (sat == null) {
+      sat = sat0 + f * (sat1 - sat0);
+    }
+    lbv = lbv0 + f * (lbv1 - lbv0);
+    return res = chroma[m](hue, sat, lbv);
+  };
+
+  _interpolators = _interpolators.concat((function() {
+    var len, o, ref, results;
+    ref = ['hsv', 'hsl', 'hsi', 'hcl', 'lch', 'hcg'];
+    results = [];
+    for (o = 0, len = ref.length; o < len; o++) {
+      m = ref[o];
+      results.push([m, interpolate_hsx]);
+    }
+    return results;
+  })());
+
+  interpolate_num = function(col1, col2, f, m) {
+    var n1, n2;
+    n1 = col1.num();
+    n2 = col2.num();
+    return chroma.num(n1 + (n2 - n1) * f, 'num');
+  };
+
+  _interpolators.push(['num', interpolate_num]);
+
+  interpolate_lab = function(col1, col2, f, m) {
+    var res, xyz0, xyz1;
+    xyz0 = col1.lab();
+    xyz1 = col2.lab();
+    return res = new Color(xyz0[0] + f * (xyz1[0] - xyz0[0]), xyz0[1] + f * (xyz1[1] - xyz0[1]), xyz0[2] + f * (xyz1[2] - xyz0[2]), m);
+  };
+
+  _interpolators.push(['lab', interpolate_lab]);
+
+}).call(this);
+
+/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./../webpack/buildin/module.js */ "./node_modules/webpack/buildin/module.js")(module)))
+
+/***/ }),
+
+/***/ "./node_modules/css-loader/index.js?!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src/index.js?!./node_modules/vue-loader/lib/index.js?!./node_modules/vue-map-chart/src/App.vue?vue&type=style&index=0&id=0b4d26f6&scoped=true&lang=css&":
+/*!****************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/css-loader??ref--6-1!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src??ref--6-2!./node_modules/vue-loader/lib??vue-loader-options!./node_modules/vue-map-chart/src/App.vue?vue&type=style&index=0&id=0b4d26f6&scoped=true&lang=css& ***!
+  \****************************************************************************************************************************************************************************************************************************************************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(/*! ../../css-loader/lib/css-base.js */ "./node_modules/css-loader/lib/css-base.js")(false);
+// imports
+
+
+// module
+exports.push([module.i, "\n.vue-world-map[data-v-0b4d26f6],\n#map-svg[data-v-0b4d26f6] {\n  height: 100%;\n}\n.vue-world-map[data-v-0b4d26f6]{\n  position: relative;\n}\n.vue-map-legend[data-v-0b4d26f6]{\n  width: 185px;\n  background: #fff;\n  border: 1px solid;\n  border-color: #acacad;\n  position: absolute;\n}\n.vue-map-legend-header[data-v-0b4d26f6]{\n  padding: 10px 15px;\n}\n.vue-map-legend-content[data-v-0b4d26f6]{\n  padding: 10px 15px;\n  background: #dadbda8f;\n  border-top: 1px solid #acacad;\n}\n", ""]);
+
+// exports
 
 
 /***/ }),
@@ -67793,6 +86992,36 @@ process.umask = function() { return 0; };
 
 /***/ }),
 
+/***/ "./node_modules/style-loader/index.js!./node_modules/css-loader/index.js?!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src/index.js?!./node_modules/vue-loader/lib/index.js?!./node_modules/vue-map-chart/src/App.vue?vue&type=style&index=0&id=0b4d26f6&scoped=true&lang=css&":
+/*!********************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/style-loader!./node_modules/css-loader??ref--6-1!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src??ref--6-2!./node_modules/vue-loader/lib??vue-loader-options!./node_modules/vue-map-chart/src/App.vue?vue&type=style&index=0&id=0b4d26f6&scoped=true&lang=css& ***!
+  \********************************************************************************************************************************************************************************************************************************************************************************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+
+var content = __webpack_require__(/*! !../../css-loader??ref--6-1!../../vue-loader/lib/loaders/stylePostLoader.js!../../postcss-loader/src??ref--6-2!../../vue-loader/lib??vue-loader-options!./App.vue?vue&type=style&index=0&id=0b4d26f6&scoped=true&lang=css& */ "./node_modules/css-loader/index.js?!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src/index.js?!./node_modules/vue-loader/lib/index.js?!./node_modules/vue-map-chart/src/App.vue?vue&type=style&index=0&id=0b4d26f6&scoped=true&lang=css&");
+
+if(typeof content === 'string') content = [[module.i, content, '']];
+
+var transform;
+var insertInto;
+
+
+
+var options = {"hmr":true}
+
+options.transform = transform
+options.insertInto = undefined;
+
+var update = __webpack_require__(/*! ../../style-loader/lib/addStyles.js */ "./node_modules/style-loader/lib/addStyles.js")(content, options);
+
+if(content.locals) module.exports = content.locals;
+
+if(false) {}
+
+/***/ }),
+
 /***/ "./node_modules/style-loader/index.js!./node_modules/css-loader/index.js?!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/passport/AuthorizedClients.vue?vue&type=style&index=0&id=397d14ca&scoped=true&lang=css&":
 /*!************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
   !*** ./node_modules/style-loader!./node_modules/css-loader??ref--6-1!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src??ref--6-2!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/passport/AuthorizedClients.vue?vue&type=style&index=0&id=397d14ca&scoped=true&lang=css& ***!
@@ -72519,6 +91748,1847 @@ var e=Object.defineProperty,t=Object.prototype.hasOwnProperty,s=Object.getOwnPro
 
 /***/ }),
 
+/***/ "./node_modules/vue-loader/lib/index.js?!./node_modules/vue-map-chart/src/App.vue?vue&type=script&lang=js&":
+/*!***************************************************************************************************************************!*\
+  !*** ./node_modules/vue-loader/lib??vue-loader-options!./node_modules/vue-map-chart/src/App.vue?vue&type=script&lang=js& ***!
+  \***************************************************************************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var chroma_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! chroma-js */ "./node_modules/chroma-js/chroma.js");
+/* harmony import */ var chroma_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(chroma_js__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _Map__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Map */ "./node_modules/vue-map-chart/src/Map.vue");
+/* harmony import */ var _dynamic_map_css__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./dynamic-map-css */ "./node_modules/vue-map-chart/src/dynamic-map-css.js");
+
+
+
+
+
+let legend = {
+  data: null,
+  code: null,
+  name: null
+}
+
+let position = {
+  left: 0,
+  top: 0,
+}
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+  name: "MapChart",
+  components: { Map: _Map__WEBPACK_IMPORTED_MODULE_1__["default"] },
+  watch: {
+    countryData() {
+      this.renderMapCSS();
+    },
+  },
+  props: {
+    lowColor: {
+      type: String,
+      default: '#fde2e2',
+    },
+    highColor: {
+      type: String,
+      default: '#d83737',
+    },
+    countryData: {
+      type: Object,
+      required: true,
+    },
+    defaultCountryFillColor: {
+      type: String,
+      default: '#dadada',
+    },
+    countryStrokeColor: {
+      type: String,
+      default: '#909090',
+    },
+  },
+  data() {
+    return {
+      legend: legend,
+      position: position,
+      node: document.createElement('style'),
+      chromaScale: chroma_js__WEBPACK_IMPORTED_MODULE_0___default.a.scale(
+        [this.$props.lowColor, this.$props.highColor]
+      ),
+    };
+  },
+  methods: {
+    onHoverCountry(country) {
+      this.legend = country;
+      this.position = country.position
+      this.$emit('hoverCountry', country);
+    },
+    onHoverLeaveCountry(country) {
+      this.legend = {
+        data: null,
+        code: null,
+        name: null
+      }
+      this.$emit('hoverLeaveCountry', country);
+    },
+    renderMapCSS() {
+      const baseCss = Object(_dynamic_map_css__WEBPACK_IMPORTED_MODULE_2__["getBaseCss"])(this.$props);
+      const dynamicMapCss = Object(_dynamic_map_css__WEBPACK_IMPORTED_MODULE_2__["getDynamicMapCss"])(
+        this.$props.countryData, this.chromaScale
+      );
+      this.$data.node.innerHTML = Object(_dynamic_map_css__WEBPACK_IMPORTED_MODULE_2__["getCombinedCssString"])(
+        baseCss, dynamicMapCss
+      );
+    },
+  },
+  mounted() {
+    document.body.appendChild(this.$data.node);
+    this.renderMapCSS();
+  },
+});
+
+
+/***/ }),
+
+/***/ "./node_modules/vue-loader/lib/index.js?!./node_modules/vue-map-chart/src/Map.vue?vue&type=script&lang=js&":
+/*!***************************************************************************************************************************!*\
+  !*** ./node_modules/vue-loader/lib??vue-loader-options!./node_modules/vue-map-chart/src/Map.vue?vue&type=script&lang=js& ***!
+  \***************************************************************************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+	mounted() {
+		const paths = document.getElementsByClassName('land');
+		const _this = this;
+
+		Array.from(paths).forEach(path => {
+			path.addEventListener('mouseenter', (e) => {
+				_this.$emit(
+					'hoverCountry',
+					{
+						"code": e.target.id,
+						"name": e.target.attributes.title.value,
+						"position": {
+							"left": e.offsetX,
+							"top": e.offsetY
+						}
+					}
+				);
+			});
+			path.addEventListener('mouseleave', (e) => {
+				_this.$emit('hoverLeaveCountry');
+			});
+		});
+	},
+});
+
+
+/***/ }),
+
+/***/ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./node_modules/vue-map-chart/src/App.vue?vue&type=template&id=0b4d26f6&scoped=true&":
+/*!*************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/vue-loader/lib/loaders/templateLoader.js??ref--6!./node_modules/vue-loader/lib??vue-loader-options!./node_modules/vue-map-chart/src/App.vue?vue&type=template&id=0b4d26f6&scoped=true& ***!
+  \*************************************************************************************************************************************************************************************************************/
+/*! exports provided: render, staticRenderFns */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "render", function() { return render; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return staticRenderFns; });
+var render = function render() {
+  var _vm = this,
+    _c = _vm._self._c
+  return _c(
+    "div",
+    { staticClass: "vue-world-map" },
+    [
+      _c("Map", {
+        on: {
+          hoverCountry: _vm.onHoverCountry,
+          hoverLeaveCountry: _vm.onHoverLeaveCountry,
+        },
+      }),
+      _vm._v(" "),
+      _vm.legend.name
+        ? _c(
+            "div",
+            {
+              staticClass: "vue-map-legend",
+              style:
+                "left:" +
+                _vm.position.left +
+                "px; top: " +
+                _vm.position.top +
+                "px",
+            },
+            [
+              _c("div", { staticClass: "vue-map-legend-header" }, [
+                _c("span", [_vm._v(_vm._s(_vm.legend.name))]),
+              ]),
+              _vm._v(" "),
+              _c("div", { staticClass: "vue-map-legend-content" }, [
+                _c("span", [
+                  _vm._v(_vm._s(_vm.countryData[_vm.legend.code] || 0)),
+                ]),
+              ]),
+            ]
+          )
+        : _vm._e(),
+    ],
+    1
+  )
+}
+var staticRenderFns = []
+render._withStripped = true
+
+
+
+/***/ }),
+
+/***/ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./node_modules/vue-map-chart/src/Map.vue?vue&type=template&id=6c7f3cb1&":
+/*!*************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/vue-loader/lib/loaders/templateLoader.js??ref--6!./node_modules/vue-loader/lib??vue-loader-options!./node_modules/vue-map-chart/src/Map.vue?vue&type=template&id=6c7f3cb1& ***!
+  \*************************************************************************************************************************************************************************************************/
+/*! exports provided: render, staticRenderFns */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "render", function() { return render; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return staticRenderFns; });
+var render = function render() {
+  var _vm = this,
+    _c = _vm._self._c
+  return _c(
+    "svg",
+    {
+      attrs: {
+        id: "map-svg",
+        xmlns: "http://www.w3.org/2000/svg",
+        "xmlns:amcharts": "http://amcharts.com/ammap",
+        "xmlns:xlink": "http://www.w3.org/1999/xlink",
+        version: "1.1",
+        width: "100%",
+        viewBox: "0 0 1008 650",
+      },
+    },
+    [
+      _c(
+        "defs",
+        [
+          _c("amcharts:ammap", {
+            attrs: {
+              projection: "mercator",
+              leftLongitude: "-169.6",
+              topLatitude: "83.68",
+              rightLongitude: "190.25",
+              bottomLatitude: "-55.55",
+            },
+          }),
+        ],
+        1
+      ),
+      _vm._v(" "),
+      _c("g", [
+        _c("path", {
+          staticClass: "land",
+          attrs: {
+            id: "AE",
+            title: "United Arab Emirates",
+            d: "M619.87,393.72L620.37,393.57L620.48,394.41L622.67,393.93L624.99,394.01L626.68,394.1L628.6,392.03L630.7,390.05L632.47,388.15L633,389.2L633.38,391.64L631.95,391.65L631.72,393.65L632.22,394.07L630.95,394.67L630.94,395.92L630.12,397.18L630.05,398.39L629.48,399.03L621.06,397.51L619.98,394.43z",
+          },
+        }),
+        _vm._v(" "),
+        _c("path", {
+          staticClass: "land",
+          attrs: {
+            id: "AF",
+            title: "Afghanistan",
+            d: "M646.88,356.9L649.74,358.2L651.85,357.74L652.44,356.19L654.65,355.67L656.23,354.62L656.79,351.83L659.15,351.15L659.59,349.9L660.92,350.84L661.76,350.95L663.32,350.98L665.44,351.72L666.29,352.14L668.32,351.02L669.27,351.69L670.17,350.09L671.85,350.16L672.28,349.64L672.58,348.21L673.79,346.98L675.3,347.78L675,348.87L675.85,349.04L675.58,351.99L676.69,353.14L677.67,352.4L678.92,352.06L680.66,350.49L682.59,350.75L685.49,350.75L685.99,351.76L684.35,352.15L682.93,352.8L679.71,353.2L676.7,353.93L675.06,355.44L675.72,356.9L676.05,358.6L674.65,360.03L674.77,361.33L674,362.55L671.33,362.44L672.43,364.66L670.65,365.51L669.46,367.51L669.61,369.49L668.51,370.41L667.48,370.11L665.33,370.54L665.03,371.45L662.94,371.45L661.38,373.29L661.28,376.04L657.63,377.37L655.68,377.09L655.11,377.79L653.44,377.39L650.63,377.87L645.94,376.23L648.48,373.3L648.25,371.2L646.13,370.65L645.91,368.56L644.99,365.92L646.19,364.09L644.97,363.6L645.74,361.15z",
+          },
+        }),
+        _vm._v(" "),
+        _c("path", {
+          staticClass: "land",
+          attrs: {
+            id: "AL",
+            title: "Albania",
+            d: "M532.98,334.66L532.63,335.93L533.03,337.52L534.19,338.42L534.13,339.39L533.22,339.93L533.05,341.12L531.75,342.88L531.27,342.63L531.22,341.83L529.66,340.6L529.42,338.85L529.66,336.32L530.04,335.16L529.57,334.57L529.38,333.38L530.6,331.51L530.77,332.23L531.53,331.89L532.13,332.91L532.8,333.29z",
+          },
+        }),
+        _vm._v(" "),
+        _c("path", {
+          staticClass: "land",
+          attrs: {
+            id: "AM",
+            title: "Armenia",
+            d: "M597.45,337.5L601.35,336.92L601.93,337.9L603,338.54L602.43,339.46L603.93,340.72L603.14,341.88L604.33,342.87L605.59,343.46L605.65,345.96L604.63,346.06L603.49,343.98L603.5,343.43L602.26,343.44L601.43,342.46L600.85,342.56L599.74,341.5L597.66,340.59L597.93,338.8z",
+          },
+        }),
+        _vm._v(" "),
+        _c("path", {
+          staticClass: "land",
+          attrs: {
+            id: "AO",
+            title: "Angola",
+            d: "M521.03,479.78l0.69,2.09l0.8,1.68l0.64,0.91l1.07,1.47l1.85,-0.23l0.93,-0.4l1.55,0.4l0.42,-0.7l0.7,-1.64l1.74,-0.11l0.15,-0.49l1.43,-0.01l-0.24,1.01l3.4,-0.02l0.05,1.77l0.57,1.09l-0.41,1.7l0.21,1.74l0.94,1.05l-0.15,3.37l0.69,-0.26l1.22,0.07l1.74,-0.42l1.28,0.17l0.3,0.88l-0.32,1.38l0.49,1.34l-0.42,1.07l0.24,0.99l-5.84,-0.04l-0.13,9.16l1.89,2.38l1.83,1.82l-5.15,1.19l-6.79,-0.41l-1.94,-1.4l-11.37,0.13l-0.42,0.21l-1.67,-1.32l-1.82,-0.09l-1.68,0.5l-1.35,0.56l-0.26,-1.83l0.39,-2.55l0.97,-2.65l0.15,-1.24l0.91,-2.59l0.67,-1.17l1.61,-1.87l0.9,-1.27l0.29,-2.11l-0.15,-1.61l-0.84,-1.01l-0.75,-1.72l-0.69,-1.69l0.15,-0.59l0.86,-1.12l-0.85,-2.72l-0.57,-1.88l-1.4,-1.77l0.27,-0.54l1.16,-0.38l0.81,0.05l0.98,-0.34L521.03,479.78zM510.12,479.24l-0.71,0.3l-0.75,-2.1l1.13,-1.21l0.85,-0.47l1.05,0.96l-1.02,0.59l-0.46,0.72L510.12,479.24z",
+          },
+        }),
+        _vm._v(" "),
+        _c("path", {
+          staticClass: "land",
+          attrs: {
+            id: "AR",
+            title: "Argentina",
+            d: "M291.6,648.91l-2.66,0.25l-1.43,-1.73l-1.69,-0.13l-3,0l0,-10.57l1.08,2.15l1.4,3.53l3.65,2.87l3.93,1.21L291.6,648.91zM293.1,526.47l1.65,2.18l1.09,-2.43l3.2,0.12l0.45,0.64l5.15,4.94l2.29,0.46l3.43,2.26l2.89,1.2l0.4,1.36l-2.76,4.73l2.83,0.85l3.15,0.48l2.22,-0.5l2.54,-2.4l0.46,-2.74l1.39,-0.59l1.41,1.79l-0.06,2.49l-2.36,1.73l-1.88,1.28l-3.16,3.08l-3.74,4.37l-0.7,2.59l-0.75,3.37l0.03,3.3l-0.61,0.74l-0.22,2.17l-0.19,1.76l3.56,2.91l-0.38,2.37l1.75,1.51l-0.14,1.7l-2.69,4.52l-4.16,1.91l-5.62,0.75l-3.08,-0.36l0.59,2.15l-0.57,2.72l0.52,1.85l-1.68,1.3l-2.87,0.51l-2.7,-1.35l-1.08,0.97l0.39,3.71l1.89,1.14l1.54,-1.19l0.84,1.96l-2.58,1.18l-2.25,2.38l-0.41,3.91l-0.66,2.11l-2.65,0.01l-2.2,2.04l-0.8,3.01l2.76,2.98l2.68,0.83l-0.96,3.73l-3.31,2.38l-1.82,5.03l-2.56,1.72l-1.15,2.06l0.91,4.64l1.87,2.63l-1.18,-0.23l-2.6,-0.71l-6.78,-0.61l-1.16,-2.63l0.05,-3.33l-1.87,0.28l-0.99,-1.6l-0.25,-4.6l2.15,-1.88l0.89,-2.68l-0.33,-2.11l1.49,-3.52l1.02,-5.35l-0.3,-2.33l1.22,-0.75l-0.3,-1.48l-1.3,-0.78l0.92,-1.63l-1.27,-1.46l-0.65,-4.4l1.13,-0.77l-0.47,-4.54l0.66,-3.75l0.75,-3.22l1.68,-1.3l-0.85,-3.46l-0.01,-3.22l2.12,-2.26l-0.06,-2.87l1.6,-3.31l0.01,-3.09l-0.73,-0.61l-1.29,-5.69l1.73,-3.34l-0.27,-3.11l1,-2.9l1.84,-2.96l1.98,-1.95l-0.84,-1.23l0.59,-1l-0.09,-5.14l3.05,-1.51l0.96,-3.16l-0.34,-0.76l2.34,-2.72L293.1,526.47z",
+          },
+        }),
+        _vm._v(" "),
+        _c("path", {
+          staticClass: "land",
+          attrs: {
+            id: "AT",
+            title: "Austria",
+            d: "M522.86,309.85L522.65,311.56L521.07,311.57L521.61,312.46L520.68,315.11L520.15,315.8L517.7,315.9L516.28,316.82L513.96,316.51L509.95,315.46L509.33,314.03L506.56,314.75L506.23,315.52L504.53,314.94L503.1,314.83L501.83,314.09L502.26,313.08L502.15,312.34L503,312.12L504.42,313.26L504.82,312.17L507.29,312.35L509.3,311.61L510.64,311.73L511.51,312.58L511.78,311.88L511.38,309.16L512.39,308.62L513.37,306.67L515.46,308.04L517.03,306.3L518.02,305.98L520.2,307.28L521.51,307.06L522.81,307.86L522.58,308.4z",
+          },
+        }),
+        _vm._v(" "),
+        _c("path", {
+          staticClass: "land",
+          attrs: {
+            id: "AU",
+            title: "Australia",
+            d: "M882.93,588.16l2.71,1.28l1.53,-0.51l2.19,-0.71l1.68,0.25l0.2,4.43l-0.96,1.3l-0.29,3.06l-0.98,-1.05l-1.95,2.67l-0.58,-0.21l-1.72,-0.12l-1.73,-3.28l-0.38,-2.5l-1.62,-3.25l0.07,-1.7L882.93,588.16zM877.78,502.1l1.01,2.25l1.8,-1.08l0.93,1.22l1.35,1.13l-0.29,1.28l0.6,2.48l0.43,1.45l0.71,0.35l0.76,2.5l-0.27,1.52l0.91,1.99l3.04,1.54l1.98,1.41l1.88,1.29l-0.37,0.72l1.6,1.87l1.09,3.25l1.12,-0.66l1.14,1.31l0.69,-0.46l0.48,3.21l1.99,1.87l1.3,1.17l2.19,2.49l0.79,2.49l0.07,1.77l-0.19,1.94l1.34,2.68l-0.16,2.81l-0.49,1.48l-0.76,2.87l0.06,1.86l-0.55,2.34l-1.24,3l-2.08,1.63l-1.02,2.59l-0.94,1.67l-0.83,2.93l-1.08,1.71l-0.71,2.58l-0.36,2.4l0.14,1.11l-1.61,1.22l-3.14,0.13l-2.59,1.45l-1.29,1.38l-1.69,1.54l-2.32,-1.58l-1.72,-0.63l0.44,-1.85l-1.53,0.67l-2.46,2.58l-2.42,-0.97l-1.59,-0.56l-1.6,-0.25l-2.71,-1.03l-1.81,-2.18l-0.52,-2.66l-0.65,-1.75l-1.38,-1.4l-2.7,-0.41l0.92,-1.66l-0.68,-2.52l-1.37,2.35l-2.5,0.63l1.47,-1.88l0.42,-1.95l1.08,-1.65l-0.22,-2.47l-2.28,2.85l-1.75,1.15l-1.07,2.69l-2.19,-1.4l0.09,-1.79l-1.75,-2.43l-1.48,-1.25l0.53,-0.77l-3.6,-2l-1.97,-0.09l-2.7,-1.6l-5.02,0.31l-3.63,1.18l-3.19,1.1l-2.68,-0.22l-2.97,1.7l-2.43,0.77l-0.54,1.75l-1.04,1.36l-2.38,0.08l-1.76,0.3l-2.48,-0.61l-2.02,0.37l-1.92,0.15l-1.67,1.8l-0.82,-0.15l-1.41,0.96l-1.35,1.08l-2.05,-0.13l-1.88,0l-2.97,-2.17l-1.51,-0.64l0.06,-1.93l1.39,-0.46l0.48,-0.76l-0.1,-1.2l0.34,-2.3l-0.31,-1.95l-1.48,-3.29l-0.46,-1.85l0.12,-1.83l-1.12,-2.08l-0.07,-0.93l-1.24,-1.26l-0.35,-2.47l-1.6,-2.48l-0.39,-1.33l1.23,1.35l-0.95,-2.88l1.39,0.9l0.83,1.2l-0.05,-1.59l-1.39,-2.43l-0.27,-0.97l-0.65,-0.92l0.3,-1.77l0.57,-0.75l0.38,-1.52l-0.3,-1.77l1.16,-2.17l0.21,2.29l1.18,-2.07l2.28,-1l1.37,-1.28l2.14,-1.1l1.27,-0.23l0.77,0.37l2.21,-1.11l1.7,-0.33l0.42,-0.65l0.74,-0.27l1.55,0.07l2.95,-0.87l1.52,-1.31l0.72,-1.58l1.64,-1.49l0.13,-1.17l0.07,-1.59l1.96,-2.47l1.18,2.51l1.19,-0.58l-1,-1.38l0.88,-1.41l1.24,0.63l0.34,-2.21l1.53,-1.42l0.68,-1.14l1.41,-0.49l0.04,-0.8l1.23,0.34l0.05,-0.72l1.23,-0.41l1.36,-0.39l2.07,1.32l1.56,1.71l1.75,0.02l1.78,0.27l-0.59,-1.58l1.34,-2.3l1.26,-0.75l-0.44,-0.71l1.22,-1.63l1.7,-1.01l1.43,0.34l2.36,-0.54l-0.05,-1.45l-2.05,-0.94l1.49,-0.41l1.86,0.7l1.49,1.17l2.36,0.73l0.8,-0.29l1.74,0.88l1.64,-0.82l1.05,0.25l0.66,-0.55l1.29,1.41l-0.75,1.53l-1.06,1.16l-0.96,0.1l0.33,1.15l-0.82,1.43l-1,1.41l0.2,0.81l2.23,1.6l2.16,0.93l1.44,1l2.03,1.72l0.79,0l1.47,0.75l0.43,0.9l2.68,0.99l1.85,-1l0.55,-1.57l0.57,-1.29l0.35,-1.59l0.85,-2.3l-0.39,-1.39l0.2,-0.84l-0.32,-1.64l0.37,-2.16l0.54,-0.58l-0.44,-0.95l0.68,-1.51l0.53,-1.56l0.07,-0.81l1.04,-1.06l0.79,1.39l0.19,1.78l0.7,0.34l0.12,1.2l1.02,1.45l0.21,1.62L877.78,502.1z",
+          },
+        }),
+        _vm._v(" "),
+        _c("path", {
+          staticClass: "land",
+          attrs: {
+            id: "AZ",
+            title: "Azerbaijan",
+            d: "M601.43,342.46l0.83,0.97l1.24,-0.01l-0.01,0.56l1.14,2.08l-1.92,-0.48l-1.42,-1.66l-0.44,-1.37L601.43,342.46zM608.08,337.03l1.24,0.25l0.48,-0.95l1.67,-1.51l1.47,1.97l1.43,2.62l1.31,0.17l0.86,0.99l-2.31,0.29l-0.49,2.82l-0.48,1.26l-1.03,0.84l0.08,1.77l-0.7,0.18l-1.75,-1.87l0.97,-1.78l-0.83,-1.06l-1.05,0.27l-3.31,2.66l-0.06,-2.5l-1.26,-0.59l-1.19,-0.99l0.79,-1.16l-1.49,-1.26l0.56,-0.92l-1.07,-0.64l-0.58,-0.97l0.69,-0.61l2.09,1.07l1.51,0.22l0.38,-0.43l-1.38,-2.02l0.73,-0.52l0.79,0.13L608.08,337.03z",
+          },
+        }),
+        _vm._v(" "),
+        _c("path", {
+          staticClass: "land",
+          attrs: {
+            id: "BA",
+            title: "Bosnia and Herzegovina",
+            d: "M528.54,323.11L529.56,323.1L528.86,324.82L530.21,326.32L529.8,328.14L529.14,328.31L528.61,328.67L527.7,329.56L527.29,331.66L524.81,330.22L523.75,328.61L522.68,327.76L521.39,326.31L520.79,325.1L519.41,323.27L520,321.63L521.01,322.54L521.61,321.72L522.92,321.63L525.33,322.29L527.27,322.23z",
+          },
+        }),
+        _vm._v(" "),
+        _c("path", {
+          staticClass: "land",
+          attrs: {
+            id: "BD",
+            title: "Bangladesh",
+            d: "M735.09,400.41L735.04,402.56L734.06,402.1L734.24,404.51L733.44,402.95L733.28,401.43L732.74,399.98L731.57,398.22L728.99,398.1L729.25,399.35L728.37,401.02L727.17,400.41L726.76,400.96L725.97,400.63L724.89,400.36L724.45,397.88L723.48,395.6L723.95,393.76L722.23,392.94L722.85,391.82L724.6,390.67L722.58,389.04L723.57,386.93L725.79,388.27L727.13,388.43L727.38,390.58L730.04,391L732.65,390.95L734.26,391.48L732.97,394.07L731.71,394.25L730.85,395.98L732.38,397.56L732.84,395.62L733.62,395.61z",
+          },
+        }),
+        _vm._v(" "),
+        _c("path", {
+          staticClass: "land",
+          attrs: {
+            id: "BE",
+            title: "Belgium",
+            d: "M484.55,295.91L486.6,296.26L489.2,295.33L490.97,297.28L492.52,298.32L492.2,301.29L491.47,301.45L491.16,303.88L488.71,301.91L487.27,302.25L485.31,300.19L484.01,298.42L482.71,298.35L482.3,296.79z",
+          },
+        }),
+        _vm._v(" "),
+        _c("path", {
+          staticClass: "land",
+          attrs: {
+            id: "BF",
+            title: "Burkina Faso",
+            d: "M467.33,436.4L465.41,435.67L464.09,435.78L463.11,436.49L461.85,435.89L461.36,434.96L460.1,434.34L459.91,432.7L460.68,431.49L460.61,430.53L462.84,428.17L463.25,426.21L464.02,425.51L465.38,425.89L466.55,425.31L466.93,424.57L469.11,423.29L469.64,422.39L472.26,421.19L473.81,420.78L474.51,421.33L476.3,421.32L476.08,422.72L476.46,424.03L478.04,425.9L478.12,427.28L481.36,427.93L481.29,429.88L480.68,430.74L479.31,431L478.74,432.24L477.78,432.56L475.32,432.5L474.02,432.28L473.12,432.74L471.88,432.53L467.01,432.66L466.94,434.27z",
+          },
+        }),
+        _vm._v(" "),
+        _c("path", {
+          staticClass: "land",
+          attrs: {
+            id: "BG",
+            title: "Bulgaria",
+            d: "M538.78,325.56L539.59,327.16L540.67,326.87L542.83,327.48L546.95,327.68L548.34,326.69L551.64,325.79L553.68,327.2L555.33,327.61L553.87,329.2L552.85,331.93L553.75,334.09L551.34,333.58L548.48,334.76L548.45,336.62L545.9,336.97L543.93,335.67L541.68,336.7L539.61,336.59L539.41,334.12L538,332.91L538.47,332.37L538.16,331.92L538.63,330.71L539.7,329.52L538.34,327.86L538.09,326.44z",
+          },
+        }),
+        _vm._v(" "),
+        _c("path", {
+          staticClass: "land",
+          attrs: {
+            id: "BI",
+            title: "Burundi",
+            d: "M557.52,475.93L557.34,472.56L556.63,471.3L558.34,471.52L559.2,469.93L560.69,470.11L560.85,471.21L561.45,471.84L561.48,472.75L560.79,473.33L559.69,474.79L558.68,475.8z",
+          },
+        }),
+        _vm._v(" "),
+        _c("path", {
+          staticClass: "land",
+          attrs: {
+            id: "BJ",
+            title: "Benin",
+            d: "M482.8,445.92L480.48,446.25L479.79,444.31L479.92,437.85L479.35,437.27L479.25,435.88L478.27,434.89L477.42,434.06L477.78,432.56L478.74,432.24L479.31,431L480.68,430.74L481.29,429.88L482.23,429.05L483.24,429.04L485.38,430.68L485.27,431.63L485.9,433.31L485.35,434.45L485.64,435.21L484.28,436.96L483.42,437.83L482.89,439.6L482.96,441.39z",
+          },
+        }),
+        _vm._v(" "),
+        _c("path", {
+          staticClass: "land",
+          attrs: {
+            id: "BN",
+            title: "Brunei Darussalam",
+            d: "M795.46,450.77L796.57,449.72L798.96,448.19L798.83,449.57L798.67,451.35L797.33,451.26L796.74,452.21z",
+          },
+        }),
+        _vm._v(" "),
+        _c("path", {
+          staticClass: "land",
+          attrs: {
+            id: "BO",
+            title: "Bolivia",
+            d: "M299.04,526.35L295.84,526.22L294.75,528.65L293.1,526.47L289.43,525.74L287.1,528.46L285.07,528.87L283.97,524.72L282.47,521.38L283.35,518.51L281.88,517.26L281.51,515.14L280.13,513.14L281.9,510L280.69,507.56L281.34,506.59L280.83,505.52L281.93,504.08L281.99,501.64L282.12,499.62L282.73,498.66L280.3,494.08L282.39,494.32L283.83,494.25L284.46,493.4L286.91,492.25L288.38,491.19L292.05,490.71L291.76,492.83L292.1,493.92L291.87,495.82L294.92,498.37L298.06,498.84L299.16,499.91L301.06,500.48L302.22,501.31L303.98,501.28L305.61,502.13L305.73,503.79L306.28,504.63L306.32,505.88L305.5,505.92L306.58,509.29L311.95,509.41L311.54,511.09L311.84,512.24L313.37,513.06L314.04,514.88L313.54,517.2L312.77,518.49L313.04,520.18L312.16,520.79L312.12,519.88L309.5,518.37L306.9,518.32L302.01,519.18L300.67,521.8L300.6,523.4L299.49,526.99z",
+          },
+        }),
+        _vm._v(" "),
+        _c("path", {
+          staticClass: "land",
+          attrs: {
+            id: "BR",
+            title: "Brazil",
+            d: "M313.68,551.79L317.42,547.42L320.59,544.34L322.47,543.06L324.83,541.33L324.89,538.84L323.48,537.05L322.09,537.64L322.64,535.86L323.02,534.04L323.02,532.36L322.01,531.81L320.96,532.3L319.92,532.17L319.59,530.99L319.33,528.22L318.8,527.32L316.91,526.5L315.77,527.09L312.81,526.51L312.99,522.45L312.16,520.79L313.04,520.18L312.77,518.49L313.54,517.2L314.04,514.88L313.37,513.06L311.84,512.24L311.54,511.09L311.95,509.41L306.58,509.29L305.5,505.92L306.32,505.88L306.28,504.63L305.73,503.79L305.61,502.13L303.98,501.28L302.22,501.31L301.06,500.48L299.16,499.91L298.06,498.84L294.92,498.37L291.87,495.82L292.1,493.92L291.76,492.83L292.05,490.71L288.38,491.19L286.91,492.25L284.46,493.4L283.83,494.25L282.39,494.32L280.3,494.08L278.72,494.57L277.44,494.24L277.63,489.94L275.33,491.6L272.86,491.53L271.8,490.02L269.94,489.86L270.53,488.65L268.97,486.93L267.8,484.4L268.54,483.89L268.54,482.7L270.24,481.89L269.96,480.38L270.67,479.4L270.88,478.1L274.08,476.19L276.38,475.66L276.75,475.24L279.28,475.37L280.54,467.72L280.61,466.51L280.17,464.92L278.93,463.9L278.94,461.88L280.52,461.42L281.08,461.71L281.17,460.64L279.53,460.35L279.5,458.61L284.96,458.67L285.89,457.71L286.67,458.59L287.21,460.24L287.74,459.89L289.29,461.37L291.47,461.19L292.01,460.33L294.09,459.68L295.25,459.23L295.57,458.05L297.58,457.25L297.42,456.67L295.05,456.43L294.66,454.67L294.77,452.8L293.52,452.08L294.04,451.82L296.12,452.18L298.35,452.88L299.16,452.22L301.17,451.78L304.31,450.74L305.34,449.67L304.96,448.88L306.42,448.76L307.08,449.4L306.71,450.63L307.67,451.05L308.32,452.35L307.54,453.33L307.09,455.71L307.81,457.12L308.01,458.41L309.74,459.71L311.12,459.85L311.43,459.31L312.31,459.19L313.58,458.7L314.49,457.96L316.04,458.19L316.72,458.09L318.25,458.32L318.5,457.75L318.03,457.2L318.31,456.39L319.44,456.64L320.77,456.35L322.37,456.94L323.6,457.52L324.47,456.76L325.09,456.88L325.48,457.67L326.82,457.47L327.89,456.41L328.75,454.35L330.41,451.8L331.37,451.67L332.06,453.21L333.63,458.09L335.13,458.55L335.21,460.47L333.1,462.76L333.97,463.6L338.93,464.04L339.03,466.83L341.16,465L344.69,466.01L349.34,467.71L350.71,469.34L350.25,470.88L353.51,470.02L358.97,471.5L363.16,471.39L367.3,473.7L370.88,476.83L373.04,477.63L375.44,477.75L376.46,478.63L377.41,482.2L377.88,483.89L376.76,488.55L375.33,490.39L371.38,494.33L369.59,497.54L367.52,500.02L366.82,500.08L366.03,502.18L366.23,507.58L365.45,512.06L365.15,513.99L364.27,515.14L363.77,519.08L360.93,522.96L360.45,526.05L358.18,527.36L357.52,529.17L354.48,529.16L350.07,530.33L348.09,531.68L344.95,532.57L341.65,535.01L339.28,538.07L338.87,540.39L339.34,542.12L338.81,545.3L338.18,546.85L336.22,548.6L333.11,554.28L330.64,556.87L328.73,558.41L327.46,561.57L325.6,563.48L324.82,561.58L326.06,560.01L324.44,557.76L322.24,555.94L319.35,553.86L318.31,553.95L315.5,551.45z",
+          },
+        }),
+        _vm._v(" "),
+        _c("path", {
+          staticClass: "land",
+          attrs: {
+            id: "BS",
+            title: "Bahamas",
+            d: "M257.86,395.2l-0.69,0.15l-0.71,-1.76l-1.05,-0.89l0.61,-1.95l0.84,0.12l0.98,2.55L257.86,395.2zM257.06,386.51l-3.06,0.5l-0.2,-1.15l1.32,-0.25l1.85,0.09L257.06,386.51zM259.36,386.48l-0.48,2.21l-0.52,-0.4l0.05,-1.63l-1.26,-1.23l-0.01,-0.36L259.36,386.48z",
+          },
+        }),
+        _vm._v(" "),
+        _c("path", {
+          staticClass: "land",
+          attrs: {
+            id: "BT",
+            title: "Bhutan",
+            d: "M732.36,382.78L733.5,383.78L733.3,385.71L731.01,385.8L728.65,385.59L726.88,386.08L724.33,384.89L724.28,384.26L726.13,381.92L727.64,381.12L729.65,381.85L731.13,381.93z",
+          },
+        }),
+        _vm._v(" "),
+        _c("path", {
+          staticClass: "land",
+          attrs: {
+            id: "BW",
+            title: "Botswana",
+            d: "M547.17,515.95L547.73,516.47L548.62,518.18L551.79,521.43L552.99,521.75L553,522.8L553.82,524.7L555.99,525.16L557.78,526.52L553.81,528.74L551.29,531L550.36,533.03L549.52,534.18L547.99,534.43L547.5,535.9L547.21,536.86L545.42,537.58L543.14,537.43L541.8,536.57L540.62,536.19L539.25,536.91L538.56,538.39L537.23,539.32L535.83,540.71L533.82,541.03L533.2,539.94L533.46,538.04L531.79,535.11L531.04,534.65L531.04,525.79L533.8,525.68L533.88,515.11L535.97,515.02L540.29,513.99L541.37,515.2L543.15,514.05L544.01,514.04L545.59,513.38L546.09,513.6z",
+          },
+        }),
+        _vm._v(" "),
+        _c("path", {
+          staticClass: "land",
+          attrs: {
+            id: "BY",
+            title: "Belarus",
+            d: "M541.1,284.07L543.81,284.11L546.85,282.31L547.5,279.59L549.8,278.02L549.54,275.82L551.24,274.98L554.26,273.05L557.21,274.31L557.61,275.54L559.08,274.95L561.82,276.13L562.09,278.44L561.49,279.76L563.25,282.91L564.39,283.78L564.22,284.64L566.11,285.47L566.92,286.72L565.83,287.74L563.57,287.58L563.03,288.02L563.69,289.56L564.38,292.49L561.97,292.76L561.11,293.76L560.92,296.02L559.81,295.59L557.28,295.81L556.54,294.76L555.49,295.54L554.44,294.89L552.23,294.8L549.1,293.72L546.27,293.36L544.1,293.46L542.56,294.69L541.22,294.86L541.17,292.85L540.3,290.73L541.98,289.79L542,287.94L541.22,286.16z",
+          },
+        }),
+        _vm._v(" "),
+        _c("path", {
+          staticClass: "land",
+          attrs: {
+            id: "BZ",
+            title: "Belize",
+            d: "M225.31,412.96L225.29,412.53L225.63,412.39L226.14,412.74L227.14,410.97L227.67,410.93L227.68,411.36L228.21,411.37L228.17,412.17L227.71,413.44L227.96,413.89L227.67,414.94L227.84,415.21L227.52,416.68L226.97,417.46L226.46,417.55L225.9,418.55L225.07,418.55L225.29,415.27z",
+          },
+        }),
+        _vm._v(" "),
+        _c("path", {
+          staticClass: "land",
+          attrs: {
+            id: "CA",
+            title: "Canada",
+            d: "M198.93,96.23l-0.22,-5.9l3.63,0.58l1.63,0.96l3.35,4.92l-0.76,4.97l-4.15,2.77l-2.28,-3.12L198.93,96.23zM212.14,108.88l0.33,-1.49l-1.97,-2.45l-5.65,-0.19l0.75,3.68l5.25,0.83L212.14,108.88zM248.49,155.83l3.08,5.1l0.81,0.57l3.07,-1.27l3.02,0.2l2.98,0.28l-0.25,-2.64l-4.84,-5.38l-6.42,-1.08l-1.35,0.67L248.49,155.83zM183.06,93.13l-2.71,4.19l6.24,0.52l4.61,4.44l4.58,1.5l-1.09,-5.68l-2.14,-6.73l-7.58,-5.35l-5.5,-2.04l0.2,5.69L183.06,93.13zM208.96,82.89l5.13,-0.12l-2.22,4l-0.04,5.3l3.01,5.76l5.81,1.77l4.96,-0.99l5.18,-10.73l3.85,-4.45l-3.38,-4.97l-2.21,-10.65l-4.6,-3.19l-4.72,-3.68l-3.58,-9.56l-6.52,0.94l1.23,4.15l-2.87,1.25l-1.94,5.32l-1.94,7.46l1.78,7.26L208.96,82.89zM145.21,136.27l3.92,1.95l12.67,-1.3l-5.82,4.77l0.36,3.43l4.26,-0.24l7.07,-4.58l9.5,-1.67l1.71,-5.22l-0.49,-5.57l-2.94,-0.5l-2.5,1.93l-1.1,-4.13l-0.95,-5.7l-2.9,-1.42l-2.57,4.41l4.01,11.05l-4.9,-0.85l-4.98,-6.79l-7.89,-4l-2.64,3.32L145.21,136.27zM167.77,94.21l-3.65,-2.9l-1.5,-0.66l-2.88,4.28l-0.05,2l4.66,0.01L167.77,94.21zM166.31,106.56l0.93,-3.99l-3.95,-2.12l-4.09,1.39l-2.27,4.26l4.16,4.21L166.31,106.56zM195.4,139.8l4.62,-1.11l1.28,-8.25l-0.09,-5.95l-2.14,-5.56l-0.22,1.6l-3.94,-0.7l-4.22,4.09l-3.02,-0.37l0.18,8.92l4.6,-0.87l-0.06,6.47L195.4,139.8zM192.12,185.41l-5.06,-3.93l-4.71,-4.21l-0.87,-6.18l-1.76,-8.92l-3.14,-3.84l-2.79,-1.55l-2.47,1.42l1.99,9.59l-1.41,3.73l-2.29,-8.98l-2.56,-3.11l-3.17,4.81l-3.9,-4.76l-6.24,2.87l1.4,-4.46l-2.87,-1.87l-7.51,5.84l-1.95,3.71l-2.35,6.77l4.9,2.32l4.33,-0.12l-6.5,3.46l1.48,3.13l3.98,0.17l5.99,-0.67l5.42,1.96l-3.66,1.44l-3.95,-0.37l-4.33,1.41l-1.87,0.87l3.45,6.35l2.49,-0.88l3.83,2.15l1.52,3.65l4.99,-0.73l7.1,-1.16l5.26,-2.65l3.26,-0.48l4.82,2.12l5.07,1.22l0.94,-2.86l-1.79,-3.05l4.6,-0.64L192.12,185.41zM199.86,184.43l-1.96,3.54l-2.47,2.49l3.83,3.54l2.28,-0.85l3.78,2.36l1.74,-2.73l-1.71,-3.03l-0.84,-1.53l-1.68,-1.46L199.86,184.43zM182.25,154.98l-2.13,-2.17l-3.76,0.4l-0.95,1.38l4.37,6.75L182.25,154.98zM210.94,168.15l3.01,-6.93l3.34,-1.85l4.19,-8.74l-5.36,-2.47l-5.84,-0.36l-2.78,2.77l-1.47,4.23l-0.04,4.82l1.75,8.19L210.94,168.15zM228.09,145.15l5.76,-0.18l8.04,-1.61l3.59,1.28l4.18,-2.26l1.75,-2.84l-0.63,-4.52l-3,-4.23l-4.56,-0.8l-5.71,0.97l-4.46,2.44l-4.09,-0.94l-3.78,-0.5l-1.78,-2.7l-3.22,-2.61l0.64,-4.43l-2.42,-3.98l-5.52,0.03l-3.11,-3.99l-5.78,-0.8l-1.06,5.1l3.25,3.74l5.8,1.45l2.81,5.09l0.34,5.6l0.97,5.99l7.45,3.42L228.09,145.15zM139.07,126.88l5.21,-5.05l2.62,-0.59l2.16,-4.23l0.38,-9.77l-3.85,1.91l-4.3,-0.18l-5.76,8.19l-4.76,8.98l3.8,2.51L139.07,126.88zM211.25,143.05l1.53,-4.14l-1.02,-3.46l-2.45,-3.92l-4.03,3.02l-1.49,4.92l3.4,2.79L211.25,143.05zM202.94,154.49l-0.73,-2.88l-5,1.26l-3.34,-2.11l-3.32,4.8l3.09,6.28l-5.72,-1.17l-0.06,3.01l6.97,7.05l1.94,3.38l2.7,0.73l4.6,-3.41l0.5,-8.21l-4.24,-4.07L202.94,154.49zM128.95,308.23l-1.16,-2.34l-2.8,-1.77l-1.39,-2.05l-0.95,-1.5l-2.64,-0.46l-1.72,-0.67l-2.94,-0.96l-0.24,1.02l1.08,2.38l2.89,0.78l0.5,1.23l2.51,1.5l0.84,1.51l4.6,1.92L128.95,308.23zM250.65,230.6l-2,-2.11l-2.06,0.5l-0.25,-3.06l-3.21,-2.04l-3.07,-2.27l-1.63,-1.75l-1.43,1.03l-0.52,-2.96l-2.03,-0.55l-0.96,6.13l-0.36,5.11l-2.44,3.14l3.8,-0.6l0.96,3.65l3.99,-3.23l2.78,-3.38l1.57,2.86l4.36,1.51L250.65,230.6zM130.12,178.05l7.38,-4.18V170l3.48,-6.41l6.88,-6.69l3.52,-2.47l-3.01,-4.2l-2.72,-2.95l-7.16,-0.57l-4,-2.16l-9.48,1.63l2.74,6.23l-2.43,6.43l-1.94,6.87l-1.2,3.86l6.47,4.69L130.12,178.05zM264.36,205.36l0.32,-1.01l-0.03,-3.17l-2.19,-2.08l-2.57,1.05l-1.19,4.17l0.7,3.56l3.14,-0.36L264.36,205.36zM288.18,212.9l4.41,6.6l3.45,2.85l4.92,-7.87l0.87,-4.93l-4.41,-0.47l-4.03,-6.7l-4.45,-1.64l-6.6,-4.97l5.15,-3.63l-2.65,-7.54l-2.44,-3.35l-6.77,-3.35l-2.92,-5.55l-5.21,1.99l-0.36,-3.86l-3.86,-4.32l-6.22,-4.71l-2.65,3.71l-5.55,2.66l0.42,-6.06l-4.81,-10.05l-7.11,4.06l-2.59,7.7l-2.21,-5.92l2.06,-6.37l-7.24,2.65l-2.88,3.99l-2.15,8.42l0.89,9.05l3.98,0.04l-2.93,3.92l2.33,2.96l4.55,1.25l5.93,2.42l10.2,1.82l5.08,-1.04l1.5,-2.42l2.21,2.79l2.47,0.46l2.97,4.96l-1.8,1.98l5.68,2.63l4.29,3.68l1.08,2.55l0.77,3.24l-3.63,6.93l-0.98,3.44l0.94,2.42l-5.77,0.86l-5.27,0.12l-1.85,4.87l2.37,2.23l8.11,-1.03l-0.04,-1.89l4.08,3.15l4.18,3.28l-0.98,1.77l3.4,3.02l6.02,3.53l7.6,2.39l-0.46,-2.09l-2.92,-3.67l-3.96,-5.37l7.03,5l3.54,1.66l0.97,-4.44l-1.82,-6.3l-1.16,-1.73l-3.81,-3.03l-2.95,-3.91l0.35,-3.94L288.18,212.9zM222.35,51.34l2.34,7.29l4.96,5.88l9.81,-1.09l6.31,1.97l-4.38,6.05l-2.21,-1.78l-7.66,-0.71l1.19,8.31l3.96,6.04l-0.8,5.2l-4.97,3.46l-2.27,5.47l4.55,2.65l3.82,8.55l-7.5,-5.7l-1.71,0.94l1.38,9.38l-5.18,2.83l0.35,5.85l5.3,0.63l4.17,1.44l8.24,-1.84l7.33,3.27l7.49,-7.19l-0.06,-3.02l-4.79,0.48l-0.39,-2.84l3.92,-3.83l1.33,-5.15l4.33,-3.83l2.66,-4.76l-2.32,-7.1l1.94,-2.65l-3.86,-1.89l8.49,-1.63l1.79,-3.15l5.78,-2.6l4.8,-13.47l4.57,-4.94l6.62,-11.12l-6.1,0.1l2.54,-4.3l6.78,-3.99l6.84,-8.9l0.12,-5.73l-5.13,-6.04l-6.02,-2.93l-7.49,-1.82l-6.07,-1.49l-6.07,-1.5l-8.1,3.98l-1.49,-2.53l-8.57,0.98l-5.03,2.57l-3.7,3.65l-2.13,11.74L239,24.52l-3.48,-1.14l-4.12,7.97l-5.5,3.35l-3.27,0.66l-4.17,3.84l0.61,6.65L222.35,51.34zM296.75,316.34l-0.98,-1.98l-1.06,1.26l0.7,1.36l3.56,1.71l1.04,-0.26l1.38,-1.66l-2.6,0.11L296.75,316.34zM239.75,238.48l0.61,1.63l1.98,0.14l3.28,-3.34l0.06,-1.19l-3.85,-0.06L239.75,238.48zM301.88,304.92l-2.87,-1.8l-3.69,-1.09l-0.97,0.37l2.61,2.04l3.63,1.34l1.36,-0.08L301.88,304.92zM326.76,309.71l-0.36,-2.24l-1.96,0.72l0.87,-3.11l-2.8,-1.32l-1.29,1.05l-2.49,-1.18l0.98,-1.51l-1.88,-0.93l-1.83,1.47l1.86,-3.82l1.5,-2.8l0.54,-1.22l-1.3,-0.2l-2.43,1.55l-1.74,2.53l-2.9,6.92l-2.35,2.56l1.22,1.14l-1.75,1.47l0.43,1.23l5.44,0.13l3.01,-0.25l2.69,1.01l-1.98,1.93l1.67,0.14l3.25,-3.58l0.78,0.53l-0.61,3.37l1.84,0.77l1.27,-0.15l1.18,-3.61L326.76,309.71zM305.57,314.47l-2.81,4.56l-4.63,0.58l-3.64,-2.01l-0.92,-3.07l-0.89,-4.46l2.65,-2.83l-2.48,-2.09l-4.19,0.43l-5.88,3.53l-4.5,5.45l-2.38,0.67l3.23,-3.8l4.04,-5.57l3.57,-1.9l2.35,-3.11l2.9,-0.3l4.21,0.03l6,0.92l4.74,-0.71l3.53,-3.62l4.62,-1.59l2.01,-1.58l2.04,-1.71l-0.2,-5.19l-1.13,-1.77l-2.18,-0.63l-1.11,-4.05l-1.8,-1.55l-4.47,-1.26l-2.52,-2.82l-3.73,-2.83l1.13,-3.2l-3.1,-6.26l-3.65,-6.89l-2.18,-4.98l-1.86,2.61l-2.68,6.05l-4.06,2.97l-2.03,-3.16l-2.56,-0.85l-0.93,-6.99l0.08,-4.8l-5,-0.44l-0.85,-2.27l-3.45,-3.44l-2.61,-2.04l-2.32,1.58l-2.88,-0.58l-4.81,-1.65l-1.95,1.4l0.94,9.18l1.22,5.12l-3.31,5.75l3.41,4.02l1.9,4.44l0.23,3.42l-1.55,3.5l-3.18,3.46l-4.49,2.28l1.98,2.53l1.46,7.4l-1.52,4.68l-2.16,1.46l-4.17,-4.28l-2.03,-5.17l-0.87,-4.76l0.46,-4.19l-3.05,-0.47l-4.63,-0.28l-2.97,-2.08l-3.51,-1.37l-2.01,-2.38l-2.8,-1.94l-5.21,-2.23l-3.92,1.02l-1.31,-3.95l-1.26,-4.99l-4.12,-0.9l0.15,-6.41l1.09,-4.48l3.04,-6.6l3.43,-4.9l3.26,-0.77l0.19,-4.05l2.21,-2.68l4.01,-0.42l3.25,-4.39l0.82,-2.9l2.7,-5.73l0.84,-3.5l2.9,2.11l3.9,-1.08l5.49,-4.96l0.36,-3.54l-1.98,-3.98l2.09,-4.06l-0.17,-3.87l-3.76,-3.95l-4.14,-1.19l-3.98,-0.62l-0.15,8.71l-2.04,6.56l-2.93,5.3l-2.71,-4.95l0.84,-5.61l-3.35,-5.02l-3.75,6.09l0.01,-7.99l-5.21,-1.63l2.49,-4.01l-3.81,-9.59l-2.84,-3.91l-3.7,-1.44l-3.32,6.43l-0.22,9.34l3.27,3.29l3,4.91l-1.27,7.71l-2.26,-0.2l-1.78,5.88l0.02,-7l-4.34,-2.58l-2.49,1.33l0.32,4.67l-4.09,-0.18l-4.35,1.17l-4.95,-3.35l-3.13,0.6l-2.82,-4.11l-2.26,-1.84l-2.24,0.77l-3.41,0.35l-1.81,2.61l2.86,3.19l-3.05,3.72l-2.99,-4.42l-2.39,1.3l-7.57,0.87l-5.07,-1.59l3.94,-3.74l-3.78,-3.9l-2.75,0.5l-3.86,-1.32l-6.56,-2.89l-4.29,-3.37l-3.4,-0.47l-1.06,2.36l-3.44,1.31l-0.38,-6.15l-3.73,5.5l-4.74,-7.32l-1.94,-0.89l-0.63,3.91l-2.09,1.9l-1.93,-3.39l-4.59,2.05l-4.2,3.55l-4.17,-0.98l-3.4,2.5l-2.46,3.28l-2.92,-0.72l-4.41,-3.8l-5.23,-1.94l-0.02,27.65l-0.01,35.43l2.76,0.17l2.73,1.56l1.96,2.44l2.49,3.6l2.73,-3.05l2.81,-1.79l1.49,2.85l1.89,2.23l2.57,2.42l1.75,3.79l2.87,5.88l4.77,3.2l0.08,3.12l-1.56,2.35l0.06,2.48l3.39,3.45l0.49,3.76l3.59,1.96l-0.4,2.79l1.56,3.96l5.08,1.82l2,1.89l5.43,4.23l0.38,0.01h7.96h8.32h2.76h8.55h8.27h8.41l8.42,0l9.53,0l9.59,0l5.8,0l0.01,-1.64l0.95,-0.02l0.5,2.35l0.87,0.72l1.96,0.26l2.86,0.67l2.72,1.3l2.27,-0.55l3.45,1.09l1.14,-1.66l1.59,-0.66l0.62,-1.03l0.63,-0.55l2.61,0.86l1.93,0.1l0.67,0.57l0.94,2.38l3.15,0.63l-0.49,1.18l1.11,1.21l-0.48,1.56l1.18,0.51l-0.59,1.37l0.75,0.13l0.53,-0.6l0.55,0.9l2.1,0.5l2.13,0.04l2.27,0.41l2.51,0.78l0.91,1.26l1.82,3.04l-0.9,1.3l-2.28,-0.54l-1.42,-2.44l0.36,2.49l-1.34,2.17l0.15,1.84l-0.23,1.07l-1.81,1.27l-1.32,2.09l-0.62,1.32l1.54,0.24l2.08,-1.2l1.23,-1.06l0.83,-0.17l1.54,0.38l0.75,-0.59l1.37,-0.48l2.44,-0.47v0l0,0l-0.25,-1.15l-0.13,0.04l-0.86,0.2l-1.12,-0.36l0.84,-1.32l0.85,-0.46l1.98,-0.56l2.37,-0.53l1.24,0.73l0.78,-0.85l0.89,-0.54l0.6,0.29l0.03,0.06l2.87,-2.73l1.27,-0.73l4.26,-0.03l5.17,0l0.28,-0.98l0.9,-0.2l1.19,-0.62l1,-1.82l0.86,-3.15l2.14,-3.1l0.93,1.08l1.88,-0.7l1.25,1.19l0,5.52l1.83,2.25l3.12,-0.48l4.49,-0.13l-4.87,3.26l0.11,3.29l2.13,0.28l3.13,-2.79l2.78,-1.58l6.21,-2.35l3.47,-2.62l-1.81,-1.46L305.57,314.47zM251.91,243.37l1.1,-3.12l-0.71,-1.23l-1.15,-0.13l-1.08,1.8l-0.13,0.41l0.74,1.77L251.91,243.37zM109.25,279.8L109.25,279.8l1.56,-2.35L109.25,279.8zM105.85,283.09l-2.69,0.38l-1.32,-0.62l-0.17,1.52l0.52,2.07l1.42,1.46l1.04,2.13l1.69,2.1l1.12,0.01l-2.44,-3.7L105.85,283.09z",
+          },
+        }),
+        _vm._v(" "),
+        _c("path", {
+          staticClass: "land",
+          attrs: {
+            id: "CD",
+            title: "Democratic Republic of Congo",
+            d: "M561.71,453.61L561.54,456.87L562.66,457.24L561.76,458.23L560.68,458.97L559.61,460.43L559.02,461.72L558.86,463.96L558.21,465.02L558.19,467.12L557.38,467.9L557.28,469.56L556.89,469.77L556.63,471.3L557.34,472.56L557.52,475.93L558.02,478.5L557.74,479.96L558.3,481.58L559.93,483.15L561.44,486.7L560.34,486.41L556.57,486.89L555.82,487.22L555.02,489.02L555.65,490.27L555.15,493.62L554.8,496.47L555.56,496.98L557.52,498.08L558.29,497.57L558.53,500.65L556.38,500.62L555.23,499.05L554.2,497.83L552.05,497.43L551.42,495.94L549.7,496.84L547.46,496.44L546.52,495.15L544.74,494.89L543.43,494.96L543.27,494.08L542.3,494.01L541.02,493.84L539.29,494.26L538.07,494.19L537.37,494.45L537.52,491.08L536.59,490.03L536.38,488.3L536.79,486.6L536.23,485.51L536.18,483.75L532.77,483.77L533.02,482.76L531.59,482.77L531.44,483.26L529.7,483.37L528.99,485L528.57,485.71L527.02,485.31L526.1,485.71L524.24,485.93L523.17,484.46L522.53,483.55L521.72,481.87L521.03,479.78L512.76,479.75L511.77,480.08L510.96,480.03L509.8,480.41L509.41,479.54L510.12,479.24L510.21,478.02L510.67,477.3L511.69,476.72L512.43,477L513.39,475.93L514.91,475.96L515.09,476.75L516.14,477.25L517.79,475.49L519.42,474.13L520.13,473.24L520.04,470.94L521.26,468.23L522.54,466.8L524.39,465.46L524.71,464.57L524.78,463.55L525.24,462.58L525.09,461L525.44,458.53L525.99,456.79L526.83,455.3L526.99,453.62L527.24,451.67L528.34,450.25L529.84,449.35L532.15,450.3L533.93,451.33L535.98,451.61L538.07,452.15L538.91,450.47L539.3,450.25L540.57,450.53L543.7,449.14L544.8,449.73L545.71,449.65L546.13,448.97L547.17,448.73L549.28,449.02L551.08,449.08L552.01,448.79L553.7,451.1L554.96,451.43L555.71,450.96L557.01,451.15L558.57,450.56L559.24,451.75z",
+          },
+        }),
+        _vm._v(" "),
+        _c("path", {
+          staticClass: "land",
+          attrs: {
+            id: "CF",
+            title: "Central African Republic",
+            d: "M518.09,442.66L520.41,442.44L520.93,441.72L521.39,441.78L522.09,442.41L525.62,441.34L526.81,440.24L528.28,439.25L528,438.26L528.79,438L531.5,438.18L534.14,436.87L536.16,433.78L537.59,432.64L539.36,432.15L539.68,433.37L541.3,435.14L541.3,436.29L540.85,437.47L541.03,438.34L542,439.15L544.14,440.39L545.67,441.52L545.7,442.44L547.58,443.9L548.75,445.11L549.46,446.79L551.56,447.9L552.01,448.79L551.08,449.08L549.28,449.02L547.17,448.73L546.13,448.97L545.71,449.65L544.8,449.73L543.7,449.14L540.57,450.53L539.3,450.25L538.91,450.47L538.07,452.15L535.98,451.61L533.93,451.33L532.15,450.3L529.84,449.35L528.34,450.25L527.24,451.67L526.99,453.62L525.19,453.46L523.29,452.99L521.62,454.47L520.15,457.07L519.85,456.26L519.73,454.99L518.45,454.09L517.41,452.65L517.17,451.65L515.85,450.19L516.07,449.36L515.79,448.18L516.01,446.01L516.68,445.5z",
+          },
+        }),
+        _vm._v(" "),
+        _c("path", {
+          staticClass: "land",
+          attrs: {
+            id: "CG",
+            title: "Republic of Congo",
+            d: "M511.69,476.72L510.64,475.76L509.79,476.23L508.66,477.43L506.36,474.48L508.49,472.94L507.44,471.09L508.4,470.39L510.29,470.05L510.51,468.81L512.01,470.15L514.49,470.27L515.35,468.95L515.7,467.1L515.39,464.92L514.07,463.28L515.28,460.05L514.58,459.5L512.5,459.72L511.71,458.29L511.92,457.07L515.45,457.18L517.72,457.91L519.95,458.57L520.15,457.07L521.62,454.47L523.29,452.99L525.19,453.46L526.99,453.62L526.83,455.3L525.99,456.79L525.44,458.53L525.09,461L525.24,462.58L524.78,463.55L524.71,464.57L524.39,465.46L522.54,466.8L521.26,468.23L520.04,470.94L520.13,473.24L519.42,474.13L517.79,475.49L516.14,477.25L515.09,476.75L514.91,475.96L513.39,475.93L512.43,477z",
+          },
+        }),
+        _vm._v(" "),
+        _c("path", {
+          staticClass: "land",
+          attrs: {
+            id: "CH",
+            title: "Switzerland",
+            d: "M502.15,312.34L502.26,313.08L501.83,314.09L503.1,314.83L504.53,314.94L504.31,316.61L503.08,317.3L501,316.79L500.39,318.42L499.06,318.55L498.57,317.91L497,319.27L495.65,319.46L494.44,318.6L493.48,316.83L492.14,317.47L492.18,315.63L494.23,313.32L494.14,312.27L495.42,312.66L496.19,311.95L498.57,311.98L499.15,311.08z",
+          },
+        }),
+        _vm._v(" "),
+        _c("path", {
+          staticClass: "land",
+          attrs: {
+            id: "CI",
+            title: "Côte d'Ivoire",
+            d: "M467.24,449.46L465.97,449.49L464.01,448.94L462.22,448.97L458.89,449.46L456.95,450.27L454.17,451.29L453.63,451.22L453.84,448.92L454.11,448.57L454.03,447.46L452.84,446.29L451.95,446.1L451.13,445.33L451.74,444.09L451.46,442.73L451.59,441.91L452.04,441.91L452.2,440.68L451.98,440.14L452.25,439.75L453.29,439.41L452.6,437.15L451.95,435.99L452.18,435.02L452.74,434.81L453.1,434.55L453.88,434.97L456.04,435L456.56,434.17L457.04,434.23L457.85,433.91L458.29,435.12L458.94,434.76L460.1,434.34L461.36,434.96L461.85,435.89L463.11,436.49L464.09,435.78L465.41,435.67L467.33,436.4L468.07,440.41L466.89,442.77L466.16,445.94L467.37,448.35z",
+          },
+        }),
+        _vm._v(" "),
+        _c("path", {
+          staticClass: "land",
+          attrs: {
+            id: "CL",
+            title: "Chile",
+            d: "M282.81,636.73l0,10.57l3,0l1.69,0.13l-0.93,1.98l-2.4,1.53l-1.38,-0.16l-1.66,-0.4l-2.04,-1.48l-2.94,-0.71l-3.53,-2.71l-2.86,-2.57l-3.86,-5.25l2.31,0.97l3.94,3.13l3.72,1.7l1.45,-2.17l0.91,-3.2l2.58,-1.91L282.81,636.73zM283.97,524.72l1.1,4.15l2.02,-0.41l0.34,0.76l-0.96,3.16l-3.05,1.51l0.09,5.14l-0.59,1l0.84,1.23l-1.98,1.95l-1.84,2.96l-1,2.9l0.27,3.11l-1.73,3.34l1.29,5.69l0.73,0.61l-0.01,3.09l-1.6,3.31l0.06,2.87l-2.12,2.26l0.01,3.22l0.85,3.46l-1.68,1.3l-0.75,3.22l-0.66,3.75l0.47,4.54l-1.13,0.77l0.65,4.4l1.27,1.46l-0.92,1.63l1.3,0.78l0.3,1.48l-1.22,0.75l0.3,2.33l-1.02,5.35l-1.49,3.52l0.33,2.11l-0.89,2.68l-2.15,1.88l0.25,4.6l0.99,1.6l1.87,-0.28l-0.05,3.33l1.16,2.63l6.78,0.61l2.6,0.71l-2.49,-0.03l-1.35,1.13l-2.53,1.67l-0.45,4.38l-1.19,0.11l-3.16,-1.54l-3.21,-3.25l0,0l-3.49,-2.63l-0.88,-2.87l0.79,-2.62l-1.41,-2.94l-0.36,-7.34l1.19,-4.03l2.96,-3.19l-4.26,-1.19l2.67,-3.57l0.95,-6.56l3.12,1.37l1.46,-7.97l-1.88,-1l-0.88,4.75l-1.77,-0.54l0.88,-5.42l0.96,-6.84l1.29,-2.48l-0.81,-3.5l-0.23,-3.98l1.18,-0.11l1.72,-5.6l1.94,-5.43l1.19,-4.97l-0.65,-4.91l0.84,-2.67l-0.34,-3.96l1.64,-3.87l0.51,-6.04l0.9,-6.37l0.88,-6.75l-0.21,-4.87l-0.58,-4.15l1.44,-0.75l0.75,-1.5l1.37,1.99l0.37,2.12l1.47,1.25l-0.88,2.87L283.97,524.72z",
+          },
+        }),
+        _vm._v(" "),
+        _c("path", {
+          staticClass: "land",
+          attrs: {
+            id: "CM",
+            title: "Cameroon",
+            d: "M511.92,457.07L511.57,456.92L509.91,457.28L508.2,456.9L506.87,457.09L502.31,457.02L502.72,454.82L501.62,452.98L500.34,452.5L499.77,451.25L499.05,450.85L499.09,450.08L499.81,448.1L501.14,445.4L501.95,445.37L503.62,443.73L504.69,443.69L506.26,444.84L508.19,443.89L508.45,442.73L509.08,441.59L509.51,440.17L511.01,439.01L511.58,437.04L512.17,436.41L512.57,434.94L513.31,433.13L515.67,430.93L515.82,429.98L516.13,429.47L515.02,428.33L515.11,427.43L515.9,427.26L517.01,429.09L517.2,430.98L517.1,432.87L518.62,435.44L517.06,435.41L516.27,435.61L514.99,435.33L514.38,436.66L516.03,438.31L517.25,438.79L517.65,439.96L518.53,441.89L518.09,442.66L516.68,445.5L516.01,446.01L515.79,448.18L516.07,449.36L515.85,450.19L517.17,451.65L517.41,452.65L518.45,454.09L519.73,454.99L519.85,456.26L520.15,457.07L519.95,458.57L517.72,457.91L515.45,457.18z",
+          },
+        }),
+        _vm._v(" "),
+        _c("path", {
+          staticClass: "land",
+          attrs: {
+            id: "CN",
+            title: "China",
+            d: "M784.63,410.41l-2.42,1.41l-2.3,-0.91l-0.08,-2.53l1.38,-1.34l3.06,-0.83l1.61,0.07l0.63,1.13l-1.23,1.3L784.63,410.41zM833.19,302.89l4.88,1.38l3.32,3.03l1.13,3.95l4.26,0l2.43,-1.65l4.63,-1.24l-1.47,3.76l-1.09,1.51l-0.96,4.46l-1.89,3.89l-3.4,-0.7l-2.41,1.4l0.74,3.36l-0.4,4.55l-1.43,0.1l0.02,1.93l-1.81,-2.24l-1.11,2.13l-4.33,1.62l0.44,1.97l-2.42,-0.14l-1.33,-1.17l-1.93,2.64l-3.09,1.98l-2.28,2.35l-3.92,1.06l-2.06,1.69l-3.02,0.98l1.49,-1.67l-0.59,-1.41l2.22,-2.45l-1.48,-1.93l-2.44,1.3l-3.17,2.54l-1.73,2.34l-2.75,0.17l-1.43,1.68l1.48,2.41l2.29,0.58l0.09,1.58l2.22,1.02l3.14,-2.51l2.49,1.37l1.81,0.09l0.46,1.84l-3.97,0.97l-1.31,1.87l-2.73,1.73l-1.44,2.39l3.02,1.86l1.1,3.31l1.71,3.05l1.9,2.53l-0.05,2.43l-1.76,0.89l0.67,1.73l1.65,1l-0.43,2.61l-0.71,2.52l-1.57,0.28l-2.05,3.41l-2.27,4.09l-2.6,3.68l-3.86,2.82l-3.9,2.55l-3.16,0.35l-1.71,1.34l-0.97,-0.98l-1.59,1.5l-3.92,1.5l-2.97,0.46l-0.96,3.15l-1.55,0.17l-0.74,-2.16l0.66,-1.16l-3.76,-0.96l-1.33,0.49l-2.82,-0.78l-1.33,-1.22l0.44,-1.74l-2.56,-0.55l-1.35,-1.14l-2.39,1.62l-2.73,0.35l-2.24,-0.02l-1.5,0.74l-1.45,0.44l0.42,3.43l-1.5,-0.08l-0.25,-0.7l-0.08,-1.24l-2.06,0.87l-1.21,-0.55l-2.08,-1.13l0.82,-2.51l-1.78,-0.59l-0.67,-2.8l-2.96,0.51l0.34,-3.63l2.66,-2.58l0.11,-2.57l-0.08,-2.4l-1.22,-0.75l-0.94,-1.86l-1.64,0.24l-3.02,-0.47l0.95,-1.33l-1.31,-1.99l-2,1.35L740.4,378l-3.23,2.03l-2.55,2.36l-2.26,0.39l-1.23,-0.85l-1.48,-0.08l-2,-0.73l-1.51,0.8l-1.85,2.34l-0.24,-2.48l-1.71,0.66l-3.27,-0.31l-3.17,-0.73l-2.28,-1.39l-2.18,-0.63l-0.94,-1.53l-1.58,-0.46l-2.83,-2.09l-2.25,-0.99l-1.16,0.77l-3.9,-2.26l-2.75,-2.07l-0.79,-3.63l2.01,0.44l0.09,-1.69l-1.12,-1.71l0.28,-2.74l-3.01,-3.99l-4.61,-1.39l-0.83,-2.66l-2.07,-1.63l-0.5,-1.01l-0.42,-2.01l0.1,-1.38l-1.7,-0.81l-0.92,0.36l-0.71,-3.32l0.8,-0.83l-0.39,-0.85l2.68,-1.73l1.94,-0.72l2.97,0.49l1.06,-2.35l3.6,-0.44l1,-1.48l4.42,-2.03l0.39,-0.85l-0.22,-2.17l1.92,-1l-2.52,-6.75l5.55,-1.58l1.44,-0.89l2.02,-7.26l5.56,1.35l1.56,-1.86l0.13,-4.19l2.33,-0.39l2.13,-2.83l1.1,-0.35l0.74,2.97l2.36,2.23l4,1.57l1.93,3.32l-1.08,4.73l1.01,1.73l3.33,0.68l3.78,0.55l3.39,2.45l1.73,0.43l1.28,3.57l1.65,2.27l3.09,-0.09l5.79,0.85l3.73,-0.53l2.77,0.57l4.15,2.29l3.39,0l1.24,1.16l3.26,-2.01l4.53,-1.31l4.2,-0.14l3.28,-1.34l2.01,-2.05l1.96,-1.3l-0.45,-1.28l-0.9,-1.5l1.47,-2.54l1.58,0.36l2.88,0.8l2.79,-2.1l4.28,-1.55l2.05,-2.66l1.97,-1.16l4.07,-0.54l2.21,0.46l0.31,-1.45l-2.54,-2.89l-2.25,-1.33l-2.16,1.54l-2.77,-0.65l-1.59,0.53l-0.72,-1.71l1.98,-4.23l1.37,-3.25l3.37,1.63l3.95,-2.74l-0.03,-1.93l2.53,-4.73l1.56,-1.45l-0.04,-2.52l-1.54,-1.1l2.32,-2.31l3.48,-0.84l3.72,-0.13l4.2,1.39l2.46,1.71l1.73,4.61l1.05,1.94l0.98,2.73L833.19,302.89z",
+          },
+        }),
+        _vm._v(" "),
+        _c("path", {
+          staticClass: "land",
+          attrs: {
+            id: "CO",
+            title: "Colombia",
+            d: "M263.92,463.81L262.72,463.15L261.34,462.23L260.54,462.67L258.16,462.28L257.48,461.08L256.96,461.13L254.15,459.54L253.77,458.67L254.82,458.46L254.7,457.07L255.35,456.06L256.74,455.87L257.93,454.12L259,452.66L257.96,451.99L258.49,450.37L257.86,447.81L258.46,447.08L258.02,444.71L256.88,443.21L257.24,441.85L258.15,442.05L258.68,441.21L258.03,439.56L258.37,439.14L259.81,439.23L261.92,437.26L263.07,436.96L263.1,436.03L263.62,433.64L265.23,432.32L266.99,432.27L267.21,431.68L269.41,431.91L271.62,430.48L272.71,429.84L274.06,428.47L275.06,428.64L275.79,429.39L275.25,430.35L273.45,430.83L272.74,432.25L271.65,433.06L270.84,434.12L270.49,436.13L269.72,437.79L271.16,437.97L271.52,439.27L272.14,439.89L272.36,441.02L272.03,442.06L272.13,442.65L272.82,442.88L273.49,443.86L277.09,443.59L278.72,443.95L280.7,446.36L281.83,446.06L283.85,446.21L285.45,445.89L286.44,446.38L285.93,447.88L285.31,448.82L285.09,450.83L285.65,452.68L286.45,453.51L286.54,454.14L285.12,455.53L286.14,456.14L286.89,457.12L287.74,459.89L287.21,460.24L286.67,458.59L285.89,457.71L284.96,458.67L279.5,458.61L279.53,460.35L281.17,460.64L281.08,461.71L280.52,461.42L278.94,461.88L278.93,463.9L280.17,464.92L280.61,466.51L280.54,467.72L279.28,475.37L277.88,473.88L277.04,473.82L278.85,470.98L276.7,469.67L275.02,469.91L274.01,469.43L272.46,470.17L270.37,469.82L268.72,466.9L267.42,466.18L266.53,464.86L264.67,463.54z",
+          },
+        }),
+        _vm._v(" "),
+        _c("path", {
+          staticClass: "land",
+          attrs: {
+            id: "CR",
+            title: "Costa Rica",
+            d: "M242.63,440.4L241.11,439.77L240.54,439.18L240.86,438.69L240.76,438.07L239.98,437.39L238.88,436.84L237.91,436.48L237.73,435.65L236.99,435.14L237.17,435.97L236.61,436.64L235.97,435.86L235.07,435.58L234.69,435.01L234.71,434.15L235.08,433.25L234.29,432.85L234.93,432.31L235.35,431.94L237.2,432.69L237.84,432.32L238.73,432.56L239.2,433.14L240.02,433.33L240.69,432.73L241.41,434.27L242.49,435.41L243.81,436.62L242.72,436.87L242.74,438L243.32,438.42L242.9,438.76L243.01,439.27L242.78,439.84z",
+          },
+        }),
+        _vm._v(" "),
+        _c("path", {
+          staticClass: "land",
+          attrs: {
+            id: "CU",
+            title: "Cuba",
+            d: "M244.58,396.94L247.01,397.16L249.21,397.19L251.84,398.22L252.96,399.33L255.58,398.99L256.57,399.69L258.95,401.56L260.69,402.91L261.61,402.87L263.29,403.48L263.08,404.32L265.15,404.44L267.27,405.66L266.94,406.35L265.07,406.73L263.18,406.88L261.25,406.64L257.24,406.93L259.12,405.27L257.98,404.5L256.17,404.3L255.2,403.44L254.53,401.74L252.95,401.85L250.33,401.05L249.49,400.42L245.84,399.95L244.86,399.36L245.91,398.61L243.16,398.46L241.15,400.02L239.98,400.06L239.58,400.8L238.2,401.13L237,400.84L238.48,399.91L239.08,398.82L240.35,398.15L241.78,397.56L243.91,397.27z",
+          },
+        }),
+        _vm._v(" "),
+        _c("path", {
+          staticClass: "land",
+          attrs: {
+            id: "CY",
+            title: "Cyprus",
+            d: "M570.31,358.29L572.2,356.83L569.65,357.85L567.63,357.8L567.23,358.63L567.03,358.65L565.7,358.77L566.35,360.14L567.72,360.58L570.6,359.2L570.51,358.93z",
+          },
+        }),
+        _vm._v(" "),
+        _c("path", {
+          staticClass: "land",
+          attrs: {
+            id: "CZ",
+            title: "Czech Republic",
+            d: "M522.81,307.86L521.51,307.06L520.2,307.28L518.02,305.98L517.03,306.3L515.46,308.04L513.37,306.67L511.79,304.84L510.36,303.8L510.06,301.98L509.57,300.68L511.61,299.73L512.65,298.63L514.66,297.77L515.37,296.93L516.11,297.44L517.36,296.97L518.69,298.4L520.78,298.79L520.61,300L522.13,300.9L522.55,299.77L524.47,300.26L524.74,301.63L526.82,301.89L528.11,304.02L527.28,304.03L526.84,304.8L526.2,304.99L526.02,305.96L525.48,306.17L525.4,306.56L524.45,307L523.2,306.93z",
+          },
+        }),
+        _vm._v(" "),
+        _c("path", {
+          staticClass: "land",
+          attrs: {
+            id: "DE",
+            title: "Germany",
+            d: "M503.07,278.92L503.12,280.8L505.96,281.92L505.93,283.62L508.78,282.72L510.35,281.41L513.52,283.3L514.84,284.81L515.5,287.2L514.72,288.45L515.73,290.1L516.43,292.55L516.21,294.11L517.36,296.97L516.11,297.44L515.37,296.93L514.66,297.77L512.65,298.63L511.61,299.73L509.57,300.68L510.06,301.98L510.36,303.8L511.79,304.84L513.37,306.67L512.39,308.62L511.38,309.16L511.78,311.88L511.51,312.58L510.64,311.73L509.3,311.61L507.29,312.35L504.82,312.17L504.42,313.26L503,312.12L502.15,312.34L499.15,311.08L498.57,311.98L496.19,311.95L496.54,308.97L497.96,306.07L493.92,305.29L492.6,304.16L492.76,302.27L492.2,301.29L492.52,298.32L492.04,293.63L493.73,293.63L494.44,291.92L495.14,287.69L494.61,286.11L495.16,285.11L497.5,284.85L498.02,285.89L499.93,283.56L499.29,281.77L499.16,279.02L501.28,279.66z",
+          },
+        }),
+        _vm._v(" "),
+        _c("path", {
+          staticClass: "land",
+          attrs: {
+            id: "DJ",
+            title: "Djibouti",
+            d: "M596.05,427.72L596.71,428.6L596.62,429.79L595.02,430.47L596.23,431.24L595.19,432.76L594.57,432.26L593.9,432.46L592.33,432.41L592.28,431.55L592.07,430.76L593.01,429.43L594,428.17L595.2,428.42z",
+          },
+        }),
+        _vm._v(" "),
+        _c("path", {
+          staticClass: "land",
+          attrs: {
+            id: "DK",
+            title: "Denmark",
+            d: "M510.83,275.84l-1.68,3.97l-2.93,-2.76l-0.39,-2.05l4.11,-1.66L510.83,275.84zM505.85,271.59l-0.69,1.9l-0.83,-0.55l-2.02,3.59l0.76,2.39l-1.79,0.74l-2.12,-0.64l-1.14,-2.72l-0.08,-5.12l0.47,-1.38l0.8,-1.54l2.47,-0.32l0.98,-1.43l2.26,-1.47l-0.1,2.68l-0.83,1.68l0.34,1.43L505.85,271.59z",
+          },
+        }),
+        _vm._v(" "),
+        _c("path", {
+          staticClass: "land",
+          attrs: {
+            id: "DO",
+            title: "Dominican Republic",
+            d: "M274.18,407.35L274.53,406.84L276.72,406.86L278.38,407.62L279.12,407.54L279.63,408.59L281.16,408.53L281.07,409.41L282.32,409.52L283.7,410.6L282.66,411.8L281.32,411.16L280.04,411.28L279.12,411.14L278.61,411.68L277.53,411.86L277.11,411.14L276.18,411.57L275.06,413.57L274.34,413.11L274.19,412.27L274.25,411.47L273.53,410.59L274.21,410.09L274.43,408.96z",
+          },
+        }),
+        _vm._v(" "),
+        _c("path", {
+          staticClass: "land",
+          attrs: {
+            id: "DZ",
+            title: "Algeria",
+            d: "M508.9,396.08L499.29,401.83L491.17,407.68L487.22,409L484.11,409.29L484.08,407.41L482.78,406.93L481.03,406.08L480.37,404.69L470.91,398.14L461.45,391.49L450.9,383.96L450.96,383.35L450.96,383.14L450.93,379.39L455.46,377.03L458.26,376.54L460.55,375.68L461.63,374.06L464.91,372.77L465.03,370.36L466.65,370.07L467.92,368.86L471.59,368.3L472.1,367.02L471.36,366.31L470.39,362.78L470.23,360.73L469.17,358.55L471.86,356.68L474.9,356.08L476.67,354.65L479.37,353.6L484.12,352.98L488.76,352.69L490.17,353.21L492.81,351.84L495.81,351.81L496.95,352.62L498.86,352.41L498.29,354.2L498.74,357.48L498.08,360.3L496.35,362.18L496.6,364.71L498.89,366.69L498.92,367.5L500.64,368.83L501.84,374.69L502.75,377.53L502.9,379.01L502.41,381.6L502.61,383.04L502.25,384.76L502.5,386.73L501.38,388.02L503.04,390.28L503.15,391.6L504.14,393.31L505.45,392.75L507.67,394.17z",
+          },
+        }),
+        _vm._v(" "),
+        _c("path", {
+          staticClass: "land",
+          attrs: {
+            id: "EC",
+            title: "Ecuador",
+            d: "M250.1,472.87L251.59,470.79L250.98,469.57L249.91,470.87L248.23,469.64L248.8,468.86L248.33,466.33L249.31,465.91L249.83,464.18L250.89,462.38L250.69,461.25L252.23,460.65L254.15,459.54L256.96,461.13L257.48,461.08L258.16,462.28L260.54,462.67L261.34,462.23L262.72,463.15L263.92,463.81L264.31,465.92L263.44,467.73L260.38,470.65L257.01,471.75L255.29,474.18L254.76,476.06L253.17,477.21L252,475.8L250.86,475.5L249.7,475.72L249.63,474.7L250.43,474.04z",
+          },
+        }),
+        _vm._v(" "),
+        _c("path", {
+          staticClass: "land",
+          attrs: {
+            id: "EE",
+            title: "Estonia",
+            d: "M543.42,264.71L543.75,261.59L542.72,262.26L540.94,260.36L540.69,257.25L544.24,255.72L547.77,254.91L550.81,255.83L553.71,255.66L554.13,256.62L552.14,259.76L552.97,264.72L551.77,266.38L549.45,266.37L547.04,264.43L545.81,263.78z",
+          },
+        }),
+        _vm._v(" "),
+        _c("path", {
+          staticClass: "land",
+          attrs: {
+            id: "EG",
+            title: "Egypt",
+            d: "M573.17,377.28L572.38,378.57L571.78,380.97L571.02,382.61L570.36,383.17L569.43,382.15L568.16,380.73L566.16,376.16L565.88,376.45L567.04,379.82L568.76,383L570.88,387.88L571.91,389.56L572.81,391.3L575.33,394.7L574.77,395.23L574.86,397.2L578.13,399.91L578.62,400.53L567.5,400.53L556.62,400.53L545.35,400.53L545.35,389.3L545.35,378.12L544.51,375.54L545.23,373.54L544.8,372.15L545.81,370.58L549.54,370.53L552.24,371.39L555.02,372.36L556.32,372.86L558.48,371.83L559.63,370.9L562.11,370.63L564.1,371.04L564.87,372.66L565.52,371.59L567.76,372.36L569.95,372.55L571.33,371.73z",
+          },
+        }),
+        _vm._v(" "),
+        _c("path", {
+          staticClass: "land",
+          attrs: {
+            id: "EH",
+            title: "Western Sahara",
+            d: "M438.57,383.06L442.19,383.07L450.94,383.1L450.94,383.1L450.94,383.1L442.19,383.07L438.57,383.06L438.46,383.15L438.41,383.19L436.63,386.39L434.77,387.53L433.75,389.44L433.69,391.09L432.94,392.88L432,393.37L430.44,395.31L429.48,397.46L429.66,398.48L428.74,400.05L427.66,400.87L427.53,402.26L427.41,403.53L428.02,402.53L439,402.55L438.47,398.2L439.16,396.65L441.78,396.38L441.69,388.52L450.9,388.69L450.9,383.96L450.96,383.35L450.96,383.14z",
+          },
+        }),
+        _vm._v(" "),
+        _c("path", {
+          staticClass: "land",
+          attrs: {
+            id: "ER",
+            title: "Eritrea",
+            d: "M594,428.17L593.04,427.24L591.89,425.57L590.65,424.65L589.92,423.65L587.48,422.5L585.56,422.47L584.88,421.86L583.24,422.54L581.54,421.23L580.66,423.38L577.4,422.78L577.1,421.63L578.31,417.38L578.58,415.45L579.46,414.55L581.53,414.07L582.95,412.4L584.58,415.78L585.35,418.45L586.89,419.86L590.71,422.58L592.27,424.22L593.79,425.88L594.67,426.86L596.05,427.72L595.2,428.42z",
+          },
+        }),
+        _vm._v(" "),
+        _c("path", {
+          staticClass: "land",
+          attrs: {
+            id: "ES",
+            title: "Spain",
+            d: "M449.92,334.56L450.06,331.88L448.92,330.22L452.88,327.45L456.31,328.15L460.08,328.12L463.06,328.78L465.39,328.58L469.92,328.7L471.04,330.19L476.2,331.92L477.22,331.1L480.38,332.82L483.63,332.33L483.78,334.52L481.12,337.01L477.53,337.79L477.28,339.03L475.55,341.06L474.47,344.02L475.56,346.07L473.94,347.67L473.34,349.97L471.22,350.67L469.23,353.36L465.68,353.41L463,353.35L461.25,354.57L460.18,355.88L458.8,355.59L457.77,354.42L456.97,352.42L454.35,351.88L454.12,350.72L455.16,349.4L455.54,348.44L454.58,347.38L455.35,345.03L454.23,342.86L455.44,342.56L455.55,340.84L456.01,340.31L456.04,337.43L457.34,336.43L456.56,334.55L454.92,334.42L454.44,334.89L452.79,334.9L452.08,333.06L450.94,333.61z",
+          },
+        }),
+        _vm._v(" "),
+        _c("path", {
+          staticClass: "land",
+          attrs: {
+            id: "ET",
+            title: "Ethiopia",
+            d: "M581.54,421.23L583.24,422.54L584.88,421.86L585.56,422.47L587.48,422.5L589.92,423.65L590.65,424.65L591.89,425.57L593.04,427.24L594,428.17L593.01,429.43L592.07,430.76L592.28,431.55L592.33,432.41L593.9,432.46L594.57,432.26L595.19,432.76L594.58,433.77L595.62,435.33L596.65,436.69L597.72,437.7L606.89,441.04L609.25,441.02L601.32,449.44L597.67,449.56L595.17,451.53L593.38,451.58L592.61,452.46L590.69,452.46L589.56,451.52L587,452.69L586.17,453.85L584.3,453.63L583.68,453.31L583.02,453.38L582.14,453.36L578.59,450.98L576.64,450.98L575.68,450.07L575.68,448.5L574.22,448.03L572.57,444.98L571.29,444.33L570.79,443.21L569.37,441.84L567.65,441.64L568.61,440.03L570.09,439.96L570.51,439.1L570.48,436.57L571.31,433.61L572.63,432.81L572.92,431.65L574.12,429.48L575.81,428.06L576.95,425.25L577.4,422.78L580.66,423.38z",
+          },
+        }),
+        _vm._v(" "),
+        _c("path", {
+          staticClass: "land",
+          attrs: {
+            id: "FK",
+            title: "Falkland Islands",
+            d: "M303.66,633.13L307.02,630.44L309.41,631.56L311.09,629.77L313.33,631.78L312.49,633.36L308.7,634.72L307.44,633.13L305.06,635.18z",
+          },
+        }),
+        _vm._v(" "),
+        _c("path", {
+          staticClass: "land",
+          attrs: {
+            id: "FI",
+            title: "Finland",
+            d: "M555.42,193.1L555.01,198.5L559.31,203.49L556.72,208.97L559.98,216.93L558.09,222.69L560.62,227.55L559.47,231.69L563.62,235.95L562.56,239.05L559.96,242.5L553.96,249.91L548.87,250.36L543.94,252.43L539.38,253.61L537.75,250.54L535.04,248.67L535.66,242.95L534.3,237.54L535.64,233.96L538.18,230.02L544.59,223L546.47,221.61L546.17,218.77L542.27,215.55L541.33,212.85L541.25,201.73L536.88,196.58L533.14,192.77L534.82,190.69L537.94,194.84L541.6,194.45L544.61,196.32L547.28,192.88L548.66,187.03L553.01,184.25L556.61,187.51z",
+          },
+        }),
+        _vm._v(" "),
+        _c("path", {
+          staticClass: "land",
+          attrs: {
+            id: "FJ",
+            title: "Fiji",
+            d: "M980.53,508.61l-0.35,1.4l-0.23,0.16l-1.78,0.72l-1.79,0.61l-0.36,-1.09l1.4,-0.6l0.89,-0.16l1.64,-0.91L980.53,508.61zM974.69,512.92l-1.27,-0.36l-1.08,1l0.27,1.29l1.55,0.36l1.74,-0.4l0.46,-1.53l-0.96,-0.84L974.69,512.92z",
+          },
+        }),
+        _vm._v(" "),
+        _c("path", {
+          staticClass: "land",
+          attrs: {
+            id: "FR",
+            title: "France",
+            d: "M502.06,333.54l-0.93,2.89l-1.27,-0.76l-0.65,-2.53l0.57,-1.41l1.81,-1.45L502.06,333.54zM485.31,300.19l1.96,2.06l1.44,-0.34l2.45,1.97l0.63,0.37l0.81,-0.09l1.32,1.12l4.04,0.79l-1.42,2.9l-0.36,2.98l-0.77,0.71l-1.28,-0.38l0.09,1.05l-2.05,2.3l-0.04,1.84l1.34,-0.63l0.96,1.77l-0.12,1.13l0.83,1.5l-0.97,1.21l0.72,3.04l1.52,0.49l-0.32,1.68l-2.54,2.17l-5.53,-1.04l-4.08,1.24l-0.32,2.29l-3.25,0.49l-3.15,-1.72l-1.02,0.82l-5.16,-1.73l-1.12,-1.49l1.45,-2.32l0.53,-7.88l-2.89,-4.26l-2.07,-2.09l-4.29,-1.6l-0.28,-3.07l3.64,-0.92l4.71,1.09l-0.89,-4.84l2.65,1.85l6.53,-3.37l0.84,-3.61l2.45,-0.9l0.41,1.56l1.3,0.07L485.31,300.19z",
+          },
+        }),
+        _vm._v(" "),
+        _c("path", {
+          staticClass: "land",
+          attrs: {
+            id: "GA",
+            title: "Gabon",
+            d: "M506.36,474.48L503.48,471.66L501.62,469.36L499.92,466.48L500.01,465.56L500.62,464.66L501.3,462.64L501.87,460.57L502.82,460.41L506.89,460.44L506.87,457.09L508.2,456.9L509.91,457.28L511.57,456.92L511.92,457.07L511.71,458.29L512.5,459.72L514.58,459.5L515.28,460.05L514.07,463.28L515.39,464.92L515.7,467.1L515.35,468.95L514.49,470.27L512.01,470.15L510.51,468.81L510.29,470.05L508.4,470.39L507.44,471.09L508.49,472.94z",
+          },
+        }),
+        _vm._v(" "),
+        _c("path", {
+          staticClass: "land",
+          attrs: {
+            id: "GB",
+            title: "United Kingdom",
+            d: "M459.38,281l-1.5,3.29l-2.12,-0.98l-1.73,0.07l0.58,-2.57l-0.58,-2.6l2.35,-0.2L459.38,281zM466.83,260.24l-3,5.73l2.86,-0.72l3.07,0.03l-0.73,4.22l-2.52,4.53l2.9,0.32l0.22,0.52l2.5,5.79l1.92,0.77l1.73,5.41l0.8,1.84l3.4,0.88l-0.34,2.93l-1.43,1.33l1.12,2.33l-2.52,2.33l-3.75,-0.04l-4.77,1.21l-1.31,-0.87l-1.85,2.06l-2.59,-0.5l-1.97,1.67l-1.49,-0.87l4.11,-4.64l2.51,-0.97l-0.02,0l-4.38,-0.75l-0.79,-1.8l2.93,-1.41l-1.54,-2.48l0.53,-3.06l4.17,0.42l0,0l0.41,-2.74l-1.88,-2.95l-0.04,-0.07l-3.4,-0.85l-0.67,-1.32l1.02,-2.2l-0.92,-1.37l-1.51,2.34l-0.16,-4.8l-1.42,-2.59l1.02,-5.36l2.18,-4.31l2.24,0.42L466.83,260.24z",
+          },
+        }),
+        _vm._v(" "),
+        _c("path", {
+          staticClass: "land",
+          attrs: {
+            id: "GE",
+            title: "Georgia",
+            d: "M591.76,335.85L592.18,334.25L591.48,331.68L589.86,330.27L588.31,329.83L587.28,328.66L587.62,328.2L589.99,328.86L594.12,329.48L597.94,331.31L598.43,332.02L600.13,331.42L602.75,332.22L603.6,333.77L605.37,334.64L604.64,335.15L606.02,337.17L605.64,337.6L604.13,337.38L602.04,336.32L601.35,336.92L597.45,337.5L594.75,335.68z",
+          },
+        }),
+        _vm._v(" "),
+        _c("path", {
+          staticClass: "land",
+          attrs: {
+            id: "GF",
+            title: "French Guiana",
+            d: "M327.89,456.41l-1.07,1.06l-1.34,0.2l-0.38,-0.78l-0.63,-0.12l-0.87,0.76l-1.22,-0.57l0.71,-1.19l0.24,-1.27l0.48,-1.2l-1.09,-1.65l-0.22,-1.91l1.46,-2.41l0.95,0.31l2.06,0.66l2.97,2.36l0.46,1.14l-1.66,2.55L327.89,456.41z",
+          },
+        }),
+        _vm._v(" "),
+        _c("path", {
+          staticClass: "land",
+          attrs: {
+            id: "GH",
+            title: "Ghana",
+            d: "M478.23,446.84L473.83,448.48L472.27,449.44L469.74,450.25L467.24,449.46L467.37,448.35L466.16,445.94L466.89,442.77L468.07,440.41L467.33,436.4L466.94,434.27L467.01,432.66L471.88,432.53L473.12,432.74L474.02,432.28L475.32,432.5L475.11,433.39L476.28,434.85L476.28,436.9L476.55,439.12L477.25,440.15L476.63,442.68L476.85,444.08L477.6,445.86z",
+          },
+        }),
+        _vm._v(" "),
+        _c("path", {
+          staticClass: "land",
+          attrs: {
+            id: "GL",
+            title: "Greenland",
+            d: "M344.13,23.91L353.55,10.3L363.39,11.37L366.96,2.42L376.87,0L399.27,3.15L416.81,21.74L411.63,30.04L400.9,30.97L385.81,33L387.22,36.64L397.15,34.4L405.59,41.31L411.04,35.19L413.37,42.34L410.29,53.31L417.43,46.38L431.04,38.83L439.45,42.64L441.02,50.76L429.59,63.42L428.01,67.32L419.05,70.18L425.54,70.97L422.26,82.48L420,92.07L420.09,107.33L423.46,115.67L419.08,116.18L414.47,120.06L419.64,126.36L420.3,135.98L417.3,137L420.93,146.15L414.71,146.9L417.96,151.04L417.04,154.55L413.09,156.06L409.18,156.09L412.69,162.57L412.73,166.7L407.18,162.87L405.74,165.36L409.52,167.65L413.2,173.13L414.26,180.08L409.26,181.7L407.1,178.44L403.63,173.46L404.59,179.33L401.34,183.74L408.72,184.09L412.59,184.54L405.07,191.57L397.45,197.7L389.25,200.31L386.16,200.35L383.26,203.22L379.36,210.85L373.33,215.74L371.39,216.03L367.65,217.7L363.63,219.29L361.22,223.41L361.18,227.97L359.77,232.13L355.19,237.08L356.32,241.79L355.06,246.64L353.63,252.2L349.68,252.54L345.54,247.91L339.93,247.88L337.21,244.7L335.34,238.9L330.48,231.22L329.06,227.07L328.68,221.18L324.79,214.91L325.8,209.74L323.93,207.21L326.7,198.56L330.92,195.71L332.03,192.45L332.62,186.19L329.41,189.05L327.89,190.24L325.37,191.38L321.93,188.77L321.74,183.22L322.84,178.74L325.44,178.62L331.16,180.87L326.34,175.44L323.83,172.43L321.04,173.67L318.7,171.48L321.83,162.98L320.13,159.45L317.9,152.71L314.53,141.8L310.96,137.63L310.99,133L303.46,126.31L297.51,125.46L290.02,125.93L283.18,126.79L279.92,123.04L275.05,115.38L282.41,111.41L288.06,110.73L276.06,107.37L269.74,101.93L270.13,96.59L280.74,89.72L291.01,82.56L292.09,76.92L284.53,71.16L286.97,64.52L296.68,52.19L300.76,50.21L299.59,41.64L306.23,36.4L314.85,33.19L323.47,33.01L326.53,39.31L333.97,27.99L340.66,35.77L344.59,37.36L350.42,43.77L343.75,33z",
+          },
+        }),
+        _vm._v(" "),
+        _c("path", {
+          staticClass: "land",
+          attrs: {
+            id: "GM",
+            title: "Gambia",
+            d: "M428.03,426.43L428.39,425.16L431.44,425.07L432.08,424.4L432.97,424.35L434.07,425.06L434.94,425.07L435.87,424.59L436.43,425.41L435.22,426.06L434,426.01L432.8,425.4L431.76,426.06L431.26,426.09L430.58,426.49z",
+          },
+        }),
+        _vm._v(" "),
+        _c("path", {
+          staticClass: "land",
+          attrs: {
+            id: "GN",
+            title: "Guinea",
+            d: "M451.59,441.91L450.8,441.84L450.23,442.97L449.43,442.96L448.89,442.36L449.07,441.23L447.9,439.51L447.17,439.82L446.57,439.89L445.8,440.05L445.83,439.02L445.38,438.28L445.47,437.46L444.86,436.27L444.08,435.26L441.84,435.26L441.19,435.79L440.41,435.85L439.93,436.46L439.61,437.25L438.11,438.49L436.88,436.82L435.79,435.71L435.07,435.35L434.37,434.78L434.06,433.53L433.65,432.91L432.83,432.44L434.08,431.06L434.93,431.11L435.66,430.63L436.28,430.63L436.72,430.25L436.48,429.31L436.79,429.01L436.84,428.04L438.19,428.07L440.21,428.77L440.83,428.7L441.04,428.39L442.56,428.61L442.97,428.45L443.13,429.5L443.58,429.49L444.31,429.11L444.77,429.21L445.55,429.93L446.75,430.16L447.52,429.54L448.43,429.16L449.1,428.76L449.66,428.84L450.28,429.46L450.62,430.25L451.77,431.44L451.19,432.17L451.08,433.09L451.68,432.81L452.03,433.15L451.88,433.99L452.74,434.81L452.18,435.02L451.95,435.99L452.6,437.15L453.29,439.41L452.25,439.75L451.98,440.14L452.2,440.68L452.04,441.91z",
+          },
+        }),
+        _vm._v(" "),
+        _c("path", {
+          staticClass: "land",
+          attrs: {
+            id: "GQ",
+            title: "Equatorial Guinea",
+            d: "M501.87,460.57L501.34,460.15L502.31,457.02L506.87,457.09L506.89,460.44L502.82,460.41z",
+          },
+        }),
+        _vm._v(" "),
+        _c("path", {
+          staticClass: "land",
+          attrs: {
+            id: "GR",
+            title: "Greece",
+            d: "M541.7,356.71l1.53,1.16l2.18,-0.19l2.09,0.24l-0.07,0.6l1.53,-0.41l-0.35,1.01l-4.04,0.29l0.03,-0.56l-3.42,-0.67L541.7,356.71zM549.85,335.75l-0.87,2.33l-0.67,0.41l-1.71,-0.1l-1.46,-0.35l-3.4,0.96l1.94,2.06l-1.42,0.59l-1.56,0l-1.48,-1.88l-0.53,0.8l0.63,2.18l1.4,1.7l-1.06,0.79l1.56,1.65l1.39,1.03l0.04,2l-1.36,-1.15l-1.24,0.21l0.83,1.8l-0.92,0.19l-1,-0.69l1.2,3.95l-0.58,0l-0.45,-1.25l-0.57,-0.02l-0.26,1.32l-0.45,-0.3l0.1,-0.74l-0.56,-1.04h-0.64l0.12,0.84l-0.25,0.27l-0.62,-0.54l-0.38,-1.01l0.52,-0.57l-0.36,-0.74l-0.41,-0.38l-0.42,-0.09l-0.49,-0.94l0.58,-0.52l0.36,-0.48l0.56,0.1l0.25,-0.41l0.59,-0.16l0.68,0.46l0.55,0.17l0.39,-0.62l-0.94,-0.08l-0.56,-0.19l-1.25,0.28l-1.22,0.05l-1.09,-1.64l-0.18,-0.25l0.17,-0.64l-1.42,-1.15l-0.19,-1.03l1.3,-1.76l0.17,-1.19l0.91,-0.53l0.06,-0.97l1.83,-0.33l1.07,-0.81l1.52,0.07l0.46,-0.65l0.53,-0.12l2.07,0.11l2.25,-1.02l1.98,1.3l2.55,-0.35l0.03,-1.86L549.85,335.75z",
+          },
+        }),
+        _vm._v(" "),
+        _c("path", {
+          staticClass: "land",
+          attrs: {
+            id: "GT",
+            title: "Guatemala",
+            d: "M222.64,424.75L221.2,424.25L219.45,424.2L218.17,423.63L216.66,422.45L216.73,421.61L217.05,420.93L216.66,420.39L218.01,418.03L221.6,418.02L221.68,417.04L221.22,416.86L220.91,416.23L219.87,415.56L218.83,414.58L220.1,414.58L220.1,412.93L222.72,412.93L225.31,412.96L225.29,415.27L225.07,418.55L225.9,418.55L226.82,419.08L227.06,418.64L227.88,419.01L226.61,420.12L225.28,420.93L225.08,421.48L225.3,422.04L224.72,422.78L224.06,422.95L224.21,423.29L223.69,423.61L222.73,424.33z",
+          },
+        }),
+        _vm._v(" "),
+        _c("path", {
+          staticClass: "land",
+          attrs: {
+            id: "GW",
+            title: "Guinea-Bissau",
+            d: "M432.83,432.44L431.33,431.25L430.15,431.07L429.51,430.26L429.52,429.83L428.67,429.23L428.49,428.62L429.98,428.15L430.91,428.24L431.66,427.92L436.84,428.04L436.79,429.01L436.48,429.31L436.72,430.25L436.28,430.63L435.66,430.63L434.93,431.11L434.08,431.06z",
+          },
+        }),
+        _vm._v(" "),
+        _c("path", {
+          staticClass: "land",
+          attrs: {
+            id: "GY",
+            title: "Guyana",
+            d: "M307.7,440L309.54,441.03L311.28,442.86L311.35,444.31L312.41,444.38L313.91,445.74L315.02,446.72L314.57,449.24L312.87,449.97L313.02,450.62L312.5,452.07L313.75,454.09L314.64,454.1L315.01,455.67L316.72,458.09L316.04,458.19L314.49,457.96L313.58,458.7L312.31,459.19L311.43,459.31L311.12,459.85L309.74,459.71L308.01,458.41L307.81,457.12L307.09,455.71L307.54,453.33L308.32,452.35L307.67,451.05L306.71,450.63L307.08,449.4L306.42,448.76L304.96,448.88L303.07,446.76L303.83,445.99L303.77,444.69L305.5,444.24L306.19,443.72L305.23,442.68L305.48,441.65z",
+          },
+        }),
+        _vm._v(" "),
+        _c("path", {
+          staticClass: "land",
+          attrs: {
+            id: "HN",
+            title: "Honduras",
+            d: "M230.43,426.9L229.95,426.01L229.09,425.76L229.29,424.61L228.91,424.3L228.33,424.1L227.1,424.44L227,424.05L226.15,423.59L225.55,423.02L224.72,422.78L225.3,422.04L225.08,421.48L225.28,420.93L226.61,420.12L227.88,419.01L228.17,419.13L228.79,418.62L229.59,418.58L229.85,418.81L230.29,418.67L231.59,418.93L232.89,418.85L233.79,418.53L234.12,418.21L235.01,418.36L235.68,418.56L236.41,418.49L236.97,418.24L238.25,418.64L238.7,418.7L239.55,419.24L240.36,419.89L241.38,420.33L242.12,421.13L241.16,421.07L240.77,421.46L239.8,421.84L239.09,421.84L238.47,422.21L237.91,422.08L237.43,421.64L237.14,421.72L236.78,422.41L236.51,422.38L236.46,422.98L235.48,423.77L234.97,424.11L234.68,424.47L233.85,423.89L233.25,424.65L232.66,424.63L232,424.7L232.06,426.11L231.65,426.13L231.3,426.79z",
+          },
+        }),
+        _vm._v(" "),
+        _c("path", {
+          staticClass: "land",
+          attrs: {
+            id: "HR",
+            title: "Croatia",
+            d: "M528.05,318.93L528.73,320.48L529.62,321.62L528.54,323.11L527.27,322.23L525.33,322.29L522.92,321.63L521.61,321.72L521.01,322.54L520,321.63L519.41,323.27L520.79,325.1L521.39,326.31L522.68,327.76L523.75,328.61L524.81,330.22L527.29,331.66L526.98,332.3L524.35,330.9L522.72,329.52L520.16,328.38L517.8,325.53L518.37,325.23L517.09,323.59L517.03,322.25L515.23,321.63L514.37,323.34L513.54,322.01L513.61,320.63L513.71,320.57L515.66,320.71L516.18,320.03L517.13,320.68L518.23,320.76L518.22,319.64L519.19,319.23L519.47,317.61L521.7,316.53L522.59,317.03L524.69,318.76L527,319.53z",
+          },
+        }),
+        _vm._v(" "),
+        _c("path", {
+          staticClass: "land",
+          attrs: {
+            id: "HT",
+            title: "Haiti",
+            d: "M270.04,406.75L271.75,406.88L274.18,407.35L274.43,408.96L274.21,410.09L273.53,410.59L274.25,411.47L274.19,412.27L272.33,411.77L271.01,411.97L269.3,411.76L267.99,412.31L266.48,411.39L266.73,410.44L269.31,410.85L271.43,411.09L272.44,410.43L271.16,409.16L271.18,408.03L269.41,407.57z",
+          },
+        }),
+        _vm._v(" "),
+        _c("path", {
+          staticClass: "land",
+          attrs: {
+            id: "HU",
+            title: "Hungary",
+            d: "M520.68,315.11L521.61,312.46L521.07,311.57L522.65,311.56L522.86,309.85L524.29,310.92L525.32,311.38L527.68,310.87L527.9,310.03L529.02,309.9L530.38,309.25L530.68,309.52L532,309L532.66,308L533.58,307.75L536.58,309.03L537.18,308.6L538.73,309.74L538.93,310.86L537.22,311.73L535.89,314.53L534.2,317.29L531.95,318.05L530.2,317.88L528.05,318.93L527,319.53L524.69,318.76L522.59,317.03L521.7,316.53L521.15,315.16z",
+          },
+        }),
+        _vm._v(" "),
+        _c("path", {
+          staticClass: "land",
+          attrs: {
+            id: "ID",
+            title: "Indonesia",
+            d: "M813.72,492.06l-1.18,0.05l-3.72,-1.98l2.61,-0.56l1.47,0.86l0.98,0.86L813.72,492.06zM824.15,491.78l-2.4,0.62l-0.34,-0.34l0.25,-0.96l1.21,-1.72l2.77,-1.12l0.28,0.56l0.05,0.86L824.15,491.78zM805.83,486.01l1.01,0.75l1.73,-0.23l0.7,1.2l-3.24,0.57l-1.94,0.38l-1.51,-0.02l0.96,-1.62l1.54,-0.02L805.83,486.01zM819.86,486l-0.41,1.56l-4.21,0.8l-3.73,-0.35l-0.01,-1.03l2.23,-0.59l1.76,0.84l1.87,-0.21L819.86,486zM779.82,482.31l5.37,0.28l0.62,-1.16l5.2,1.35l1.02,1.82l4.21,0.51l3.44,1.67l-3.2,1.07l-3.08,-1.13l-2.54,0.08l-2.91,-0.21l-2.62,-0.51l-3.25,-1.07l-2.06,-0.28l-1.17,0.35l-5.11,-1.16l-0.49,-1.21l-2.57,-0.21l1.92,-2.68l3.4,0.17l2.26,1.09l1.16,0.21L779.82,482.31zM853,480.73l-1.44,1.91l-0.27,-2.11l0.5,-1.01l0.59,-0.95l0.64,0.82L853,480.73zM832.04,473.02l-1.05,0.93l-1.94,-0.51l-0.55,-1.2l2.84,-0.13L832.04,473.02zM841.08,472.01l1.02,2.13l-2.37,-1.15l-2.34,-0.23l-1.58,0.18l-1.94,-0.1l0.67,-1.53l3.46,-0.12L841.08,472.01zM851.37,466.59l0.78,4.51l2.9,1.67l2.34,-2.96l3.22,-1.68l2.49,0l2.4,0.97l2.08,1l3.01,0.53l0.05,9.1l0.05,9.16l-2.5,-2.31l-2.85,-0.57l-0.69,0.8l-3.55,0.09l1.19,-2.29l1.77,-0.78l-0.73,-3.05l-1.35,-2.35l-5.44,-2.37l-2.31,-0.23l-4.21,-2.58l-0.83,1.36l-1.08,0.25l-0.64,-1.02l-0.01,-1.21l-2.14,-1.37l3.02,-1l2,0.05l-0.24,-0.74l-4.1,-0.01l-1.11,-1.66l-2.5,-0.51l-1.19,-1.38l3.78,-0.67l1.44,-0.91l4.5,1.14L851.37,466.59zM826.41,459.43l-2.25,2.76l-2.11,0.54l-2.7,-0.54l-4.67,0.14l-2.45,0.4l-0.4,2.11l2.51,2.48l1.51,-1.26l5.23,-0.95l-0.23,1.28l-1.22,-0.4l-1.22,1.63l-2.47,1.08l2.65,3.57l-0.51,0.96l2.52,3.22l-0.02,1.84l-1.5,0.82l-1.1,-0.98l1.36,-2.29l-2.75,1.08l-0.7,-0.77l0.36,-1.08l-2.02,-1.64l0.21,-2.72l-1.87,0.85l0.24,3.25l0.11,4l-1.78,0.41l-1.2,-0.82l0.8,-2.57l-0.43,-2.69l-1.18,-0.02l-0.87,-1.91l1.16,-1.83l0.4,-2.21l1.41,-4.2l0.59,-1.15l2.38,-2.07l2.19,0.82l3.54,0.39l3.22,-0.12l2.77,-2.02L826.41,459.43zM836.08,460.23l-0.15,2.43l-1.45,-0.27l-0.43,1.69l1.16,1.47l-0.79,0.33l-1.13,-1.76l-0.83,-3.56l0.56,-2.23l0.93,-1.01l0.2,1.52l1.66,0.24L836.08,460.23zM805.76,458.29l3.14,2.58l-3.32,0.33l-0.94,1.9l0.12,2.52l-2.7,1.91L802,470.3l-1.08,4.27l-0.41,-0.99l-3.19,1.26l-1.11,-1.71l-2,-0.16l-1.4,-0.89l-3.33,1l-1.02,-1.35l-1.84,0.15l-2.31,-0.32l-0.43,-3.74l-1.4,-0.77l-1.35,-2.38l-0.39,-2.44l0.33,-2.58l1.67,-1.85l0.47,1.86l1.92,1.57l1.81,-0.57l1.79,0.2l1.63,-1.41l1.34,-0.24l2.65,0.78l2.29,-0.59l1.44,-3.88l1.08,-0.97l0.97,-3.17l3.22,0l2.43,0.47l-1.59,2.52l2.06,2.64L805.76,458.29zM771.95,479.71l-3.1,0.06l-2.36,-2.34l-3.6,-2.28l-1.2,-1.69l-2.12,-2.27l-1.39,-2.09l-2.13,-3.9l-2.46,-2.32l-0.82,-2.39l-1.03,-2.17l-2.53,-1.75l-1.47,-2.39l-2.11,-1.56l-2.92,-3.08l-0.25,-1.42l1.81,0.11l4.34,0.54l2.48,2.73l2.17,1.89l1.55,1.16l2.66,3l2.85,0.04l2.36,1.91l1.62,2.33l2.13,1.27l-1.12,2.27l1.61,0.97l1.01,0.07l0.48,1.94l0.98,1.56l2.06,0.25l1.36,1.76l-0.7,3.47L771.95,479.71z",
+          },
+        }),
+        _vm._v(" "),
+        _c("path", {
+          staticClass: "land",
+          attrs: {
+            id: "IE",
+            title: "Ireland",
+            d: "M457.88,284.29L458.34,287.65L456.22,291.77L451.25,294.45L447.28,293.77L449.55,288.99L448.09,284.22L451.9,280.47L454.02,278.2L454.6,280.8L454.02,283.37L455.76,283.31z",
+          },
+        }),
+        _vm._v(" "),
+        _c("path", {
+          staticClass: "land",
+          attrs: {
+            id: "IL",
+            title: "Israel",
+            d: "M575.41,366.82L574.92,367.87L573.9,367.41L573.32,369.61L574.02,369.97L573.31,370.43L573.18,371.29L574.5,370.84L574.57,372.11L573.17,377.28L571.33,371.73L572.14,370.65L571.95,370.46L572.69,368.93L573.26,366.43L573.66,365.59L573.74,365.56L574.68,365.56L574.94,364.98L575.69,364.93L575.73,366.3L575.35,366.8z",
+          },
+        }),
+        _vm._v(" "),
+        _c("path", {
+          staticClass: "land",
+          attrs: {
+            id: "IN",
+            title: "India",
+            d: "M693.5,357.44L696.51,361.43L696.23,364.17L697.34,365.88L697.25,367.57L695.24,367.13L696.03,370.76L698.78,372.82L702.68,375.09L700.9,376.55L699.81,379.54L702.53,380.74L705.17,382.29L708.83,384.06L712.67,384.47L714.29,386.06L716.45,386.35L719.83,387.08L722.16,387.03L722.48,385.79L722.11,383.8L722.33,382.45L724.04,381.78L724.28,384.26L724.33,384.89L726.88,386.08L728.65,385.59L731.01,385.8L733.3,385.71L733.5,383.78L732.36,382.78L734.62,382.38L737.17,380.03L740.4,378L742.75,378.78L744.75,377.44L746.07,379.42L745.12,380.76L748.14,381.23L748.36,382.43L747.37,383.01L747.6,384.94L745.6,384.37L741.97,386.53L742.05,388.31L740.51,390.91L740.36,392.41L739.11,394.93L736.92,394.23L736.81,397.38L736.18,398.41L736.48,399.69L735.09,400.41L733.62,395.61L732.84,395.62L732.38,397.56L730.85,395.98L731.71,394.25L732.97,394.07L734.26,391.48L732.65,390.95L730.04,391L727.38,390.58L727.13,388.43L725.79,388.27L723.57,386.93L722.58,389.04L724.6,390.67L722.85,391.82L722.23,392.94L723.95,393.76L723.48,395.6L724.45,397.88L724.89,400.36L724.48,401.46L722.58,401.42L719.12,402.04L719.28,404.29L717.78,406.05L713.75,408.05L710.61,411.51L708.5,413.36L705.71,415.27L705.71,416.61L704.31,417.33L701.78,418.36L700.47,418.52L699.63,420.72L700.21,424.47L700.36,426.84L699.18,429.55L699.16,434.38L697.71,434.52L696.44,436.67L697.29,437.6L694.73,438.4L693.79,440.32L692.66,441.13L690.01,438.5L688.71,434.54L687.63,431.68L686.65,430.34L685.16,427.6L684.47,424.02L683.98,422.22L681.43,418.25L680.27,412.61L679.43,408.84L679.44,405.26L678.9,402.46L674.82,404.25L672.84,403.89L669.18,400.26L670.53,399.17L669.7,397.99L666.41,395.41L668.28,393.37L674.45,393.38L673.89,390.74L672.32,389.18L672,386.79L670.16,385.39L673.25,382.09L676.51,382.33L679.44,379.01L681.2,375.75L683.92,372.51L683.88,370.18L686.27,368.27L684,366.64L683.03,364.39L682.04,361.44L683.41,359.98L687.67,360.81L690.79,360.3z",
+          },
+        }),
+        _vm._v(" "),
+        _c("path", {
+          staticClass: "land",
+          attrs: {
+            id: "IQ",
+            title: "Iraq",
+            d: "M602.61,355.77L604.44,356.81L604.66,358.81L603.24,359.98L602.59,362.62L604.54,365.8L607.97,367.62L609.42,370.12L608.96,372.49L609.85,372.49L609.88,374.22L611.43,375.91L609.77,375.76L607.88,375.49L605.82,378.57L600.61,378.31L592.71,371.82L588.53,369.53L585.15,368.64L584.02,364.6L590.23,361.1L591.29,356.98L591.02,354.46L592.56,353.6L594,351.42L595.2,350.87L598.46,351.33L599.45,352.22L600.79,351.63z",
+          },
+        }),
+        _vm._v(" "),
+        _c("path", {
+          staticClass: "land",
+          attrs: {
+            id: "IR",
+            title: "Iran",
+            d: "M626.44,351.53L628.91,350.85L630.9,348.83L632.77,348.93L634,348.27L636,348.6L639.1,350.39L641.34,350.78L644.54,353.87L646.63,353.99L646.88,356.9L645.74,361.15L644.97,363.6L646.19,364.09L644.99,365.92L645.91,368.56L646.13,370.65L648.25,371.2L648.48,373.3L645.94,376.23L647.32,377.91L648.45,379.84L651.13,381.24L651.21,384.01L652.55,384.52L652.78,385.96L648.74,387.57L647.68,391.17L642.41,390.24L639.35,389.53L636.19,389.12L634.99,385.31L633.65,384.75L631.49,385.31L628.67,386.82L625.24,385.79L622.41,383.38L619.71,382.48L617.84,379.47L615.77,375.2L614.26,375.72L612.48,374.65L611.43,375.91L609.88,374.22L609.85,372.49L608.96,372.49L609.42,370.12L607.97,367.62L604.54,365.8L602.59,362.62L603.24,359.98L604.66,358.81L604.44,356.81L602.61,355.77L600.79,351.63L599.26,348.8L599.8,347.71L598.93,343.59L600.85,342.56L601.29,343.93L602.71,345.59L604.63,346.06L605.65,345.96L608.96,343.3L610.01,343.03L610.83,344.1L609.87,345.88L611.62,347.74L612.31,347.57L613.2,350.18L615.86,350.91L617.81,352.67L621.79,353.27L626.17,352.35z",
+          },
+        }),
+        _vm._v(" "),
+        _c("path", {
+          staticClass: "land",
+          attrs: {
+            id: "IS",
+            title: "Iceland",
+            d: "M434.57,212.43L433.93,216.91L437.09,221.51L433.45,226.52L425.36,230.9L422.94,232.05L419.25,231.12L411.43,229.11L414.19,226.27L408.09,223.07L413.05,221.79L412.93,219.82L407.05,218.25L408.94,213.78L413.19,212.75L417.56,217.43L421.82,213.68L425.35,215.64L429.92,211.93z",
+          },
+        }),
+        _vm._v(" "),
+        _c("path", {
+          staticClass: "land",
+          attrs: {
+            id: "IT",
+            title: "Italy",
+            d: "M518.77,347.88l-1.01,2.78l0.42,1.09l-0.59,1.79l-2.14,-1.31l-1.43,-0.38l-3.91,-1.79l0.39,-1.82l3.28,0.32l2.86,-0.39L518.77,347.88zM501.08,337.06l1.68,2.62l-0.39,4.81l-1.27,-0.23l-1.14,1.2l-1.06,-0.95l-0.11,-4.38l-0.64,-2.1l1.54,0.19L501.08,337.06zM509.95,315.46l4.01,1.05l-0.3,1.99l0.67,1.71l-2.23,-0.58l-2.28,1.42l0.16,1.97l-0.34,1.12l0.92,1.99l2.63,1.95l1.41,3.17l3.12,3.05l2.2,-0.02l0.68,0.83l-0.79,0.74l2.51,1.35l2.06,1.12l2.4,1.92l0.29,0.68l-0.52,1.31l-1.56,-1.7l-2.44,-0.6l-1.18,2.36l2.03,1.34l-0.33,1.88l-1.17,0.21l-1.5,3.06l-1.17,0.27l0.01,-1.08l0.57,-1.91l0.61,-0.77l-1.09,-2.09l-0.86,-1.83l-1.16,-0.46l-0.83,-1.58l-1.8,-0.67l-1.21,-1.49l-2.07,-0.24l-2.19,-1.68l-2.56,-2.45l-1.91,-2.19l-0.87,-3.8l-1.4,-0.45l-2.28,-1.29l-1.29,0.53l-1.62,1.8l-1.17,0.28l0.32,-1.68l-1.52,-0.49l-0.72,-3.04l0.97,-1.21l-0.83,-1.5l0.12,-1.13l1.21,0.86l1.35,-0.19l1.57,-1.36l0.49,0.64l1.34,-0.13l0.61,-1.63l2.07,0.51l1.24,-0.68l0.22,-1.67l1.7,0.58l0.33,-0.78l2.77,-0.71L509.95,315.46z",
+          },
+        }),
+        _vm._v(" "),
+        _c("path", {
+          staticClass: "land",
+          attrs: {
+            id: "JM",
+            title: "Jamaica",
+            d: "M257.76,410.96L259.65,411.22L261.14,411.93L261.6,412.73L259.63,412.78L258.78,413.27L257.21,412.8L255.61,411.73L255.94,411.06L257.12,410.86z",
+          },
+        }),
+        _vm._v(" "),
+        _c("path", {
+          staticClass: "land",
+          attrs: {
+            id: "JO",
+            title: "Jordan",
+            d: "M574.92,367.87L575.41,366.82L578.53,368.14L584.02,364.6L585.15,368.64L584.62,369.13L579,370.78L581.8,374.04L580.87,374.58L580.41,375.67L578.27,376.11L577.6,377.27L576.38,378.25L573.26,377.74L573.17,377.28L574.57,372.11L574.5,370.84L574.92,369.88z",
+          },
+        }),
+        _vm._v(" "),
+        _c("path", {
+          staticClass: "land",
+          attrs: {
+            id: "JP",
+            title: "Japan",
+            d: "M852.76,362.01l0.36,1.15l-1.58,2.03l-1.15,-1.07l-1.44,0.78l-0.74,1.95l-1.83,-0.95l0.02,-1.58l1.55,-2l1.59,0.39l1.15,-1.42L852.76,362.01zM870.53,351.73l-1.06,2.78l0.49,1.73l-1.46,2.42l-3.58,1.6l-4.93,0.21l-4,3.84l-1.88,-1.29L854,360.5l-4.88,0.75l-3.32,1.59l-3.28,0.06l2.84,2.46l-1.87,5.61l-1.81,1.37l-1.36,-1.27l0.69,-2.96l-1.77,-0.96l-1.14,-2.28l2.65,-1.03l1.47,-2.11l2.82,-1.75l2.06,-2.33l5.58,-1.02l3,0.7l2.93,-6.17l1.87,1.67l4.11,-3.51l1.59,-1.38l1.76,-4.38l-0.48,-4.1l1.18,-2.33l2.98,-0.68l1.53,5.11l-0.08,2.94l-2.59,3.6L870.53,351.73zM878.76,325.8l1.97,0.83l1.98,-1.65l0.62,4.35l-4.16,1.05l-2.46,3.76l-4.41,-2.58l-1.53,4.12l-3.12,0.06l-0.39,-3.74l1.39,-2.94l3,-0.21l0.82,-5.38l0.83,-3.09l3.29,4.12L878.76,325.8z",
+          },
+        }),
+        _vm._v(" "),
+        _c("path", {
+          staticClass: "land",
+          attrs: {
+            id: "KE",
+            title: "Kenya",
+            d: "M590.19,465.78L591.85,468.07L589.89,469.19L589.2,470.35L588.14,470.55L587.75,472.52L586.85,473.64L586.3,475.5L585.17,476.42L581.15,473.63L580.95,472.01L570.79,466.34L570.31,466.03L570.29,463.08L571.09,461.95L572.47,460.11L573.49,458.08L572.26,454.88L571.93,453.48L570.6,451.54L572.32,449.87L574.22,448.03L575.68,448.5L575.68,450.07L576.64,450.98L578.59,450.98L582.14,453.36L583.02,453.38L583.68,453.31L584.3,453.63L586.17,453.85L587,452.69L589.56,451.52L590.69,452.46L592.61,452.46L590.16,455.63z",
+          },
+        }),
+        _vm._v(" "),
+        _c("path", {
+          staticClass: "land",
+          attrs: {
+            id: "KG",
+            title: "Kyrgyzstan",
+            d: "M674.22,333.11L674.85,331.45L676.69,330.91L681.31,332.22L681.74,329.98L683.33,329.18L687.33,330.79L688.35,330.37L693,330.47L697.16,330.87L698.56,332.24L700.29,332.79L699.9,333.65L695.48,335.68L694.48,337.16L690.88,337.6L689.82,339.95L686.85,339.46L684.92,340.18L682.24,341.9L682.63,342.75L681.83,343.58L676.53,344.13L673.06,342.96L670.02,343.24L670.29,341.14L673.34,341.75L674.37,340.62L676.5,340.98L680.09,338.34L676.77,336.38L674.77,337.31L672.7,335.91L675.05,333.48z",
+          },
+        }),
+        _vm._v(" "),
+        _c("path", {
+          staticClass: "land",
+          attrs: {
+            id: "KH",
+            title: "Cambodia",
+            d: "M765.44,433.6L764.3,432.12L762.89,429.18L762.22,425.73L764.02,423.35L767.64,422.8L770.27,423.21L772.58,424.34L773.85,422.35L776.34,423.41L776.99,425.33L776.64,428.75L771.93,430.94L773.16,432.67L770.22,432.87L767.79,434.01z",
+          },
+        }),
+        _vm._v(" "),
+        _c("path", {
+          staticClass: "land",
+          attrs: {
+            id: "KP",
+            title: "North Korea",
+            d: "M841.55,332.62L841.94,333.29L840.88,333.06L839.66,334.33L838.82,335.61L838.93,338.28L837.48,339.09L836.98,339.74L835.92,340.82L834.05,341.42L832.84,342.4L832.75,343.97L832.42,344.37L833.54,344.95L835.13,346.53L834.72,347.39L833.53,347.62L831.55,347.79L830.46,349.39L829.2,349.27L829.03,349.59L827.67,348.92L827.33,349.58L826.51,349.87L826.41,349.21L825.68,348.89L824.93,348.32L825.7,346.75L826.36,346.33L826.11,345.68L826.82,343.74L826.63,343.15L825,342.75L823.68,341.78L825.96,339.43L829.05,337.45L830.98,334.8L832.31,335.97L834.73,336.11L834.29,334.14L838.62,332.51L839.74,330.38z",
+          },
+        }),
+        _vm._v(" "),
+        _c("path", {
+          staticClass: "land",
+          attrs: {
+            id: "KR",
+            title: "South Korea",
+            d: "M835.13,346.53L837.55,350.71L838.24,352.98L838.26,356.96L837.21,358.84L834.67,359.5L832.43,360.91L829.9,361.2L829.59,359.35L830.11,356.78L828.87,353.18L830.95,352.59L829.03,349.59L829.2,349.27L830.46,349.39L831.55,347.79L833.53,347.62L834.72,347.39z",
+          },
+        }),
+        _vm._v(" "),
+        _c("path", {
+          staticClass: "land",
+          attrs: {
+            id: "XK",
+            title: "Kosovo",
+            d: "M533.47,333.92L533.34,334.69L532.98,334.66L532.8,333.29L532.13,332.91L531.53,331.89L532.05,331.04L532.72,330.76L533.11,329.5L533.61,329.28L534.01,329.82L534.54,330.06L534.9,330.67L535.36,330.85L535.91,331.55L536.31,331.53L535.99,332.46L535.66,332.91L535.75,333.19L535.12,333.33z",
+          },
+        }),
+        _vm._v(" "),
+        _c("path", {
+          staticClass: "land",
+          attrs: {
+            id: "KW",
+            title: "Kuwait",
+            d: "M609.77,375.76L610.35,377.17L610.1,377.9L611,380.31L609.02,380.39L608.32,378.88L605.82,378.57L607.88,375.49z",
+          },
+        }),
+        _vm._v(" "),
+        _c("path", {
+          staticClass: "land",
+          attrs: {
+            id: "KZ",
+            title: "Kazakhstan",
+            d: "M674.22,333.11L672.61,333.81L668.92,336.42L667.69,339.07L666.64,339.09L665.88,337.34L662.31,337.22L661.74,334.16L660.37,334.13L660.58,330.33L657.23,327.53L652.42,327.83L649.13,328.39L646.45,324.89L644.16,323.41L639.81,320.57L639.29,320.22L632.07,322.57L632.18,336.7L630.74,336.88L628.78,333.95L626.88,332.89L623.7,333.68L622.46,334.93L622.3,334.01L622.99,332.44L622.46,331.12L619.21,329.82L617.94,326.35L616.4,325.37L616.3,324.09L619.03,324.46L619.14,321.58L621.52,320.94L623.97,321.53L624.48,317.62L623.98,315.11L621.17,315.31L618.79,314.31L615.54,316.1L612.93,316.96L611.5,316.3L611.79,314.2L610,311.44L607.92,311.55L605.54,308.72L607.16,305.5L606.34,304.63L608.57,299.86L611.46,302.39L611.81,299.2L617.59,294.35L621.97,294.23L628.16,297.33L631.47,299.12L634.45,297.25L638.89,297.17L642.48,299.46L643.3,298.15L647.23,298.34L647.94,296.23L643.39,293.14L646.08,290.91L645.56,289.66L648.25,288.45L646.23,285.25L647.51,283.63L658,281.97L659.37,280.78L666.39,278.99L668.91,276.95L673.95,278.01L674.83,283.02L677.76,281.86L681.36,283.49L681.13,286.07L683.82,285.8L690.84,281.31L689.82,282.81L693.4,286.47L699.66,298.05L701.16,295.72L705.02,298.28L709.05,297.14L710.59,297.94L711.94,300.49L713.9,301.33L715.1,303.18L718.71,302.6L720.2,305.23L718.06,308.06L715.73,308.46L715.6,312.64L714.04,314.5L708.48,313.15L706.46,320.41L705.02,321.3L699.47,322.88L701.99,329.63L700.07,330.63L700.29,332.79L698.56,332.24L697.16,330.87L693,330.47L688.35,330.37L687.33,330.79L683.33,329.18L681.74,329.98L681.31,332.22L676.69,330.91L674.85,331.45z",
+          },
+        }),
+        _vm._v(" "),
+        _c("path", {
+          staticClass: "land",
+          attrs: {
+            id: "LA",
+            title: "Lao People's Democratic Republic",
+            d: "M770.27,423.21L771.18,421.91L771.31,419.47L769.04,416.94L768.86,414.07L766.73,411.69L764.61,411.49L764.05,412.51L762.4,412.59L761.56,412.08L758.61,413.82L758.54,411.2L759.23,408.09L757.34,407.96L757.18,406.18L755.96,405.26L756.56,404.16L758.95,402.22L759.2,402.92L760.69,403L760.27,399.57L761.72,399.13L763.36,401.5L764.62,404.22L768.07,404.25L769.16,406.84L767.37,407.61L766.56,408.68L769.92,410.44L772.25,413.9L774.02,416.47L776.14,418.49L776.85,420.53L776.34,423.41L773.85,422.35L772.58,424.34z",
+          },
+        }),
+        _vm._v(" "),
+        _c("path", {
+          staticClass: "land",
+          attrs: {
+            id: "LB",
+            title: "Lebanon",
+            d: "M575.69,364.93L574.94,364.98L574.68,365.56L573.74,365.56L574.74,362.83L576.13,360.45L576.19,360.33L577.45,360.51L577.91,361.83L576.38,363.1z",
+          },
+        }),
+        _vm._v(" "),
+        _c("path", {
+          staticClass: "land",
+          attrs: {
+            id: "LK",
+            title: "Sri Lanka",
+            d: "M704.57,442.37L704.15,445.29L702.98,446.09L700.54,446.73L699.2,444.5L698.71,440.47L699.98,435.89L701.91,437.46L703.22,439.44z",
+          },
+        }),
+        _vm._v(" "),
+        _c("path", {
+          staticClass: "land",
+          attrs: {
+            id: "LR",
+            title: "Liberia",
+            d: "M453.63,451.22L452.89,451.24L450,449.91L447.46,447.78L445.07,446.25L443.18,444.44L443.85,443.54L444,442.73L445.26,441.2L446.57,439.89L447.17,439.82L447.9,439.51L449.07,441.23L448.89,442.36L449.43,442.96L450.23,442.97L450.8,441.84L451.59,441.91L451.46,442.73L451.74,444.09L451.13,445.33L451.95,446.1L452.84,446.29L454.03,447.46L454.11,448.57L453.84,448.92z",
+          },
+        }),
+        _vm._v(" "),
+        _c("path", {
+          staticClass: "land",
+          attrs: {
+            id: "LS",
+            title: "Lesotho",
+            d: "M556.5,547.75L557.48,548.71L556.62,550.27L556.14,551.32L554.58,551.82L554.06,552.86L553.06,553.18L550.96,550.69L552.45,548.66L553.97,547.41L555.28,546.77z",
+          },
+        }),
+        _vm._v(" "),
+        _c("path", {
+          staticClass: "land",
+          attrs: {
+            id: "LT",
+            title: "Lithuania",
+            d: "M538.99,282.09L538.76,280.87L539.06,279.54L537.82,278.77L534.89,277.91L534.29,273.75L537.5,272.2L542.2,272.53L544.96,272.03L545.35,273.08L546.84,273.4L549.54,275.82L549.8,278.02L547.5,279.59L546.85,282.31L543.81,284.11L541.1,284.07L540.43,282.61z",
+          },
+        }),
+        _vm._v(" "),
+        _c("path", {
+          staticClass: "land",
+          attrs: {
+            id: "LU",
+            title: "Luxembourg",
+            d: "M492.2,301.29L492.76,302.27L492.6,304.16L491.79,304.26L491.16,303.88L491.47,301.45z",
+          },
+        }),
+        _vm._v(" "),
+        _c("path", {
+          staticClass: "land",
+          attrs: {
+            id: "LV",
+            title: "Latvia",
+            d: "M534.29,273.75L534.39,269.94L535.77,266.7L538.41,264.92L540.63,268.8L542.88,268.7L543.42,264.71L545.81,263.78L547.04,264.43L549.45,266.37L551.77,266.38L553.12,267.57L553.35,270.06L554.26,273.05L551.24,274.98L549.54,275.82L546.84,273.4L545.35,273.08L544.96,272.03L542.2,272.53L537.5,272.2z",
+          },
+        }),
+        _vm._v(" "),
+        _c("path", {
+          staticClass: "land",
+          attrs: {
+            id: "LY",
+            title: "Libya",
+            d: "M516.89,397.93L514.91,399.05L513.33,397.39L508.9,396.08L507.67,394.17L505.45,392.75L504.14,393.31L503.15,391.6L503.04,390.28L501.38,388.02L502.5,386.73L502.25,384.76L502.61,383.04L502.41,381.6L502.9,379.01L502.75,377.53L501.84,374.69L503.21,373.94L503.45,372.56L503.15,371.21L505.08,369.95L505.94,368.9L507.31,367.95L507.47,365.4L510.76,366.55L511.94,366.26L514.28,366.82L518,368.29L519.31,371.21L521.83,371.85L525.78,373.21L528.77,374.82L530.14,373.98L531.48,372.49L530.83,369.98L531.71,368.38L533.73,366.83L535.66,366.38L539.45,367.06L540.41,368.54L541.45,368.55L542.34,369.11L545.13,369.5L545.81,370.58L544.8,372.15L545.23,373.54L544.51,375.54L545.35,378.12L545.35,389.3L545.35,400.53L545.35,406.49L542.13,406.5L542.09,407.74L530.91,402.04L519.72,396.27z",
+          },
+        }),
+        _vm._v(" "),
+        _c("path", {
+          staticClass: "land",
+          attrs: {
+            id: "MA",
+            title: "Morocco",
+            d: "M450.96,383.14L450.93,379.39L455.46,377.03L458.26,376.54L460.55,375.68L461.63,374.06L464.91,372.77L465.03,370.36L466.65,370.07L467.92,368.86L471.59,368.3L472.1,367.02L471.36,366.31L470.39,362.78L470.23,360.73L469.17,358.55L467.95,358.51L465.05,357.76L462.38,358L460.69,356.54L458.63,356.52L457.74,358.63L455.87,362.14L453.79,363.53L450.98,365.06L449.18,367.3L448.8,369.04L447.73,371.86L448.43,375.89L446.09,378.57L444.69,379.42L442.48,381.59L439.87,381.94L438.57,383.06L442.19,383.07L450.94,383.1L450.94,383.1L450.94,383.1L442.19,383.07L438.57,383.06z",
+          },
+        }),
+        _vm._v(" "),
+        _c("path", {
+          staticClass: "land",
+          attrs: {
+            id: "MD",
+            title: "Moldova",
+            d: "M549.89,309.45L550.56,308.83L552.42,308.41L554.49,309.72L555.64,309.88L556.91,311L556.71,312.41L557.73,313.08L558.13,314.8L559.11,315.84L558.92,316.44L559.44,316.86L558.7,317.15L557.04,317.04L556.77,316.47L556.18,316.8L556.38,317.52L555.61,318.81L555.12,320.18L554.42,320.62L553.91,318.79L554.21,317.07L554.12,315.28L552.5,312.84L551.61,311.09L550.74,309.85z",
+          },
+        }),
+        _vm._v(" "),
+        _c("path", {
+          staticClass: "land",
+          attrs: {
+            id: "ME",
+            title: "Montenegro",
+            d: "M530.77,332.23L530.6,331.51L529.38,333.38L529.57,334.57L528.98,334.28L528.2,333.05L526.98,332.3L527.29,331.66L527.7,329.56L528.61,328.67L529.14,328.31L529.88,328.97L530.29,329.51L531.21,329.92L532.28,330.71L532.05,331.04L531.53,331.89z",
+          },
+        }),
+        _vm._v(" "),
+        _c("path", {
+          staticClass: "land",
+          attrs: {
+            id: "MG",
+            title: "Madagascar",
+            d: "M614.17,498.4L614.91,499.61L615.6,501.5L616.06,504.96L616.78,506.31L616.5,507.69L616.01,508.55L615.05,506.85L614.53,507.71L615.06,509.85L614.81,511.09L614.04,511.76L613.86,514.24L612.76,517.66L611.38,521.75L609.64,527.42L608.57,531.63L607.3,535.18L605.02,535.91L602.57,537.22L600.96,536.43L598.73,535.33L597.96,533.71L597.77,531L596.79,528.58L596.53,526.41L597.03,524.25L598.32,523.73L598.33,522.74L599.67,520.48L599.92,518.6L599.27,517.2L598.74,515.35L598.52,512.65L599.5,511.02L599.87,509.17L601.27,509.07L602.84,508.47L603.87,507.95L605.11,507.91L606.7,506.26L609.01,504.48L609.85,503.04L609.47,501.81L610.66,502.16L612.21,500.17L612.26,498.45L613.19,497.17z",
+          },
+        }),
+        _vm._v(" "),
+        _c("path", {
+          staticClass: "land",
+          attrs: {
+            id: "MK",
+            title: "Macedonia",
+            d: "M532.98,334.66L533.34,334.69L533.47,333.92L535.12,333.33L535.75,333.19L536.71,332.97L538,332.91L539.41,334.12L539.61,336.59L539.07,336.71L538.61,337.36L537.09,337.29L536.02,338.1L534.19,338.42L533.03,337.52L532.63,335.93z",
+          },
+        }),
+        _vm._v(" "),
+        _c("path", {
+          staticClass: "land",
+          attrs: {
+            id: "ML",
+            title: "Mali",
+            d: "M441.13,422.22L442.07,421.7L442.54,420L443.43,419.93L445.39,420.73L446.97,420.16L448.05,420.35L448.48,419.71L459.73,419.67L460.35,417.64L459.86,417.28L458.51,404.6L457.16,391.54L461.45,391.49L470.91,398.14L480.37,404.69L481.03,406.08L482.78,406.93L484.08,407.41L484.11,409.29L487.22,409L487.23,415.75L485.69,417.69L485.45,419.48L482.96,419.93L479.14,420.18L478.1,421.21L476.3,421.32L474.51,421.33L473.81,420.78L472.26,421.19L469.64,422.39L469.11,423.29L466.93,424.57L466.55,425.31L465.38,425.89L464.02,425.51L463.25,426.21L462.84,428.17L460.61,430.53L460.68,431.49L459.91,432.7L460.1,434.34L458.94,434.76L458.29,435.12L457.85,433.91L457.04,434.23L456.56,434.17L456.04,435L453.88,434.97L453.1,434.55L452.74,434.81L451.88,433.99L452.03,433.15L451.68,432.81L451.08,433.09L451.19,432.17L451.77,431.44L450.62,430.25L450.28,429.46L449.66,428.84L449.1,428.76L448.43,429.16L447.52,429.54L446.75,430.16L445.55,429.93L444.77,429.21L444.31,429.11L443.58,429.49L443.13,429.5L442.97,428.45L443.1,427.56L442.86,426.46L441.81,425.65L441.26,424.01z",
+          },
+        }),
+        _vm._v(" "),
+        _c("path", {
+          staticClass: "land",
+          attrs: {
+            id: "MM",
+            title: "Myanmar",
+            d: "M754.36,405.95L752.72,407.23L750.74,407.37L749.46,410.56L748.28,411.09L749.64,413.66L751.42,415.79L752.56,417.71L751.54,420.23L750.57,420.76L751.24,422.21L753.11,424.49L753.43,426.09L753.38,427.42L754.48,430.02L752.94,432.67L751.58,435.58L751.31,433.48L752.17,431.3L751.23,429.62L751.46,426.51L750.32,425.03L749.41,421.59L748.9,417.93L747.69,415.53L745.84,416.99L742.65,419.05L741.08,418.79L739.34,418.12L740.31,414.51L739.73,411.77L737.53,408.38L737.87,407.31L736.23,406.93L734.24,404.51L734.06,402.1L735.04,402.56L735.09,400.41L736.48,399.69L736.18,398.41L736.81,397.38L736.92,394.23L739.11,394.93L740.36,392.41L740.51,390.91L742.05,388.31L741.97,386.53L745.6,384.37L747.6,384.94L747.37,383.01L748.36,382.43L748.14,381.23L749.78,380.99L750.72,382.85L751.94,383.6L752.03,386L751.91,388.57L749.26,391.15L748.92,394.78L751.88,394.28L752.55,397.08L754.33,397.67L753.51,400.17L755.59,401.3L756.81,401.85L758.86,400.98L758.95,402.22L756.56,404.16L755.96,405.26z",
+          },
+        }),
+        _vm._v(" "),
+        _c("path", {
+          staticClass: "land",
+          attrs: {
+            id: "MN",
+            title: "Mongolia",
+            d: "M721.29,304.88L724.25,304.14L729.6,300.4L733.87,298.33L736.3,299.68L739.23,299.74L741.1,301.79L743.9,301.94L747.96,303.03L750.68,300L749.54,297.4L752.45,292.74L755.59,294.61L758.13,295.14L761.43,296.29L761.96,299.61L765.95,301.45L768.6,300.64L772.14,300.07L774.95,300.65L777.7,302.74L779.4,304.94L782,304.9L785.53,305.59L788.11,304.53L791.8,303.82L795.91,300.76L797.59,301.23L799.06,302.69L802.4,302.33L801.04,305.58L799.06,309.8L799.78,311.51L801.37,310.98L804.13,311.63L806.29,310.09L808.54,311.42L811.08,314.31L810.77,315.76L808.56,315.3L804.49,315.84L802.51,317L800.46,319.66L796.18,321.21L793.39,323.31L790.51,322.51L788.93,322.15L787.46,324.69L788.35,326.19L788.81,327.47L786.84,328.77L784.83,330.82L781.56,332.15L777.35,332.3L772.82,333.61L769.56,335.62L768.32,334.46L764.93,334.46L760.78,332.17L758.01,331.6L754.28,332.13L748.49,331.28L745.4,331.37L743.76,329.1L742.48,325.53L740.75,325.1L737.36,322.65L733.58,322.1L730.25,321.42L729.24,319.69L730.32,314.96L728.39,311.65L724.39,310.08L722.03,307.85z",
+          },
+        }),
+        _vm._v(" "),
+        _c("path", {
+          staticClass: "land",
+          attrs: {
+            id: "MR",
+            title: "Mauritania",
+            d: "M441.13,422.22L439.28,420.24L437.58,418.11L435.72,417.34L434.38,416.49L432.81,416.52L431.45,417.15L430.05,416.9L429.09,417.83L428.85,416.27L429.63,414.83L429.98,412.08L429.67,409.17L429.33,407.7L429.61,406.23L428.89,404.81L427.41,403.53L428.02,402.53L439,402.55L438.47,398.2L439.16,396.65L441.78,396.38L441.69,388.52L450.9,388.69L450.9,383.96L461.45,391.49L457.16,391.54L458.51,404.6L459.86,417.28L460.35,417.64L459.73,419.67L448.48,419.71L448.05,420.35L446.97,420.16L445.39,420.73L443.43,419.93L442.54,420L442.07,421.7z",
+          },
+        }),
+        _vm._v(" "),
+        _c("path", {
+          staticClass: "land",
+          attrs: {
+            id: "MW",
+            title: "Malawi",
+            d: "M572.15,495.69L571.37,497.85L572.15,501.57L573.13,501.53L574.14,502.45L575.31,504.53L575.55,508.25L574.34,508.86L573.48,510.87L571.65,509.08L571.45,507.04L572.04,505.69L571.87,504.54L570.77,503.81L569.99,504.07L568.38,502.69L566.91,501.95L567.76,499.29L568.64,498.3L568.1,495.94L568.66,493.64L569.14,492.87L568.43,490.47L567.11,489.21L569.85,489.73L570.42,490.51L571.37,491.83z",
+          },
+        }),
+        _vm._v(" "),
+        _c("path", {
+          staticClass: "land",
+          attrs: {
+            id: "MX",
+            title: "Mexico",
+            d: "M202.89,388.72L201.8,391.43L201.31,393.64L201.1,397.72L200.83,399.19L201.32,400.83L202.19,402.3L202.75,404.61L204.61,406.82L205.26,408.51L206.36,409.96L209.34,410.75L210.5,411.97L212.96,411.15L215.09,410.86L217.19,410.33L218.96,409.82L220.74,408.62L221.41,406.89L221.64,404.4L222.13,403.53L224.02,402.74L226.99,402.05L229.47,402.15L231.17,401.9L231.84,402.53L231.75,403.97L230.24,405.74L229.58,407.55L230.09,408.06L229.67,409.34L228.97,411.63L228.26,410.88L227.67,410.93L227.14,410.97L226.14,412.74L225.63,412.39L225.29,412.53L225.31,412.96L222.72,412.93L220.1,412.93L220.1,414.58L218.83,414.58L219.87,415.56L220.91,416.23L221.22,416.86L221.68,417.04L221.6,418.02L218.01,418.03L216.66,420.39L217.05,420.93L216.73,421.61L216.66,422.45L213.49,419.34L212.04,418.4L209.75,417.64L208.19,417.85L205.93,418.94L204.52,419.23L202.54,418.47L200.44,417.91L197.82,416.58L195.72,416.17L192.54,414.82L190.2,413.42L189.49,412.64L187.92,412.47L185.05,411.54L183.88,410.2L180.87,408.53L179.47,406.66L178.8,405.21L179.73,404.92L179.44,404.07L180.09,403.3L180.1,402.26L179.16,400.92L178.9,399.72L177.96,398.2L175.49,395.18L172.67,392.79L171.31,390.88L168.9,389.62L168.39,388.86L168.82,386.94L167.39,386.21L165.73,384.69L165.03,382.5L163.52,382.24L161.9,380.58L160.58,379.03L160.46,378.03L158.95,375.61L157.96,373.13L158,371.88L155.97,370.59L155.04,370.73L153.44,369.83L152.99,371.16L153.45,372.72L153.72,375.15L154.69,376.48L156.77,378.69L157.23,379.44L157.66,379.66L158.02,380.76L158.52,380.71L159.09,382.75L159.94,383.55L160.53,384.66L162.3,386.26L163.23,389.15L164.06,390.5L164.84,391.94L164.99,393.56L166.34,393.66L167.47,395.05L168.49,396.41L168.42,396.95L167.24,398.06L166.74,398.05L166,396.2L164.17,394.47L162.15,392.99L160.71,392.21L160.8,389.96L160.38,388.28L159.04,387.32L157.11,385.93L156.74,386.33L156.04,385.51L154.31,384.76L152.66,382.93L152.86,382.69L154.01,382.87L155.05,381.69L155.16,380.26L153,377.99L151.36,377.1L150.32,375.09L149.28,372.97L147.98,370.36L146.84,367.4L150.03,367.15L153.59,366.79L153.33,367.43L157.56,369.04L163.96,371.35L169.54,371.32L171.76,371.32L171.76,369.97L176.62,369.97L177.64,371.14L179.08,372.17L180.74,373.6L181.67,375.29L182.37,377.05L183.82,378.02L186.15,378.98L187.91,376.45L190.21,376.39L192.18,377.67L193.59,379.85L194.56,381.71L196.21,383.51L196.83,385.7L197.62,387.17L199.8,388.13L201.79,388.81z",
+          },
+        }),
+        _vm._v(" "),
+        _c("path", {
+          staticClass: "land",
+          attrs: {
+            id: "MY",
+            title: "Malaysia",
+            d: "M758.65,446.07l0.22,1.44l1.85,-0.33l0.92,-1.15l0.64,0.26l1.66,1.69l1.18,1.87l0.16,1.88l-0.3,1.27l0.27,0.96l0.21,1.65l0.99,0.77l1.1,2.46l-0.05,0.94l-1.99,0.19l-2.65,-2.06l-3.32,-2.21l-0.33,-1.42l-1.62,-1.87l-0.39,-2.31l-1.01,-1.52l0.31,-2.04l-0.62,-1.19l0.49,-0.5L758.65,446.07zM807.84,450.9l-2.06,0.95l-2.43,-0.47l-3.22,0l-0.97,3.17l-1.08,0.97l-1.44,3.88l-2.29,0.59l-2.65,-0.78l-1.34,0.24l-1.63,1.41l-1.79,-0.2l-1.81,0.57l-1.92,-1.57l-0.47,-1.86l2.05,0.96l2.17,-0.52l0.56,-2.36l1.2,-0.53l3.36,-0.6l2.01,-2.21l1.38,-1.77l1.28,1.45l0.59,-0.95l1.34,0.09l0.16,-1.78l0.13,-1.38l2.16,-1.95l1.41,-2.19l1.13,-0.01l1.44,1.42l0.13,1.22l1.85,0.78l2.34,0.84l-0.2,1.1l-1.88,0.14L807.84,450.9z",
+          },
+        }),
+        _vm._v(" "),
+        _c("path", {
+          staticClass: "land",
+          attrs: {
+            id: "MZ",
+            title: "Mozambique",
+            d: "M572.15,495.69L574.26,495.46L577.63,496.26L578.37,495.9L580.32,495.83L581.32,494.98L583,495.02L586.06,493.92L588.29,492.28L588.75,493.55L588.63,496.38L588.98,498.88L589.09,503.36L589.58,504.76L588.75,506.83L587.66,508.84L585.87,510.64L583.31,511.75L580.15,513.16L576.98,516.31L575.9,516.85L573.94,518.94L572.79,519.63L572.55,521.75L573.88,524L574.43,525.76L574.47,526.66L574.96,526.51L574.88,529.47L574.43,530.88L575.09,531.4L574.67,532.67L573.5,533.76L571.19,534.8L567.82,536.46L566.59,537.61L566.83,538.91L567.54,539.12L567.3,540.76L565.18,540.74L564.94,539.36L564.52,537.97L564.28,536.86L564.78,533.43L564.05,531.26L562.71,527L565.66,523.59L566.4,521.44L566.83,521.17L567.14,519.43L566.69,518.55L566.81,516.35L567.36,514.31L567.35,510.62L565.9,509.68L564.56,509.47L563.96,508.75L562.66,508.14L560.32,508.2L560.14,507.12L559.87,505.07L568.38,502.69L569.99,504.07L570.77,503.81L571.87,504.54L572.04,505.69L571.45,507.04L571.65,509.08L573.48,510.87L574.34,508.86L575.55,508.25L575.31,504.53L574.14,502.45L573.13,501.53L572.15,501.57L571.37,497.85z",
+          },
+        }),
+        _vm._v(" "),
+        _c("path", {
+          staticClass: "land",
+          attrs: {
+            id: "NA",
+            title: "Namibia",
+            d: "M521.08,546.54L519,544.15L517.9,541.85L517.28,538.82L516.59,536.57L515.65,531.85L515.59,528.22L515.23,526.58L514.14,525.34L512.69,522.87L511.22,519.3L510.61,517.45L508.32,514.58L508.15,512.33L509.5,511.78L511.18,511.28L513,511.37L514.67,512.69L515.09,512.48L526.46,512.36L528.4,513.76L535.19,514.17L540.34,512.98L542.64,512.31L544.46,512.48L545.56,513.14L545.59,513.38L544.01,514.04L543.15,514.05L541.37,515.2L540.29,513.99L535.97,515.02L533.88,515.11L533.8,525.68L531.04,525.79L531.04,534.65L531.03,546.17L528.53,547.8L527.03,548.03L525.26,547.43L524,547.2L523.53,545.84L522.42,544.97z",
+          },
+        }),
+        _vm._v(" "),
+        _c("path", {
+          staticClass: "land",
+          attrs: {
+            id: "NC",
+            title: "New Caledonia",
+            d: "M940.08,523.48L942.38,525.34L943.83,526.72L942.77,527.45L941.22,526.63L939.22,525.28L937.41,523.69L935.56,521.59L935.17,520.58L936.37,520.63L937.95,521.64L939.18,522.65z",
+          },
+        }),
+        _vm._v(" "),
+        _c("path", {
+          staticClass: "land",
+          attrs: {
+            id: "NE",
+            title: "Niger",
+            d: "M481.29,429.88L481.36,427.93L478.12,427.28L478.04,425.9L476.46,424.03L476.08,422.72L476.3,421.32L478.1,421.21L479.14,420.18L482.96,419.93L485.45,419.48L485.69,417.69L487.23,415.75L487.22,409L491.17,407.68L499.29,401.83L508.9,396.08L513.33,397.39L514.91,399.05L516.89,397.93L517.58,402.6L518.63,403.38L518.68,404.33L519.84,405.35L519.23,406.63L518.15,412.61L518.01,416.4L514.43,419.14L513.22,422.94L514.39,424L514.38,425.85L516.18,425.92L515.9,427.26L515.11,427.43L515.02,428.33L514.49,428.4L512.6,425.27L511.94,425.15L509.75,426.75L507.58,425.92L506.07,425.75L505.26,426.15L503.61,426.07L501.96,427.29L500.53,427.36L497.14,425.88L495.81,426.58L494.38,426.53L493.33,425.45L490.51,424.38L487.5,424.72L486.77,425.34L486.38,426.99L485.57,428.14L485.38,430.68L483.24,429.04L482.23,429.05z",
+          },
+        }),
+        _vm._v(" "),
+        _c("path", {
+          staticClass: "land",
+          attrs: {
+            id: "NG",
+            title: "Nigeria",
+            d: "M499.09,450.08L496.18,451.08L495.11,450.94L494.03,451.56L491.79,451.5L490.29,449.75L489.37,447.73L487.38,445.89L485.27,445.92L482.8,445.92L482.96,441.39L482.89,439.6L483.42,437.83L484.28,436.96L485.64,435.21L485.35,434.45L485.9,433.31L485.27,431.63L485.38,430.68L485.57,428.14L486.38,426.99L486.77,425.34L487.5,424.72L490.51,424.38L493.33,425.45L494.38,426.53L495.81,426.58L497.14,425.88L500.53,427.36L501.96,427.29L503.61,426.07L505.26,426.15L506.07,425.75L507.58,425.92L509.75,426.75L511.94,425.15L512.6,425.27L514.49,428.4L515.02,428.33L516.13,429.47L515.82,429.98L515.67,430.93L513.31,433.13L512.57,434.94L512.17,436.41L511.58,437.04L511.01,439.01L509.51,440.17L509.08,441.59L508.45,442.73L508.19,443.89L506.26,444.84L504.69,443.69L503.62,443.73L501.95,445.37L501.14,445.4L499.81,448.1z",
+          },
+        }),
+        _vm._v(" "),
+        _c("path", {
+          staticClass: "land",
+          attrs: {
+            id: "NI",
+            title: "Nicaragua",
+            d: "M234.93,432.31L233.96,431.41L232.65,430.26L232.03,429.3L230.85,428.41L229.44,427.12L229.75,426.68L230.22,427.11L230.43,426.9L231.3,426.79L231.65,426.13L232.06,426.11L232,424.7L232.66,424.63L233.25,424.65L233.85,423.89L234.68,424.47L234.97,424.11L235.48,423.77L236.46,422.98L236.51,422.38L236.78,422.41L237.14,421.72L237.43,421.64L237.91,422.08L238.47,422.21L239.09,421.84L239.8,421.84L240.77,421.46L241.16,421.07L242.12,421.13L241.88,421.41L241.74,422.05L242.02,423.1L241.38,424.08L241.08,425.23L240.98,426.5L241.14,427.23L241.21,428.52L240.78,428.8L240.52,430.02L240.71,430.77L240.13,431.5L240.27,432.26L240.69,432.73L240.02,433.33L239.2,433.14L238.73,432.56L237.84,432.32L237.2,432.69L235.35,431.94z",
+          },
+        }),
+        _vm._v(" "),
+        _c("path", {
+          staticClass: "land",
+          attrs: {
+            id: "NL",
+            title: "Netherlands",
+            d: "M492.28,285.98L494.61,286.11L495.14,287.69L494.44,291.92L493.73,293.63L492.04,293.63L492.52,298.32L490.97,297.28L489.2,295.33L486.6,296.26L484.55,295.91L485.99,294.67L488.45,287.93z",
+          },
+        }),
+        _vm._v(" "),
+        _c("path", {
+          staticClass: "land",
+          attrs: {
+            id: "NO",
+            title: "Norway",
+            d: "M554.23,175.61l8.77,6.24l-3.61,2.23l3.07,5.11l-4.77,3.19l-2.26,0.72l1.19,-5.59l-3.6,-3.25l-4.35,2.78l-1.38,5.85l-2.67,3.44l-3.01,-1.87l-3.66,0.38l-3.12,-4.15l-1.68,2.09l-1.74,0.32l-0.41,5.08l-5.28,-1.22l-0.74,4.22l-2.69,-0.03l-1.85,5.24l-2.8,7.87l-4.35,9.5l1.02,2.23l-0.98,2.55l-2.78,-0.11l-1.82,5.91l0.17,8.04l1.79,2.98l-0.93,6.73l-2.33,3.81l-1.24,3.15l-1.88,-3.35l-5.54,6.27l-3.74,1.24l-3.88,-2.71l-1,-5.86l-0.89,-13.26l2.58,-3.88l7.4,-5.18l5.54,-6.59l5.13,-9.3l6.74,-13.76l4.7,-5.67l7.71,-9.89l6.15,-3.59l4.61,0.44l4.27,-6.99l5.11,0.38L554.23,175.61z",
+          },
+        }),
+        _vm._v(" "),
+        _c("path", {
+          staticClass: "land",
+          attrs: {
+            id: "NP",
+            title: "Nepal",
+            d: "M722.33,382.45L722.11,383.8L722.48,385.79L722.16,387.03L719.83,387.08L716.45,386.35L714.29,386.06L712.67,384.47L708.83,384.06L705.17,382.29L702.53,380.74L699.81,379.54L700.9,376.55L702.68,375.09L703.84,374.31L706.09,375.31L708.92,377.4L710.49,377.86L711.43,379.39L713.61,380.02L715.89,381.41L719.06,382.14z",
+          },
+        }),
+        _vm._v(" "),
+        _c("path", {
+          staticClass: "land",
+          attrs: {
+            id: "NZ",
+            title: "New Zealand",
+            d: "M960.38,588.63l0.64,1.53l1.99,-1.5l0.81,1.57l0,1.57l-1.04,1.74l-1.83,2.8l-1.43,1.54l1.03,1.86l-2.16,0.05l-2.4,1.46l-0.75,2.57l-1.59,4.03l-2.2,1.8l-1.4,1.16l-2.58,-0.09l-1.82,-1.34l-3.05,-0.28l-0.47,-1.48l1.51,-2.96l3.53,-3.87l1.81,-0.73l2.01,-1.47l2.4,-2.01l1.68,-1.98l1.25,-2.81l1.06,-0.95l0.42,-2.07l1.97,-1.7L960.38,588.63zM964.84,571.61l2.03,3.67l0.06,-2.38l1.27,0.95l0.42,2.65l2.26,1.15l1.89,0.28l1.6,-1.35l1.42,0.41l-0.68,3.15l-0.85,2.09l-2.14,-0.07l-0.75,1.1l0.26,1.56l-0.41,0.68l-1.06,1.97l-1.39,2.53l-2.17,1.49l-0.48,-0.98l-1.17,-0.54l1.62,-3.04l-0.92,-2.01l-3.02,-1.45l0.08,-1.31l2.03,-1.25l0.47,-2.74l-0.13,-2.28l-1.14,-2.34l0.08,-0.61l-1.34,-1.43l-2.21,-3.04l-1.17,-2.41l1.04,-0.27l1.53,1.89l2.18,0.89L964.84,571.61z",
+          },
+        }),
+        _vm._v(" "),
+        _c("path", {
+          staticClass: "land",
+          attrs: {
+            id: "OM",
+            title: "Oman",
+            d: "M640.29,403.18l-1.05,2.04l-1.27,-0.16l-0.58,0.71l-0.45,1.5l0.34,1.98l-0.26,0.36l-1.29,-0.01l-1.75,1.1l-0.27,1.43l-0.64,0.62l-1.74,-0.02l-1.1,0.74l0.01,1.18l-1.36,0.81l-1.55,-0.27l-1.88,0.98l-1.3,0.16l-0.92,-2.04l-2.19,-4.84l8.41,-2.96l1.87,-5.97l-1.29,-2.14l0.07,-1.22l0.82,-1.26l0.01,-1.25l1.27,-0.6l-0.5,-0.42l0.23,-2l1.43,-0.01l1.26,2.09l1.57,1.11l2.06,0.4l1.66,0.55l1.27,1.74l0.76,1l1,0.38l-0.01,0.67l-1.02,1.79l-0.45,0.84L640.29,403.18zM633.37,388.64L633,389.2l-0.53,-1.06l0.82,-1.06l0.35,0.27L633.37,388.64z",
+          },
+        }),
+        _vm._v(" "),
+        _c("path", {
+          staticClass: "land",
+          attrs: {
+            id: "PA",
+            title: "Panama",
+            d: "M256.88,443.21L255.95,442.4L255.35,440.88L256.04,440.13L255.33,439.94L254.81,439.01L253.41,438.23L252.18,438.41L251.62,439.39L250.48,440.09L249.87,440.19L249.6,440.78L250.93,442.3L250.17,442.66L249.76,443.08L248.46,443.22L247.97,441.54L247.61,442.02L246.68,441.86L246.12,440.72L244.97,440.54L244.24,440.21L243.04,440.21L242.95,440.82L242.63,440.4L242.78,439.84L243.01,439.27L242.9,438.76L243.32,438.42L242.74,438L242.72,436.87L243.81,436.62L244.81,437.63L244.75,438.23L245.87,438.35L246.14,438.12L246.91,438.82L248.29,438.61L249.48,437.9L251.18,437.33L252.14,436.49L253.69,436.65L253.58,436.93L255.15,437.03L256.4,437.52L257.31,438.36L258.37,439.14L258.03,439.56L258.68,441.21L258.15,442.05L257.24,441.85z",
+          },
+        }),
+        _vm._v(" "),
+        _c("path", {
+          staticClass: "land",
+          attrs: {
+            id: "PE",
+            title: "Peru",
+            d: "M280.13,513.14L279.38,514.65L277.94,515.39L275.13,513.71L274.88,512.51L269.33,509.59L264.3,506.42L262.13,504.64L260.97,502.27L261.43,501.44L259.06,497.69L256.29,492.45L253.65,486.83L252.5,485.54L251.62,483.48L249.44,481.64L247.44,480.51L248.35,479.26L246.99,476.59L247.86,474.64L250.1,472.87L250.43,474.04L249.63,474.7L249.7,475.72L250.86,475.5L252,475.8L253.17,477.21L254.76,476.06L255.29,474.18L257.01,471.75L260.38,470.65L263.44,467.73L264.31,465.92L263.92,463.81L264.67,463.54L266.53,464.86L267.42,466.18L268.72,466.9L270.37,469.82L272.46,470.17L274.01,469.43L275.02,469.91L276.7,469.67L278.85,470.98L277.04,473.82L277.88,473.88L279.28,475.37L276.75,475.24L276.38,475.66L274.08,476.19L270.88,478.1L270.67,479.4L269.96,480.38L270.24,481.89L268.54,482.7L268.54,483.89L267.8,484.4L268.97,486.93L270.53,488.65L269.94,489.86L271.8,490.02L272.86,491.53L275.33,491.6L277.63,489.94L277.44,494.24L278.72,494.57L280.3,494.08L282.73,498.66L282.12,499.62L281.99,501.64L281.93,504.08L280.83,505.52L281.34,506.59L280.69,507.56L281.9,510z",
+          },
+        }),
+        _vm._v(" "),
+        _c("path", {
+          staticClass: "land",
+          attrs: {
+            id: "PG",
+            title: "Papua New Guinea",
+            d: "M912.32,482.42l-0.79,0.28l-1.21,-1.08l-1.23,-1.78l-0.6,-2.13l0.39,-0.27l0.3,0.83l0.85,0.63l1.36,1.77l1.32,0.95L912.32,482.42zM901.39,478.67l-1.47,0.23l-0.44,0.79l-1.53,0.68l-1.44,0.66l-1.49,0l-2.3,-0.81l-1.6,-0.78l0.23,-0.87l2.51,0.41l1.53,-0.22l0.42,-1.34l0.4,-0.07l0.27,1.49l1.6,-0.21l0.79,-0.96l1.57,-1l-0.31,-1.65l1.68,-0.05l0.57,0.46l-0.06,1.55L901.39,478.67zM887.96,484.02l2.5,1.84l1.82,2.99l1.61,-0.09l-0.11,1.25l2.17,0.48l-0.84,0.53l2.98,1.19l-0.31,0.82l-1.86,0.2l-0.69,-0.73l-2.41,-0.32l-2.83,-0.43l-2.18,-1.8l-1.59,-1.55l-1.46,-2.46l-3.66,-1.23l-2.38,0.8l-1.71,0.93l0.36,2.08l-2.2,0.97l-1.57,-0.47l-2.9,-0.12l-0.05,-9.16l-0.05,-9.1l4.87,1.92l5.18,1.6l1.93,1.43l1.56,1.41l0.43,1.65l4.67,1.73l0.68,1.49l-2.58,0.3L887.96,484.02zM904.63,475.93l-0.88,0.74l-0.53,-1.65l-0.65,-1.08l-1.27,-0.91l-1.6,-1.19l-2.02,-0.82l0.78,-0.67l1.51,0.78l0.95,0.61l1.18,0.67l1.12,1.17l1.07,0.89L904.63,475.93z",
+          },
+        }),
+        _vm._v(" "),
+        _c("path", {
+          staticClass: "land",
+          attrs: {
+            id: "PH",
+            title: "Philippines",
+            d: "M829.59,439.86l0.29,1.87l0.17,1.58l-0.96,2.57l-1.02,-2.86l-1.31,1.42l0.9,2.06l-0.8,1.31l-3.3,-1.63l-0.79,-2.03l0.86,-1.33l-1.78,-1.33l-0.88,1.17l-1.32,-0.11l-2.08,1.57l-0.46,-0.82l1.1,-2.37l1.77,-0.79l1.53,-1.06l0.99,1.27l2.13,-0.77l0.46,-1.26l1.98,-0.08l-0.17,-2.18l2.27,1.34l0.24,1.42L829.59,439.86zM822.88,434.6l-1.01,0.93l-0.88,1.79l-0.88,0.84l-1.73,-1.95l0.58,-0.76l0.7,-0.79l0.31,-1.76l1.55,-0.17l-0.45,1.91l2.08,-2.74L822.88,434.6zM807.52,437.32l-3.73,2.67l1.38,-1.97l2.03,-1.74l1.68,-1.96l1.47,-2.82l0.5,2.31l-1.85,1.56L807.52,437.32zM817,430.02l1.68,0.88l1.78,0l-0.05,1.19l-1.3,1.2l-1.78,0.85l-0.1,-1.32l0.2,-1.45L817,430.02zM827.14,429.25l0.79,3.18l-2.16,-0.75l0.06,0.95l0.69,1.75l-1.33,0.63l-0.12,-1.99l-0.84,-0.15l-0.44,-1.72l1.65,0.23l-0.04,-1.08l-1.71,-2.18l2.69,0.06L827.14,429.25zM816,426.66l-0.74,2.47l-1.2,-1.42l-1.43,-2.18l2.4,0.1L816,426.66zM815.42,410.92l1.73,0.84l0.86,-0.76l0.25,0.75l-0.46,1.22l0.96,2.09l-0.74,2.42l-1.65,0.96l-0.44,2.33l0.63,2.29l1.49,0.32l1.24,-0.34l3.5,1.59l-0.27,1.56l0.92,0.69l-0.29,1.32l-2.18,-1.4l-1.04,-1.5l-0.72,1.05l-1.79,-1.72l-2.55,0.42l-1.4,-0.63l0.14,-1.19l0.88,-0.73l-0.84,-0.67l-0.36,1.04l-1.38,-1.65l-0.42,-1.26l-0.1,-2.77l1.13,0.96l0.29,-4.55l0.91,-2.66L815.42,410.92z",
+          },
+        }),
+        _vm._v(" "),
+        _c("path", {
+          staticClass: "land",
+          attrs: {
+            id: "PL",
+            title: "Poland",
+            d: "M517.36,296.97L516.21,294.11L516.43,292.55L515.73,290.1L514.72,288.45L515.5,287.2L514.84,284.81L516.76,283.42L521.13,281.2L524.67,279.56L527.46,280.38L527.67,281.56L530.38,281.62L533.83,282.17L538.99,282.09L540.43,282.61L541.1,284.07L541.22,286.16L542,287.94L541.98,289.79L540.3,290.73L541.17,292.85L541.22,294.86L542.63,298.75L542.33,299.99L540.94,300.5L538.39,304.11L539.11,306.03L538.5,305.78L535.84,304.14L533.82,304.74L532.5,304.3L530.84,305.22L529.43,303.7L528.27,304.28L528.11,304.02L526.82,301.89L524.74,301.63L524.47,300.26L522.55,299.77L522.13,300.9L520.61,300L520.78,298.79L518.69,298.4z",
+          },
+        }),
+        _vm._v(" "),
+        _c("path", {
+          staticClass: "land",
+          attrs: {
+            id: "PK",
+            title: "Pakistan",
+            d: "M685.99,351.76L688.06,353.39L688.89,356.05L693.5,357.44L690.79,360.3L687.67,360.81L683.41,359.98L682.04,361.44L683.03,364.39L684,366.64L686.27,368.27L683.88,370.18L683.92,372.51L681.2,375.75L679.44,379.01L676.51,382.33L673.25,382.09L670.16,385.39L672,386.79L672.32,389.18L673.89,390.74L674.45,393.38L668.28,393.37L666.41,395.41L664.36,394.64L663.52,392.44L661.35,390.1L656.19,390.68L651.63,390.73L647.68,391.17L648.74,387.57L652.78,385.96L652.55,384.52L651.21,384.01L651.13,381.24L648.45,379.84L647.32,377.91L645.94,376.23L650.63,377.87L653.44,377.39L655.11,377.79L655.68,377.09L657.63,377.37L661.28,376.04L661.38,373.29L662.94,371.45L665.03,371.45L665.33,370.54L667.48,370.11L668.51,370.41L669.61,369.49L669.46,367.51L670.65,365.51L672.43,364.66L671.33,362.44L674,362.55L674.77,361.33L674.65,360.03L676.05,358.6L675.72,356.9L675.06,355.44L676.7,353.93L679.71,353.2L682.93,352.8L684.35,352.15z",
+          },
+        }),
+        _vm._v(" "),
+        _c("path", {
+          staticClass: "land",
+          attrs: {
+            id: "PR",
+            title: "Puerto Rico",
+            d: "M289.41,410.89L290.84,411.15L291.35,411.73L290.63,412.47L288.52,412.45L286.88,412.55L286.72,411.3L287.11,410.87z",
+          },
+        }),
+        _vm._v(" "),
+        _c("path", {
+          staticClass: "land",
+          attrs: {
+            id: "PS",
+            title: "Palestinian Territories",
+            d: "M574.92,367.87L574.92,369.88L574.5,370.84L573.18,371.29L573.31,370.43L574.02,369.97L573.32,369.61L573.9,367.41z",
+          },
+        }),
+        _vm._v(" "),
+        _c("path", {
+          staticClass: "land",
+          attrs: {
+            id: "PT",
+            title: "Portugal",
+            d: "M449.92,334.56L450.94,333.61L452.08,333.06L452.79,334.9L454.44,334.89L454.92,334.42L456.56,334.55L457.34,336.43L456.04,337.43L456.01,340.31L455.55,340.84L455.44,342.56L454.23,342.86L455.35,345.03L454.58,347.38L455.54,348.44L455.16,349.4L454.12,350.72L454.35,351.88L453.23,352.79L451.75,352.3L450.3,352.68L450.73,349.94L450.47,347.76L449.21,347.43L448.54,346.08L448.77,343.72L449.88,342.41L450.08,340.94L450.67,338.73L450.6,337.16L450.04,335.82z",
+          },
+        }),
+        _vm._v(" "),
+        _c("path", {
+          staticClass: "land",
+          attrs: {
+            id: "PY",
+            title: "Paraguay",
+            d: "M299.49,526.99L300.6,523.4L300.67,521.8L302.01,519.18L306.9,518.32L309.5,518.37L312.12,519.88L312.16,520.79L312.99,522.45L312.81,526.51L315.77,527.09L316.91,526.5L318.8,527.32L319.33,528.22L319.59,530.99L319.92,532.17L320.96,532.3L322.01,531.81L323.02,532.36L323.02,534.04L322.64,535.86L322.09,537.64L321.63,540.39L319.09,542.79L316.87,543.29L313.72,542.81L310.9,541.96L313.66,537.23L313.25,535.86L310.37,534.66L306.94,532.4L304.65,531.94z",
+          },
+        }),
+        _vm._v(" "),
+        _c("path", {
+          staticClass: "land",
+          attrs: {
+            id: "QA",
+            title: "Qatar",
+            d: "M617.72,392.16L617.53,389.92L618.29,388.3L619.05,387.96L619.9,388.93L619.95,390.74L619.34,392.55L618.56,392.77z",
+          },
+        }),
+        _vm._v(" "),
+        _c("path", {
+          staticClass: "land",
+          attrs: {
+            id: "RO",
+            title: "Romania",
+            d: "M538.93,310.86L540.14,309.97L541.88,310.43L543.67,310.45L544.97,311.46L545.93,310.82L548,310.42L548.71,309.44L549.89,309.45L550.74,309.85L551.61,311.09L552.5,312.84L554.12,315.28L554.21,317.07L553.91,318.79L554.42,320.62L555.67,321.35L556.98,320.71L558.26,321.39L558.32,322.42L556.96,323.26L556.11,322.9L555.33,327.61L553.68,327.2L551.64,325.79L548.34,326.69L546.95,327.68L542.83,327.48L540.67,326.87L539.59,327.16L538.78,325.56L538.27,324.88L538.92,324.22L538.22,323.73L537.34,324.61L535.71,323.47L535.49,321.84L533.78,320.9L533.47,319.63L531.95,318.05L534.2,317.29L535.89,314.53L537.22,311.73z",
+          },
+        }),
+        _vm._v(" "),
+        _c("path", {
+          staticClass: "land",
+          attrs: {
+            id: "RS",
+            title: "Serbia",
+            d: "M533.78,320.9L535.49,321.84L535.71,323.47L537.34,324.61L538.22,323.73L538.92,324.22L538.27,324.88L538.78,325.56L538.09,326.44L538.34,327.86L539.7,329.52L538.63,330.71L538.16,331.92L538.47,332.37L538,332.91L536.71,332.97L535.75,333.19L535.66,332.91L535.99,332.46L536.31,331.53L535.91,331.55L535.36,330.85L534.9,330.67L534.54,330.06L534.01,329.82L533.61,329.28L533.11,329.5L532.72,330.76L532.05,331.04L532.28,330.71L531.21,329.92L530.29,329.51L529.88,328.97L529.14,328.31L529.8,328.14L530.21,326.32L528.86,324.82L529.56,323.1L528.54,323.11L529.62,321.62L528.73,320.48L528.05,318.93L530.2,317.88L531.95,318.05L533.47,319.63z",
+          },
+        }),
+        _vm._v(" "),
+        _c("path", {
+          staticClass: "land",
+          attrs: {
+            id: "RU",
+            title: "Russia",
+            d: "M1008.27,215.75l-2.78,2.97l-4.6,0.7l-0.07,6.46l-1.12,1.35l-2.63,-0.19l-2.14,-2.26l-3.73,-1.92l-0.63,-2.89l-2.85,-1.1l-3.19,0.87l-1.52,-2.37l0.61,-2.55l-3.36,1.64l1.26,3.19l-1.59,2.83l-0.02,0.04l-3.6,2.89l-3.63,-0.48l2.53,3.44l1.67,5.2l1.29,1.67l0.33,2.53l-0.72,1.6l-5.23,-1.32l-7.84,4.51l-2.49,0.69l-4.29,4.1l-4.07,3.5l-1.03,2.55l-4.01,-3.9l-7.31,4.42l-1.28,-2.08l-2.7,2.39l-3.75,-0.76l-0.9,3.63l-3.36,5.22l0.1,2.14l3.19,1.17l-0.38,7.46l-2.6,0.19l-1.2,4.15l1.17,2.1l-4.9,2.47l-0.97,5.4l-4.18,1.14l-0.84,4.66l-4.04,4.18l-1.04,-3.08l-1.2,-6.69l-1.56,-10.65l1.35,-6.95l2.37,-3.07l0.15,-2.44l4.36,-1.18l5.01,-6.78l4.83,-5.73l5.04,-4.57l2.25,-8.37l-3.41,0.51l-1.68,4.92l-7.11,6.36l-2.3,-7.14l-7.24,2l-7.02,9.56l2.32,3.38l-6.26,1.42l-4.33,0.56l0.2,-3.95l-4.36,-0.84l-3.47,2.7l-8.57,-0.94l-9.22,1.62l-9.08,10.33l-10.75,11.78l4.42,0.61l1.38,3l2.72,1.05l1.79,-2.38l3.08,0.31l4.05,5.19l0.09,3.92l-2.19,4.51l-0.24,5.27l-1.26,6.85l-4.23,6.01l-0.94,2.82l-3.81,4.66l-3.78,4.53l-1.81,2.28l-3.74,2.25l-1.77,0.05l-1.76,-1.86l-3.76,2.79l-0.44,1.26l-0.39,-0.66l-0.02,-1.93l1.43,-0.1l0.4,-4.55l-0.74,-3.36l2.41,-1.4l3.4,0.7l1.89,-3.89l0.96,-4.46l1.09,-1.51l1.47,-3.76l-4.63,1.24l-2.43,1.65l-4.26,0l-1.13,-3.95l-3.32,-3.03l-4.88,-1.38l-1.04,-4.28l-0.98,-2.73l-1.05,-1.94l-1.73,-4.61l-2.46,-1.71l-4.2,-1.39l-3.72,0.13l-3.48,0.84l-2.32,2.31l1.54,1.1l0.04,2.52l-1.56,1.45l-2.53,4.72l0.03,1.93l-3.95,2.74l-3.37,-1.63l-3.35,0.36l-1.47,-1.46l-1.68,-0.47l-4.11,3.06l-3.69,0.71l-2.58,1.06l-3.53,-0.7l-2.6,0.04l-1.7,-2.2l-2.75,-2.09l-2.81,-0.58l-3.55,0.57l-2.65,0.81l-3.98,-1.84l-0.53,-3.32l-3.3,-1.15l-2.54,-0.53l-3.14,-1.87l-2.9,4.66l1.14,2.6l-2.73,3.03l-4.05,-1.09l-2.8,-0.16l-1.87,-2.04l-2.92,-0.06l-2.44,-1.35l-4.26,2.07l-5.35,3.74l-2.96,0.74l-1.1,0.35l-1.49,-2.63l-3.61,0.58l-1.19,-1.84l-1.96,-0.85l-1.35,-2.55l-1.55,-0.8l-4.03,1.14l-3.86,-2.57l-1.49,2.33l-6.27,-11.58l-3.58,-3.66l1.03,-1.5l-7.03,4.49l-2.69,0.27l0.23,-2.58l-3.6,-1.63l-2.93,1.17l-0.88,-5.01l-5.04,-1.06l-2.52,2.03l-7.02,1.79l-1.37,1.19l-10.49,1.66l-1.29,1.62l2.02,3.21l-2.69,1.2l0.53,1.25l-2.69,2.22l4.54,3.1l-0.7,2.11l-3.94,-0.19l-0.81,1.31l-3.59,-2.29l-4.45,0.09l-2.98,1.87l-3.32,-1.79l-6.18,-3.1l-4.38,0.12l-5.79,4.85l-0.35,3.19l-2.88,-2.53l-2.24,4.77l0.82,0.87l-1.62,3.21l2.38,2.84l2.08,-0.12l1.79,2.76l-0.28,2.1l1.42,0.66l-1.28,2.39l-2.72,0.66l-2.79,4.09l2.55,3.7l-0.28,2.59l3.06,4.46l-1.67,1.51l-0.48,0.95l-1.24,-0.25l-1.93,-2.27l-0.79,-0.13l-1.76,-0.87l-0.86,-1.55l-2.62,-0.79l-1.7,0.6l-0.49,-0.71l-3.82,-1.83l-4.13,-0.62l-2.37,-0.66l-0.34,0.45l-3.57,-3.27l-3.2,-1.48l-2.42,-2.32l2.04,-0.64l2.33,-3.35l-1.57,-1.6l4.13,-1.67l-0.07,-0.9l-2.52,0.66l0.09,-1.83l1.45,-1.16l2.71,-0.31l0.44,-1.4l-0.62,-2.33l1.14,-2.23l-0.03,-1.26l-4.13,-1.41l-1.64,0.05l-1.73,-2.04l-2.15,0.69l-3.56,-1.54l0.06,-0.87l-1,-1.93l-2.24,-0.22l-0.23,-1.39l0.7,-0.91l-1.79,-2.58l-2.91,0.44l-0.85,-0.23l-0.71,1.04l-1.05,-0.18l-0.69,-2.94l-0.66,-1.54l0.54,-0.44l2.26,0.16l1.09,-1.02l-0.81,-1.25l-1.89,-0.83l0.17,-0.86l-1.14,-0.87l-1.76,-3.15l0.6,-1.31l-0.27,-2.31l-2.74,-1.18l-1.47,0.59l-0.4,-1.24l-2.95,-1.26l-0.9,-2.99l-0.24,-2.49l-1.35,-1.19l1.2,-1.66l-0.83,-4.96l2,-3.13l-0.42,-0.96l3.19,-3.07l-2.94,-2.68l6,-7.41l2.6,-3.45l1.05,-3.1l-4.15,-4.26l1.15,-4.15l-2.52,-4.85l1.89,-5.76l-3.26,-7.96l2.59,-5.48l-4.29,-4.99l0.41,-5.4l2.26,-0.72l4.77,-3.19l2.89,-2.81l4.61,4.86l7.68,1.88l10.59,8.65l2.15,3.51l0.19,4.8l-3.11,3.69l-4.58,1.85l-12.52,-5.31l-2.06,0.9l4.57,5.1l0.18,3.15l0.18,6.75l3.61,1.97l2.19,1.66l0.36,-3.11l-1.69,-2.8l1.78,-2.51l6.78,4.1l2.36,-1.59l-1.89,-4.88l6.53,-6.74l2.59,0.4l2.62,2.43l1.63,-4.81l-2.34,-4.28l1.37,-4.41l-2.06,-4.69l7.84,2.44l1.6,4.18l-3.55,0.91l0.02,4.04l2.21,2.44l4.33,-1.54l0.69,-4.61l5.86,-3.52l9.79,-6.54l2.11,0.38l-2.76,4.64l3.48,0.78l2.01,-2.58l5.25,-0.21l4.16,-3.19l3.2,4.62l3.19,-5.09l-2.94,-4.58l1.46,-2.66l8.28,2.44l3.88,2.49l10.16,8.8l1.88,-3.97l-2.85,-4.11l-0.08,-1.68l-3.38,-0.78l0.92,-3.83l-1.5,-6.49l-0.08,-2.74l5.17,-7.99l1.84,-8.42l2.08,-1.88l7.42,2.51l0.58,5.18l-2.66,7.28l1.74,2.78l0.9,5.94l-0.64,11.07l3.09,4.73l-1.2,5.01l-5.49,10.2l3.21,1.02l1.12,-2.51l3.08,-1.82l0.74,-3.55l2.43,-3.49l-1.63,-4.26l1.31,-5.08l-3.07,-0.64l-0.67,-4.42l2.24,-8.28l-3.64,-7.03l5.02,-6.04l-0.65,-6.62l1.4,-0.22l1.47,5.19l-1.11,8.67l3,1.59l-1.28,-6.37l4.69,-3.58l5.82,-0.49l5.18,5.18l-2.49,-7.62l-0.28,-10.28l4.88,-2.02l6.74,0.44l6.08,-1.32l-2.28,-5.38l3.25,-7.02l3.22,-0.3l5.45,-5.51l7.4,-1.51l0.94,-3.15l7.36,-1.08l2.29,2.61l6.29,-6.24l5.15,0.2l0.77,-5.24l2.68,-5.33l6.62,-5.31l4.81,4.21l-3.82,3.13l6.35,1.92l0.76,6.03l2.56,-2.94l8.2,0.16l6.32,5.84l2.25,4.35l-0.7,5.85l-3.1,3.24l-7.37,5.92l-2.11,3.08l3.48,1.43l4.15,2.55l2.52,-1.91l1.43,6.39l1.23,-2.56l4.48,-1.57l9,1.65l0.68,4.58l11.72,1.43l0.16,-7.47l5.95,1.74l4.48,-0.05l4.53,5.14l1.29,6.04l-1.66,3.84l3.52,6.98l4.41,3.49l2.71,-9.18l4.5,4l4.78,-2.38l5.43,2.72l2.07,-2.47l4.59,1.24l-2.02,-8.4l3.7,-4.07l25.32,6.06l2.39,5.35l7.34,6.65l11.32,-1.62l5.58,1.41l2.33,3.5l-0.34,6.02l3.45,2.29l3.75,-1.64l4.97,-0.21l5.29,1.57l5.31,-0.89l4.88,6.99l3.47,-2.48l-2.27,-5.07l1.25,-3.62l8.95,2.29l5.83,-0.49l8.06,3.84l3.92,3.44l6.87,5.86l7.35,7.34l-0.24,4.44l1.89,1.74l-0.65,-5.15l7.61,1.07L1008.27,215.75zM880.84,306.25l-2.82,-7.68l-1.16,-4.51l0.07,-4.5l-0.97,-4.5l-0.73,-3.15l-1.25,0.67l1.11,2.21l-2.59,2.17l-0.25,6.3l1.64,4.41l-0.12,5.85l-0.65,3.24l0.32,4.54l-0.31,4.01l0.52,3.4l1.84,-3.13l2.13,2.44l0.08,-2.84l-2.73,-4.23l1.72,-6.11L880.84,306.25zM537.82,278.77l-2.94,-0.86l-3.87,1.58l-0.64,2.13l3.45,0.55l5.16,-0.07l-0.22,-1.23l0.3,-1.33L537.82,278.77zM979.95,178.65l3.66,-0.52l2.89,-2.06l0.24,-1.19l-4.06,-2.51l-2.38,-0.02l-0.36,0.37l-3.57,3.64l0.5,2.73L979.95,178.65zM870.07,151.56l-2.66,3.92l0.49,0.52l5.75,1.08l4.25,-0.07l-0.34,-2.57l-3.98,-3.81L870.07,151.56zM894.64,142.03l3.24,-4.25l-7.04,-2.88l-5.23,-1.68l-0.67,3.59l5.21,4.27L894.64,142.03zM869.51,140.34l10.33,0.3l2.21,-8.14l-10.13,-6.07l-7.4,-0.51l-3.7,2.18l-1.51,7.75l5.55,7.01L869.51,140.34zM622.39,166.28l-2.87,1.96l0.41,4.83l5.08,2.35l0.74,3.82l9.16,1.1l1.66,-0.74l-5.36,-7.11l-0.57,-7.52l4.39,-9.14l4.18,-9.82l8.71,-10.17l8.56,-5.34l9.93,-5.74l1.88,-3.71l-1.95,-4.83l-5.46,1.6l-4.8,4.49l-9.33,2.22l-9.26,7.41l-6.27,5.85l0.76,4.87l-6.71,9.03l2.58,1.22l-5.56,8.27L622.39,166.28zM769.87,98.34l0.83,-5.72l-7.11,-8.34l-2.11,-0.98l-2.3,1.7l-5.12,18.6L769.87,98.34zM605.64,69.03l3.04,3.88l3.28,-2.69l0.39,-2.72l2.52,-1.27l3.76,-2.23l1.08,-2.62l-4.16,-3.85l-2.64,2.9l-1.61,4.12l-0.57,-4.65l-4.26,0.21L601,63.25l6.24,0.52L605.64,69.03zM736.89,82.07l4.65,5.73l7.81,4.2l6.12,-1.8l0.69,-13.62l-6.46,-16.04l-5.45,-9.02l-6.07,4.11l-7.28,11.83l3.83,3.27L736.89,82.07z",
+          },
+        }),
+        _vm._v(" "),
+        _c("path", {
+          staticClass: "land",
+          attrs: {
+            id: "RW",
+            title: "Rwanda",
+            d: "M560.54,466.55L561.66,468.12L561.49,469.76L560.69,470.11L559.2,469.93L558.34,471.52L556.63,471.3L556.89,469.77L557.28,469.56L557.38,467.9L558.19,467.12L558.87,467.41z",
+          },
+        }),
+        _vm._v(" "),
+        _c("path", {
+          staticClass: "land",
+          attrs: {
+            id: "SA",
+            title: "Saudi Arabia",
+            d: "M595.2,417.22L594.84,415.98L593.99,415.1L593.77,413.93L592.33,412.89L590.83,410.43L590.04,408.02L588.1,405.98L586.85,405.5L584.99,402.65L584.67,400.57L584.79,398.78L583.18,395.42L581.87,394.23L580.35,393.6L579.43,391.84L579.58,391.15L578.8,389.55L577.98,388.86L576.89,386.54L575.18,384.02L573.75,381.86L572.36,381.87L572.79,380.13L572.92,379.02L573.26,377.74L576.38,378.25L577.6,377.27L578.27,376.11L580.41,375.67L580.87,374.58L581.8,374.04L579,370.78L584.62,369.13L585.15,368.64L588.53,369.53L592.71,371.82L600.61,378.31L605.82,378.57L608.32,378.88L609.02,380.39L611,380.31L612.1,383.04L613.48,383.75L613.96,384.86L615.87,386.17L616.04,387.46L615.76,388.49L616.12,389.53L616.92,390.4L617.3,391.41L617.72,392.16L618.56,392.77L619.34,392.55L619.87,393.72L619.98,394.43L621.06,397.51L629.48,399.03L630.05,398.39L631.33,400.53L629.46,406.5L621.05,409.46L612.97,410.59L610.35,411.91L608.34,414.98L607.03,415.46L606.33,414.49L605.26,414.64L602.55,414.35L602.03,414.05L598.8,414.12L598.04,414.39L596.89,413.63L596.14,415.06L596.43,416.29z",
+          },
+        }),
+        _vm._v(" "),
+        _c("path", {
+          staticClass: "land",
+          attrs: {
+            id: "SB",
+            title: "Solomon Islands",
+            d: "M929.81,492.75l0.78,0.97l-1.96,-0.02l-1.07,-1.74l1.67,0.69L929.81,492.75zM926.26,491.02l-1.09,0.06l-1.72,-0.29l-0.59,-0.44l0.18,-1.12l1.85,0.44l0.91,0.59L926.26,491.02zM928.58,490.25l-0.42,0.52l-2.08,-2.45l-0.58,-1.68h0.95l1.01,2.25L928.58,490.25zM923.52,486.69l0.12,0.57l-2.2,-1.19l-1.54,-1.01l-1.05,-0.94l0.42,-0.29l1.29,0.67l2.3,1.29L923.52,486.69zM916.97,483.91l-0.56,0.16l-1.23,-0.64l-1.15,-1.15l0.14,-0.47l1.67,1.18L916.97,483.91z",
+          },
+        }),
+        _vm._v(" "),
+        _c("path", {
+          staticClass: "land",
+          attrs: {
+            id: "SD",
+            title: "Sudan",
+            d: "M570.48,436.9L570.09,436.85L570.14,435.44L569.8,434.47L568.36,433.35L568.02,431.3L568.36,429.2L567.06,429.01L566.87,429.64L565.18,429.79L565.86,430.62L566.1,432.33L564.56,433.89L563.16,435.93L561.72,436.22L559.36,434.57L558.3,435.15L558.01,435.98L556.57,436.51L556.47,437.09L553.68,437.09L553.29,436.51L551.27,436.41L550.26,436.9L549.49,436.65L548.05,435L547.57,434.23L545.54,434.62L544.77,435.93L544.05,438.45L543.09,438.98L542.23,439.29L542,439.15L541.03,438.34L540.85,437.47L541.3,436.29L541.3,435.14L539.68,433.37L539.36,432.15L539.39,431.46L538.36,430.63L538.33,428.97L537.75,427.87L536.76,428.04L537.04,426.99L537.77,425.79L537.45,424.61L538.37,423.73L537.79,423.06L538.53,421.28L539.81,419.15L542.23,419.35L542.09,407.74L542.13,406.5L545.35,406.49L545.35,400.53L556.62,400.53L567.5,400.53L578.62,400.53L579.52,403.47L578.91,404.01L579.32,407.07L580.35,410.59L581.41,411.32L582.95,412.4L581.53,414.07L579.46,414.55L578.58,415.45L578.31,417.38L577.1,421.63L577.4,422.78L576.95,425.25L575.81,428.06L574.12,429.48L572.92,431.65L572.63,432.81L571.31,433.61L570.48,436.57z",
+          },
+        }),
+        _vm._v(" "),
+        _c("path", {
+          staticClass: "land",
+          attrs: {
+            id: "SE",
+            title: "Sweden",
+            d: "M537.45,217.49L534.73,222.18L535.17,226.2L530.71,231.33L525.3,236.67L523.25,245.08L525.25,249.15L527.93,252.29L525.36,258.52L522.44,259.78L521.37,268.62L519.78,273.38L516.38,272.89L514.79,276.84L511.54,277.07L510.65,272.36L508.3,266.55L506.17,259.05L507.41,255.9L509.74,252.09L510.67,245.36L508.88,242.38L508.7,234.34L510.53,228.43L513.31,228.54L514.28,225.99L513.26,223.76L517.61,214.26L520.42,206.39L522.27,201.15L524.96,201.17L525.71,196.96L530.99,198.18L531.4,193.1L533.14,192.77L536.88,196.58L541.25,201.73L541.33,212.85L542.27,215.55z",
+          },
+        }),
+        _vm._v(" "),
+        _c("path", {
+          staticClass: "land",
+          attrs: {
+            id: "SI",
+            title: "Slovenia",
+            d: "M513.96,316.51L516.28,316.82L517.7,315.9L520.15,315.8L520.68,315.11L521.15,315.16L521.7,316.53L519.47,317.61L519.19,319.23L518.22,319.64L518.23,320.76L517.13,320.68L516.18,320.03L515.66,320.71L513.71,320.57L514.33,320.21L513.66,318.5z",
+          },
+        }),
+        _vm._v(" "),
+        _c("path", {
+          staticClass: "land",
+          attrs: {
+            id: "SJ",
+            title: "Svalbard and Jan Mayen",
+            d: "M544.58,104.49l-6.26,5.36l-4.95,-3.02l1.94,-3.42l-1.69,-4.34l5.81,-2.78l1.11,5.18L544.58,104.49zM526.43,77.81l9.23,11.29l-7.06,5.66l-1.56,10.09l-2.46,2.49l-1.33,10.51l-3.38,0.48l-6.03,-7.64l2.54,-4.62l-4.2,-3.86l-5.46,-11.82l-2.18,-11.79l7.64,-5.69l1.54,5.56l3.99,-0.22l1.06,-5.43l4.12,-0.56L526.43,77.81zM546.6,66.35l5.5,5.8l-4.16,8.52l-8.13,1.81l-8.27,-2.56l-0.5,-4.32l-4.02,-0.28l-3.07,-7.48l8.66,-4.72l4.07,4.08l2.84,-5.09L546.6,66.35z",
+          },
+        }),
+        _vm._v(" "),
+        _c("path", {
+          staticClass: "land",
+          attrs: {
+            id: "SK",
+            title: "Slovakia",
+            d: "M528.11,304.02L528.27,304.28L529.43,303.7L530.84,305.22L532.5,304.3L533.82,304.74L535.84,304.14L538.5,305.78L537.73,306.89L537.18,308.6L536.58,309.03L533.58,307.75L532.66,308L532,309L530.68,309.52L530.38,309.25L529.02,309.9L527.9,310.03L527.68,310.87L525.32,311.38L524.29,310.92L522.86,309.85L522.58,308.4L522.81,307.86L523.2,306.93L524.45,307L525.4,306.56L525.48,306.17L526.02,305.96L526.2,304.99L526.84,304.8L527.28,304.03z",
+          },
+        }),
+        _vm._v(" "),
+        _c("path", {
+          staticClass: "land",
+          attrs: {
+            id: "SL",
+            title: "Sierra Leone",
+            d: "M443.18,444.44L442.42,444.23L440.41,443.1L438.95,441.6L438.46,440.57L438.11,438.49L439.61,437.25L439.93,436.46L440.41,435.85L441.19,435.79L441.84,435.26L444.08,435.26L444.86,436.27L445.47,437.46L445.38,438.28L445.83,439.02L445.8,440.05L446.57,439.89L445.26,441.2L444,442.73L443.85,443.54z",
+          },
+        }),
+        _vm._v(" "),
+        _c("path", {
+          staticClass: "land",
+          attrs: {
+            id: "SN",
+            title: "Senegal",
+            d: "M428.39,425.16L427.23,422.92L425.83,421.9L427.07,421.35L428.43,419.32L429.09,417.83L430.05,416.9L431.45,417.15L432.81,416.52L434.38,416.49L435.72,417.34L437.58,418.11L439.28,420.24L441.13,422.22L441.26,424.01L441.81,425.65L442.86,426.46L443.1,427.56L442.97,428.45L442.56,428.61L441.04,428.39L440.83,428.7L440.21,428.77L438.19,428.07L436.84,428.04L431.66,427.92L430.91,428.24L429.98,428.15L428.49,428.62L428.03,426.43L430.58,426.49L431.26,426.09L431.76,426.06L432.8,425.4L434,426.01L435.22,426.06L436.43,425.41L435.87,424.59L434.94,425.07L434.07,425.06L432.97,424.35L432.08,424.4L431.44,425.07z",
+          },
+        }),
+        _vm._v(" "),
+        _c("path", {
+          staticClass: "land",
+          attrs: {
+            id: "SO",
+            title: "Somalia",
+            d: "M618.63,430.43L618.56,429.64L617.5,429.65L616.17,430.63L614.68,430.91L613.39,431.33L612.5,431.39L610.9,431.49L609.9,432.01L608.51,432.2L606.04,433.08L602.99,433.41L600.34,434.14L598.95,434.13L597.69,432.94L597.14,431.77L596.23,431.24L595.19,432.76L594.58,433.77L595.62,435.33L596.65,436.69L597.72,437.7L606.89,441.04L609.25,441.02L601.32,449.44L597.67,449.56L595.17,451.53L593.38,451.58L592.61,452.46L590.16,455.63L590.19,465.78L591.85,468.07L592.48,467.41L593.13,465.95L596.2,462.57L598.81,460.45L603.01,457.69L605.81,455.43L609.11,451.62L611.5,448.49L613.91,444.39L615.64,440.8L616.99,437.65L617.78,434.6L618.38,433.58L618.37,432.08z",
+          },
+        }),
+        _vm._v(" "),
+        _c("path", {
+          staticClass: "land",
+          attrs: {
+            id: "SR",
+            title: "Suriname",
+            d: "M315.02,446.72L318.38,447.28L318.68,446.77L320.95,446.57L323.96,447.33L322.5,449.73L322.72,451.64L323.83,453.3L323.34,454.5L323.09,455.77L322.37,456.94L320.77,456.35L319.44,456.64L318.31,456.39L318.03,457.2L318.5,457.75L318.25,458.32L316.72,458.09L315.01,455.67L314.64,454.1L313.75,454.09L312.5,452.07L313.02,450.62L312.87,449.97L314.57,449.24z",
+          },
+        }),
+        _vm._v(" "),
+        _c("path", {
+          staticClass: "land",
+          attrs: {
+            id: "SS",
+            title: "South Sudan",
+            d: "M570.48,436.9L570.51,439.1L570.09,439.96L568.61,440.03L567.65,441.64L569.37,441.84L570.79,443.21L571.29,444.33L572.57,444.98L574.22,448.03L572.32,449.87L570.6,451.54L568.87,452.82L566.9,452.82L564.64,453.47L562.86,452.84L561.71,453.61L559.24,451.75L558.57,450.56L557.01,451.15L555.71,450.96L554.96,451.43L553.7,451.1L552.01,448.79L551.56,447.9L549.46,446.79L548.75,445.11L547.58,443.9L545.7,442.44L545.67,441.52L544.14,440.39L542.23,439.29L543.09,438.98L544.05,438.45L544.77,435.93L545.54,434.62L547.57,434.23L548.05,435L549.49,436.65L550.26,436.9L551.27,436.41L553.29,436.51L553.68,437.09L556.47,437.09L556.57,436.51L558.01,435.98L558.3,435.15L559.36,434.57L561.72,436.22L563.16,435.93L564.56,433.89L566.1,432.33L565.86,430.62L565.18,429.79L566.87,429.64L567.06,429.01L568.36,429.2L568.02,431.3L568.36,433.35L569.8,434.47L570.14,435.44L570.09,436.85z",
+          },
+        }),
+        _vm._v(" "),
+        _c("path", {
+          staticClass: "land",
+          attrs: {
+            id: "SV",
+            title: "El Salvador",
+            d: "M229.09,425.76L228.78,426.43L227.16,426.39L226.15,426.12L224.99,425.55L223.43,425.37L222.64,424.75L222.73,424.33L223.69,423.61L224.21,423.29L224.06,422.95L224.72,422.78L225.55,423.02L226.15,423.59L227,424.05L227.1,424.44L228.33,424.1L228.91,424.3L229.29,424.61z",
+          },
+        }),
+        _vm._v(" "),
+        _c("path", {
+          staticClass: "land",
+          attrs: {
+            id: "SY",
+            title: "Syria",
+            d: "M584.02,364.6L578.53,368.14L575.41,366.82L575.35,366.8L575.73,366.3L575.69,364.93L576.38,363.1L577.91,361.83L577.45,360.51L576.19,360.33L575.93,357.72L576.61,356.31L577.36,355.56L578.11,354.8L578.27,352.86L579.18,353.54L582.27,352.57L583.76,353.22L586.07,353.21L589.29,351.9L590.81,351.96L594,351.42L592.56,353.6L591.02,354.46L591.29,356.98L590.23,361.1z",
+          },
+        }),
+        _vm._v(" "),
+        _c("path", {
+          staticClass: "land",
+          attrs: {
+            id: "SZ",
+            title: "Swaziland",
+            d: "M565.18,540.74L564.61,542.13L562.97,542.46L561.29,540.77L561.27,539.69L562.03,538.52L562.3,537.62L563.11,537.4L564.52,537.97L564.94,539.36z",
+          },
+        }),
+        _vm._v(" "),
+        _c("path", {
+          staticClass: "land",
+          attrs: {
+            id: "TD",
+            title: "Chad",
+            d: "M515.9,427.26L516.18,425.92L514.38,425.85L514.39,424L513.22,422.94L514.43,419.14L518.01,416.4L518.15,412.61L519.23,406.63L519.84,405.35L518.68,404.33L518.63,403.38L517.58,402.6L516.89,397.93L519.72,396.27L530.91,402.04L542.09,407.74L542.23,419.35L539.81,419.15L538.53,421.28L537.79,423.06L538.37,423.73L537.45,424.61L537.77,425.79L537.04,426.99L536.76,428.04L537.75,427.87L538.33,428.97L538.36,430.63L539.39,431.46L539.36,432.15L537.59,432.64L536.16,433.78L534.14,436.87L531.5,438.18L528.79,438L528,438.26L528.28,439.25L526.81,440.24L525.62,441.34L522.09,442.41L521.39,441.78L520.93,441.72L520.41,442.44L518.09,442.66L518.53,441.89L517.65,439.96L517.25,438.79L516.03,438.31L514.38,436.66L514.99,435.33L516.27,435.61L517.06,435.41L518.62,435.44L517.1,432.87L517.2,430.98L517.01,429.09z",
+          },
+        }),
+        _vm._v(" "),
+        _c("path", {
+          staticClass: "land",
+          attrs: {
+            id: "TF",
+            title: "French Southern and Antarctic Lands",
+            d: "M668.54,619.03L670.34,620.36L672.99,620.9L673.09,621.71L672.31,623.67L668,623.95L667.93,621.66L668.35,619.9z",
+          },
+        }),
+        _vm._v(" "),
+        _c("path", {
+          staticClass: "land",
+          attrs: {
+            id: "TG",
+            title: "Togo",
+            d: "M480.48,446.25L478.23,446.84L477.6,445.86L476.85,444.08L476.63,442.68L477.25,440.15L476.55,439.12L476.28,436.9L476.28,434.85L475.11,433.39L475.32,432.5L477.78,432.56L477.42,434.06L478.27,434.89L479.25,435.88L479.35,437.27L479.92,437.85L479.79,444.31z",
+          },
+        }),
+        _vm._v(" "),
+        _c("path", {
+          staticClass: "land",
+          attrs: {
+            id: "TH",
+            title: "Thailand",
+            d: "M762.89,429.18L760.37,427.87L757.97,427.93L758.38,425.68L755.91,425.7L755.69,428.84L754.18,432.99L753.27,435.49L753.46,437.54L755.28,437.63L756.42,440.2L756.93,442.63L758.49,444.24L760.19,444.57L761.64,446.02L760.73,447.17L758.87,447.51L758.65,446.07L756.37,444.84L755.88,445.34L754.77,444.27L754.29,442.88L752.8,441.29L751.44,439.96L750.98,441.61L750.45,440.05L750.76,438.29L751.58,435.58L752.94,432.67L754.48,430.02L753.38,427.42L753.43,426.09L753.11,424.49L751.24,422.21L750.57,420.76L751.54,420.23L752.56,417.71L751.42,415.79L749.64,413.66L748.28,411.09L749.46,410.56L750.74,407.37L752.72,407.23L754.36,405.95L755.96,405.26L757.18,406.18L757.34,407.96L759.23,408.09L758.54,411.2L758.61,413.82L761.56,412.08L762.4,412.59L764.05,412.51L764.61,411.49L766.73,411.69L768.86,414.07L769.04,416.94L771.31,419.47L771.18,421.91L770.27,423.21L767.64,422.8L764.02,423.35L762.22,425.73z",
+          },
+        }),
+        _vm._v(" "),
+        _c("path", {
+          staticClass: "land",
+          attrs: {
+            id: "TJ",
+            title: "Tajikistan",
+            d: "M674.37,340.62L673.34,341.75L670.29,341.14L670.02,343.24L673.06,342.96L676.53,344.13L681.83,343.58L682.54,346.91L683.46,346.55L685.16,347.36L685.07,348.74L685.49,350.75L682.59,350.75L680.66,350.49L678.92,352.06L677.67,352.4L676.69,353.14L675.58,351.99L675.85,349.04L675,348.87L675.3,347.78L673.79,346.98L672.58,348.21L672.28,349.64L671.85,350.16L670.17,350.09L669.27,351.69L668.32,351.02L666.29,352.14L665.44,351.72L667.01,348.15L666.41,345.49L664.35,344.63L665.08,343.04L667.42,343.21L668.75,341.2L669.64,338.85L673.39,337.99L672.81,339.7L673.21,340.72z",
+          },
+        }),
+        _vm._v(" "),
+        _c("path", {
+          staticClass: "land",
+          attrs: {
+            id: "TL",
+            title: "Timor-Leste",
+            d: "M825.65,488.25L825.98,487.59L828.39,486.96L830.35,486.86L831.22,486.51L832.28,486.86L831.25,487.62L828.33,488.85L825.98,489.67L825.93,488.81z",
+          },
+        }),
+        _vm._v(" "),
+        _c("path", {
+          staticClass: "land",
+          attrs: {
+            id: "TM",
+            title: "Turkmenistan",
+            d: "M646.88,356.9L646.63,353.99L644.54,353.87L641.34,350.78L639.1,350.39L636,348.6L634,348.27L632.77,348.93L630.9,348.83L628.91,350.85L626.44,351.53L625.92,349.04L626.33,345.31L624.14,344.09L624.86,341.61L623,341.39L623.62,338.3L626.26,339.21L628.73,338.02L626.68,335.79L625.88,333.65L623.62,334.61L623.34,337.34L622.46,334.93L623.7,333.68L626.88,332.89L628.78,333.95L630.74,336.88L632.18,336.7L635.34,336.65L634.88,334.77L637.28,333.47L639.64,331.27L643.42,333.27L643.72,336.26L644.79,337.03L647.82,336.86L648.76,337.53L650.14,341.32L653.35,343.83L655.18,345.52L658.11,347.27L661.84,348.79L661.76,350.95L660.92,350.84L659.59,349.9L659.15,351.15L656.79,351.83L656.23,354.62L654.65,355.67L652.44,356.19L651.85,357.74L649.74,358.2z",
+          },
+        }),
+        _vm._v(" "),
+        _c("path", {
+          staticClass: "land",
+          attrs: {
+            id: "TN",
+            title: "Tunisia",
+            d: "M501.84,374.69L500.64,368.83L498.92,367.5L498.89,366.69L496.6,364.71L496.35,362.18L498.08,360.3L498.74,357.48L498.29,354.2L498.86,352.41L501.92,351L503.88,351.42L503.8,353.19L506.18,351.9L506.38,352.57L504.97,354.28L504.96,355.88L505.93,356.73L505.56,359.69L503.71,361.4L504.24,363.23L505.69,363.29L506.4,364.88L507.47,365.4L507.31,367.95L505.94,368.9L505.08,369.95L503.15,371.21L503.45,372.56L503.21,373.94z",
+          },
+        }),
+        _vm._v(" "),
+        _c("path", {
+          staticClass: "land",
+          attrs: {
+            id: "TR",
+            title: "Turkey",
+            d: "M578.75,336.6l4.02,1.43l3.27,-0.57l2.41,0.33l3.31,-1.94l2.99,-0.18l2.7,1.83l0.48,1.3l-0.27,1.79l2.08,0.91l1.1,1.06l-1.92,1.03l0.88,4.11l-0.55,1.1l1.53,2.82l-1.34,0.59l-0.98,-0.89l-3.26,-0.45l-1.2,0.55l-3.19,0.54l-1.51,-0.06l-3.23,1.31l-2.31,0.01l-1.49,-0.66l-3.09,0.97l-0.92,-0.68l-0.15,1.94l-0.75,0.76l-0.75,0.76l-1.03,-1.57l1.06,-1.3l-1.71,0.3l-2.35,-0.8l-1.93,2l-4.26,0.39l-2.27,-1.86l-3.02,-0.12l-0.65,1.44l-1.94,0.41l-2.71,-1.85l-3.06,0.06l-1.66,-3.48l-2.05,-1.96l1.36,-2.78l-1.78,-1.72l3.11,-3.48l4.32,-0.15l1.18,-2.81l5.34,0.49l3.37,-2.42l3.27,-1.06l4.64,-0.08L578.75,336.6zM551.5,338.99l-2.34,1.98l-0.88,-1.71l0.04,-0.76l0.67,-0.41l0.87,-2.33l-1.37,-0.99l2.86,-1.18l2.41,0.5l0.33,1.44l2.45,1.2l-0.51,0.91l-3.33,0.2L551.5,338.99z",
+          },
+        }),
+        _vm._v(" "),
+        _c("path", {
+          staticClass: "land",
+          attrs: {
+            id: "TT",
+            title: "Trinidad and Tobago",
+            d: "M302.31,433.24L303.92,432.87L304.51,432.97L304.4,435.08L302.06,435.39L301.55,435.14L302.37,434.36z",
+          },
+        }),
+        _vm._v(" "),
+        _c("path", {
+          staticClass: "land",
+          attrs: {
+            id: "TW",
+            title: "Taiwan",
+            d: "M816.7,393.27L815.01,398.14L813.81,400.62L812.33,398.07L812.01,395.82L813.66,392.82L815.91,390.5L817.19,391.41z",
+          },
+        }),
+        _vm._v(" "),
+        _c("path", {
+          staticClass: "land",
+          attrs: {
+            id: "TZ",
+            title: "Tanzania",
+            d: "M570.31,466.03L570.79,466.34L580.95,472.01L581.15,473.63L585.17,476.42L583.88,479.87L584.04,481.46L585.84,482.48L585.92,483.21L585.15,484.91L585.31,485.76L585.13,487.11L586.11,488.87L587.27,491.66L588.29,492.28L586.06,493.92L583,495.02L581.32,494.98L580.32,495.83L578.37,495.9L577.63,496.26L574.26,495.46L572.15,495.69L571.37,491.83L570.42,490.51L569.85,489.73L567.11,489.21L565.51,488.36L563.73,487.89L562.61,487.41L561.44,486.7L559.93,483.15L558.3,481.58L557.74,479.96L558.02,478.5L557.52,475.93L558.68,475.8L559.69,474.79L560.79,473.33L561.48,472.75L561.45,471.84L560.85,471.21L560.69,470.11L561.49,469.76L561.66,468.12L560.54,466.55L561.53,466.21L564.6,466.25z",
+          },
+        }),
+        _vm._v(" "),
+        _c("path", {
+          staticClass: "land",
+          attrs: {
+            id: "UA",
+            title: "Ukraine",
+            d: "M564.38,292.49L565.42,292.68L566.13,291.64L566.98,291.87L569.89,291.43L571.68,294L570.98,294.92L571.21,296.31L573.45,296.52L574.45,298.45L574.39,299.32L577.95,300.86L580.1,300.17L581.83,302.21L583.47,302.17L587.6,303.57L587.63,304.84L586.5,307.07L587.11,309.4L586.67,310.79L583.96,311.1L582.52,312.26L582.43,314.09L580.19,314.42L578.32,315.74L575.7,315.95L573.28,317.47L571.96,318.5L573.45,319.97L574.82,320.93L577.68,320.69L577.13,322.11L574.06,322.79L570.25,325.06L568.7,324.27L569.31,322.42L566.25,321.26L566.75,320.49L569.91,318.86L569.51,318.05L569.06,318.46L568.62,318.24L564.26,317.22L564.07,315.71L561.47,316.21L560.43,318.44L558.26,321.39L556.98,320.71L555.67,321.35L554.42,320.62L555.12,320.18L555.61,318.81L556.38,317.52L556.18,316.8L556.77,316.48L557.04,317.04L558.7,317.15L559.44,316.86L558.92,316.44L559.11,315.84L558.13,314.8L557.73,313.08L556.71,312.41L556.91,311L555.64,309.88L554.49,309.72L552.42,308.41L550.56,308.83L549.89,309.45L548.71,309.44L548,310.42L545.93,310.82L544.98,311.46L543.67,310.45L541.88,310.43L540.14,309.97L538.93,310.86L538.73,309.74L537.18,308.6L537.73,306.89L538.5,305.79L539.12,306.03L538.39,304.11L540.94,300.5L542.33,299.99L542.63,298.75L541.22,294.86L542.56,294.69L544.1,293.46L546.27,293.36L549.1,293.72L552.23,294.8L554.44,294.89L555.49,295.54L556.54,294.76L557.28,295.81L559.81,295.59L560.92,296.02L561.11,293.76L561.97,292.76z",
+          },
+        }),
+        _vm._v(" "),
+        _c("path", {
+          staticClass: "land",
+          attrs: {
+            id: "UG",
+            title: "Uganda",
+            d: "M564.6,466.25L561.53,466.21L560.54,466.55L558.87,467.41L558.19,467.12L558.21,465.02L558.86,463.96L559.02,461.72L559.61,460.43L560.68,458.97L561.76,458.23L562.66,457.24L561.54,456.87L561.71,453.61L562.86,452.84L564.64,453.47L566.9,452.82L568.87,452.82L570.6,451.54L571.93,453.48L572.26,454.88L573.49,458.08L572.47,460.11L571.09,461.95L570.29,463.08L570.31,466.03z",
+          },
+        }),
+        _vm._v(" "),
+        _c("path", {
+          staticClass: "land",
+          attrs: {
+            id: "US",
+            title: "United States",
+            d: "M109.25,279.8L109.25,279.8l-1.54,-1.83l-2.47,-1.57l-0.79,-4.36l-3.61,-4.13l-1.51,-4.94l-2.69,-0.34l-4.46,-0.13l-3.29,-1.54l-5.8,-5.64l-2.68,-1.05l-4.9,-1.99l-3.88,0.48l-5.51,-2.59l-3.33,-2.43l-3.11,1.21l0.58,3.93l-1.55,0.36l-3.24,1.16l-2.47,1.86l-3.11,1.16l-0.4,-3.24l1.26,-5.53l2.98,-1.77l-0.77,-1.46l-3.57,3.22l-1.91,3.77l-4.04,3.95l2.05,2.65l-2.65,3.85l-3.01,2.21l-2.81,1.59l-0.69,2.29l-4.38,2.63l-0.89,2.36l-3.28,2.13l-1.92,-0.38l-2.62,1.38l-2.85,1.67l-2.33,1.63l-4.81,1.38l-0.44,-0.81l3.07,-2.27l2.74,-1.51l2.99,-2.71l3.48,-0.56l1.38,-2.06l3.89,-3.05l0.63,-1.03l2.07,-1.83l0.48,-4l1.43,-3.17l-3.23,1.64l-0.9,-0.93l-1.52,1.95l-1.83,-2.73l-0.76,1.94l-1.05,-2.7l-2.8,2.17l-1.72,0l-0.24,-3.23l0.51,-2.02l-1.81,-1.98l-3.65,1.07l-2.37,-2.63l-1.92,-1.36l-0.01,-3.25l-2.16,-2.48l1.08,-3.41l2.29,-3.37l1,-3.15l2.27,-0.45l1.92,0.99l2.26,-3.01l2.04,0.54l2.14,-1.96l-0.52,-2.92l-1.57,-1.16l2.08,-2.52l-1.72,0.07l-2.98,1.43l-0.85,1.43l-2.21,-1.43l-3.97,0.73l-4.11,-1.56l-1.18,-2.65l-3.55,-3.91l3.94,-2.87l6.25,-3.41h2.31l-0.38,3.48l5.92,-0.27l-2.28,-4.34l-3.45,-2.72l-1.99,-3.64l-2.69,-3.17l-3.85,-2.38l1.57,-4.03l4.97,-0.25l3.54,-3.58l0.67,-3.92l2.86,-3.91l2.73,-0.95l5.31,-3.76l2.58,0.57l4.31,-4.61l4.24,1.83l2.03,3.87l1.25,-1.65l4.74,0.51l-0.17,1.95l4.29,1.43l2.86,-0.84l5.91,2.64l5.39,0.78l2.16,1.07l3.73,-1.34l4.25,2.46l3.05,1.13l-0.02,27.65l-0.01,35.43l2.76,0.17l2.73,1.56l1.96,2.44l2.49,3.6l2.73,-3.05l2.81,-1.79l1.49,2.85l1.89,2.23l2.57,2.42l1.75,3.79l2.87,5.88l4.77,3.2l0.08,3.12L109.25,279.8zM285.18,314.23l-1.25,-1.19l-1.88,0.7l-0.93,-1.08l-2.14,3.1l-0.86,3.15l-1,1.82l-1.19,0.62l-0.9,0.2l-0.28,0.98l-5.17,0l-4.26,0.03l-1.27,0.73l-2.87,2.73l0.29,0.54l0.17,1.51l-2.1,1.27l-2.3,-0.32l-2.2,-0.14l-1.33,0.44l0.25,1.15l0,0l0.05,0.37l-2.42,2.27l-2.11,1.09l-1.44,0.51l-1.66,1.03l-2.03,0.5l-1.4,-0.19l-1.73,-0.77l0.96,-1.45l0.62,-1.32l1.32,-2.09l-0.14,-1.57l-0.5,-2.24l-1.04,-0.39l-1.74,1.7l-0.56,-0.03l-0.14,-0.97l1.54,-1.56l0.26,-1.79l-0.23,-1.79l-2.08,-1.55l-2.38,-0.8l-0.39,1.52l-0.62,0.4l-0.5,1.95l-0.26,-1.33l-1.12,0.95l-0.7,1.32l-0.73,1.92l-0.14,1.64l0.93,2.38l-0.08,2.51l-1.14,1.84l-0.57,0.52l-0.76,0.41l-0.95,0.02l-0.26,-0.25l-0.76,-1.98l-0.02,-0.98l0.08,-0.94l-0.35,-1.87l0.53,-2.18l0.63,-2.71l1.46,-3.03l-0.42,0.01l-2.06,2.54l-0.38,-0.46l1.1,-1.42l1.67,-2.57l1.91,-0.36l2.19,-0.8l2.21,0.42l0.09,0.02l2.47,-0.36l-1.4,-1.61l-0.75,-0.13l-0.86,-0.16l-0.59,-1.14l-2.75,0.36l-2.49,0.9l-1.97,-1.55l-1.59,-0.52l0.9,-2.17l-2.48,1.37l-2.25,1.33l-2.16,1.04l-1.72,-1.4l-2.81,0.85l0.01,-0.6l1.9,-1.73l1.99,-1.65l2.86,-1.37l-3.45,-1.09l-2.27,0.55l-2.72,-1.3l-2.86,-0.67l-1.96,-0.26l-0.87,-0.72l-0.5,-2.35l-0.95,0.02l-0.01,1.64l-5.8,0l-9.59,0l-9.53,0l-8.42,0h-8.41h-8.27h-8.55h-2.76h-8.32h-7.96l0.95,3.47l0.45,3.41l-0.69,1.09l-1.49,-3.91l-4.05,-1.42l-0.34,0.82l0.82,1.94l0.89,3.53l0.51,5.42l-0.34,3.59l-0.34,3.54l-1.1,3.61l0.9,2.9l0.1,3.2l-0.61,3.05l1.49,1.99l0.39,2.95l2.17,2.99l1.24,1.17l-0.1,0.82l2.34,4.85l2.72,3.45l0.34,1.87l0.71,0.55l2.6,0.33l1,0.91l1.57,0.17l0.31,0.96l1.31,0.4l1.82,1.92l0.47,1.7l3.19,-0.25l3.56,-0.36l-0.26,0.65l4.23,1.6l6.4,2.31l5.58,-0.02l2.22,0l0.01,-1.35l4.86,0l1.02,1.16l1.43,1.03l1.67,1.43l0.93,1.69l0.7,1.77l1.45,0.97l2.33,0.96l1.77,-2.53l2.29,-0.06l1.98,1.28l1.41,2.18l0.97,1.86l1.65,1.8l0.62,2.19l0.79,1.47l2.19,0.96l1.99,0.68l1.09,-0.09l-0.53,-1.06l-0.14,-1.5l0.03,-2.16l0.65,-1.42l1.53,-1.51l2.79,-1.37l2.55,-2.37l2.36,-0.75l1.74,-0.23l2.04,0.74l2.45,-0.4l2.09,1.69l2.03,0.1l1.05,-0.61l1.04,0.47l0.53,-0.42l-0.6,-0.63l0.05,-1.3l-0.5,-0.86l1.16,-0.5l2.14,-0.22l2.49,0.36l3.17,-0.41l1.76,0.8l1.36,1.5l0.5,0.16l2.83,-1.46l1.09,0.49l2.19,2.68l0.79,1.75l-0.58,2.1l0.42,1.23l1.3,2.4l1.49,2.68l1.07,0.71l0.44,1.35l1.38,0.37l0.84,-0.39l0.7,-1.89l0.12,-1.21l0.09,-2.1l-1.33,-3.65l-0.02,-1.37l-1.25,-2.25l-0.94,-2.75l-0.5,-2.25l0.43,-2.31l1.32,-1.94l1.58,-1.57l3.08,-2.16l0.4,-1.12l1.42,-1.23l1.4,-0.22l1.84,-1.98l2.9,-1.01l1.78,-2.53l-0.39,-3.46l-0.29,-1.21l-0.8,-0.24l-0.12,-3.35l-1.93,-1.14l1.85,0.56l-0.6,-2.26l0.54,-1.55l0.33,2.97l1.43,1.36l-0.87,2.4l0.26,0.14l1.58,-2.81l0.9,-1.38l-0.04,-1.35l-0.7,-0.64l-0.58,-1.94l0.92,0.9l0.62,0.19l0.21,0.92l2.04,-2.78l0.61,-2.62l-0.83,-0.17l0.85,-1.02l-0.08,0.45l1.79,-0.01l3.93,-1.11l-0.83,-0.7l-4.12,0.7l2.34,-1.07l1.63,-0.18l1.22,-0.19l2.07,-0.65l1.35,0.07l1.89,-0.61l0.22,-1.07l-0.84,-0.84l0.29,1.37l-1.16,-0.09l-0.93,-1.99l0.03,-2.01l0.48,-0.86l1.48,-2.28l2.96,-1.15l2.88,-1.34l2.99,-1.9l-0.48,-1.29l-1.83,-2.25L285.18,314.23zM45.62,263.79l-1.5,0.8l-2.55,1.86l0.43,2.42l1.43,1.32l2.8,-1.95l2.43,-2.47l-1.19,-1.63L45.62,263.79zM0,235.22l2.04,-1.26l0.23,-0.68L0,232.61V235.22zM8.5,250.59l-2.77,0.97l1.7,1.52l1.84,1.04l1.72,-0.87l-0.27,-2.15L8.5,250.59zM105.85,283.09l-2.69,0.38l-1.32,-0.62l-0.17,1.52l0.52,2.07l1.42,1.46l1.04,2.13l1.69,2.1l1.12,0.01l-2.44,-3.7L105.85,283.09zM37.13,403.77l-1,-0.28l-0.27,0.26l0.02,0.19l0.32,0.24l0.48,0.63l0.94,-0.21l0.23,-0.36L37.13,403.77zM34.14,403.23l1.5,0.09l0.09,-0.32l-1.38,-0.13L34.14,403.23zM40.03,406.52l-0.5,-0.26l-1.07,-0.5l-0.21,-0.06l-0.16,0.28l0.19,0.58l-0.49,0.48l-0.14,0.33l0.46,1.08l-0.08,0.83l0.7,0.42l0.41,-0.49l0.9,-0.46l1.1,-0.63l0.07,-0.16l-0.71,-1.04L40.03,406.52zM32.17,401.38l-0.75,0.41l0.11,0.12l0.36,0.68l0.98,0.11l0.2,0.04l0.15,-0.17l-0.81,-0.99L32.17,401.38zM27.77,399.82l-0.43,0.3l-0.15,0.22l0.94,0.55l0.33,-0.3l-0.06,-0.7L27.77,399.82z",
+          },
+        }),
+        _vm._v(" "),
+        _c("path", {
+          staticClass: "land",
+          attrs: {
+            id: "UY",
+            title: "Uruguay",
+            d: "M313.68,551.79L315.5,551.45L318.31,553.95L319.35,553.86L322.24,555.94L324.44,557.76L326.06,560.01L324.82,561.58L325.6,563.48L324.39,565.6L321.22,567.48L319.15,566.8L317.63,567.17L315.04,565.71L313.14,565.82L311.43,563.95L311.65,561.79L312.26,561.05L312.23,557.75L312.98,554.38z",
+          },
+        }),
+        _vm._v(" "),
+        _c("path", {
+          staticClass: "land",
+          attrs: {
+            id: "UZ",
+            title: "Uzbekistan",
+            d: "M661.76,350.95L661.84,348.79L658.11,347.27L655.18,345.52L653.35,343.83L650.14,341.32L648.76,337.53L647.82,336.86L644.79,337.03L643.72,336.26L643.42,333.27L639.64,331.27L637.28,333.47L634.88,334.77L635.34,336.65L632.18,336.7L632.07,322.57L639.29,320.22L639.81,320.57L644.16,323.41L646.45,324.89L649.13,328.39L652.42,327.83L657.23,327.53L660.58,330.33L660.37,334.13L661.74,334.16L662.31,337.22L665.88,337.34L666.64,339.09L667.69,339.07L668.92,336.42L672.61,333.81L674.22,333.11L675.05,333.48L672.7,335.91L674.77,337.31L676.77,336.38L680.09,338.34L676.5,340.98L674.37,340.62L673.21,340.72L672.81,339.7L673.39,337.99L669.64,338.85L668.75,341.2L667.42,343.21L665.08,343.04L664.35,344.63L666.41,345.49L667.01,348.15L665.44,351.72L663.32,350.98z",
+          },
+        }),
+        _vm._v(" "),
+        _c("path", {
+          staticClass: "land",
+          attrs: {
+            id: "VE",
+            title: "Venezuela",
+            d: "M275.25,430.35L275.17,431.02L273.52,431.35L274.44,432.64L274.4,434.13L273.17,435.77L274.23,438.01L275.44,437.83L276.07,435.79L275.2,434.79L275.06,432.65L278.55,431.49L278.16,430.15L279.14,429.25L280.15,431.25L282.12,431.3L283.94,432.88L284.05,433.82L286.56,433.84L289.56,433.55L291.17,434.82L293.31,435.17L294.88,434.29L294.91,433.57L298.39,433.4L301.75,433.36L299.37,434.2L300.32,435.54L302.57,435.75L304.69,437.14L305.14,439.4L306.6,439.33L307.7,440L305.48,441.65L305.23,442.68L306.19,443.72L305.5,444.24L303.77,444.69L303.83,445.99L303.07,446.76L304.96,448.88L305.34,449.67L304.31,450.74L301.17,451.78L299.16,452.22L298.35,452.88L296.12,452.18L294.04,451.82L293.52,452.08L294.77,452.8L294.66,454.67L295.05,456.43L297.42,456.67L297.58,457.25L295.57,458.05L295.25,459.23L294.09,459.68L292.01,460.33L291.47,461.19L289.29,461.37L287.74,459.89L286.89,457.12L286.14,456.14L285.12,455.53L286.54,454.14L286.45,453.51L285.65,452.68L285.09,450.83L285.31,448.82L285.93,447.88L286.44,446.38L285.45,445.89L283.85,446.21L281.83,446.06L280.7,446.36L278.72,443.95L277.09,443.59L273.49,443.86L272.82,442.88L272.13,442.65L272.03,442.06L272.36,441.02L272.14,439.89L271.52,439.27L271.16,437.97L269.72,437.79L270.49,436.13L270.84,434.12L271.65,433.06L272.74,432.25L273.45,430.83z",
+          },
+        }),
+        _vm._v(" "),
+        _c("path", {
+          staticClass: "land",
+          attrs: {
+            id: "VN",
+            title: "Vietnam",
+            d: "M778.21,401.87L774.47,404.43L772.13,407.24L771.51,409.29L773.66,412.38L776.28,416.2L778.82,417.99L780.53,420.32L781.81,425.64L781.43,430.66L779.1,432.53L775.88,434.36L773.6,436.72L770.1,439.34L769.08,437.53L769.87,435.62L767.79,434.01L770.22,432.87L773.16,432.67L771.93,430.94L776.64,428.75L776.99,425.33L776.34,423.41L776.85,420.53L776.14,418.49L774.02,416.47L772.25,413.9L769.92,410.44L766.56,408.68L767.37,407.61L769.16,406.84L768.07,404.25L764.62,404.22L763.36,401.5L761.72,399.13L763.23,398.39L765.46,398.41L768.19,398.06L770.58,396.44L771.93,397.58L774.5,398.13L774.05,399.87L775.39,401.09z",
+          },
+        }),
+        _vm._v(" "),
+        _c("path", {
+          staticClass: "land",
+          attrs: {
+            id: "VU",
+            title: "Vanuatu",
+            d: "M945.87,509.9l-0.92,0.38l-0.94,-1.27l0.1,-0.78L945.87,509.9zM943.8,505.46l0.46,2.33l-0.75,-0.36l-0.58,0.16l-0.4,-0.8l-0.06,-2.21L943.8,505.46z",
+          },
+        }),
+        _vm._v(" "),
+        _c("path", {
+          staticClass: "land",
+          attrs: {
+            id: "YE",
+            title: "Yemen",
+            d: "M624.16,416.33L622.13,417.12L621.59,418.4L621.52,419.39L618.73,420.61L614.25,421.96L611.74,423.99L610.51,424.14L609.67,423.97L608.03,425.17L606.24,425.72L603.89,425.87L603.18,426.03L602.57,426.78L601.83,426.99L601.4,427.72L600.01,427.66L599.11,428.04L597.17,427.9L596.44,426.23L596.52,424.66L596.07,423.81L595.52,421.69L594.71,420.5L595.27,420.36L594.98,419.04L595.32,418.48L595.2,417.22L596.43,416.29L596.14,415.06L596.89,413.63L598.04,414.39L598.8,414.12L602.03,414.05L602.55,414.35L605.26,414.64L606.33,414.49L607.03,415.46L608.34,414.98L610.35,411.91L612.97,410.59L621.05,409.46L623.25,414.3z",
+          },
+        }),
+        _vm._v(" "),
+        _c("path", {
+          staticClass: "land",
+          attrs: {
+            id: "ZA",
+            title: "South Africa",
+            d: "M563.63,548.71l-0.55,0.46l-1.19,1.63l-0.78,1.66l-1.59,2.33l-3.17,3.38l-1.98,1.98l-2.12,1.51l-2.93,1.3l-1.43,0.17l-0.36,0.93l-1.7,-0.5l-1.39,0.64l-3.04,-0.65l-1.7,0.41l-1.16,-0.18l-2.89,1.33l-2.39,0.54l-1.73,1.28l-1.28,0.08l-1.19,-1.21l-0.95,-0.06l-1.21,-1.51l-0.13,0.47l-0.37,-0.91l0.02,-1.96l-0.91,-2.23l0.9,-0.6l-0.07,-2.53l-1.84,-3.05l-1.41,-2.74l0,-0.01l-2.01,-4.15l1.34,-1.57l1.11,0.87l0.47,1.36l1.26,0.23l1.76,0.6l1.51,-0.23l2.5,-1.63l0,-11.52l0.76,0.46l1.66,2.93l-0.26,1.89l0.63,1.1l2.01,-0.32l1.4,-1.39l1.33,-0.93l0.69,-1.48l1.37,-0.72l1.18,0.38l1.34,0.87l2.28,0.15l1.79,-0.72l0.28,-0.96l0.49,-1.47l1.53,-0.25l0.84,-1.15l0.93,-2.03l2.52,-2.26l3.97,-2.22l1.14,0.03l1.36,0.51l0.94,-0.36l1.49,0.3l1.34,4.26l0.73,2.17l-0.5,3.43l0.24,1.11l-1.42,-0.57l-0.81,0.22l-0.26,0.9l-0.77,1.17l0.03,1.08l1.67,1.7l1.64,-0.34l0.57,-1.39l2.13,0.03l-0.7,2.28l-0.33,2.62l-0.73,1.43L563.63,548.71zM556.5,547.75l-1.22,-0.98l-1.31,0.65l-1.52,1.25l-1.5,2.03l2.1,2.48l1,-0.32l0.52,-1.03l1.56,-0.5l0.48,-1.05l0.86,-1.56L556.5,547.75z",
+          },
+        }),
+        _vm._v(" "),
+        _c("path", {
+          staticClass: "land",
+          attrs: {
+            id: "ZM",
+            title: "Zambia",
+            d: "M567.11,489.21L568.43,490.47L569.14,492.87L568.66,493.64L568.1,495.94L568.64,498.3L567.76,499.29L566.91,501.95L568.38,502.69L559.87,505.07L560.14,507.12L558.01,507.52L556.42,508.67L556.08,509.68L555.07,509.9L552.63,512.3L551.08,514.19L550.13,514.26L549.22,513.92L546.09,513.6L545.59,513.38L545.56,513.14L544.46,512.48L542.64,512.31L540.34,512.98L538.51,511.16L536.62,508.78L536.75,499.62L542.59,499.66L542.35,498.67L542.77,497.6L542.28,496.27L542.6,494.89L542.3,494.01L543.27,494.08L543.43,494.96L544.74,494.89L546.52,495.15L547.46,496.44L549.7,496.84L551.42,495.94L552.05,497.43L554.2,497.83L555.23,499.05L556.38,500.62L558.53,500.65L558.29,497.57L557.52,498.08L555.56,496.98L554.8,496.47L555.15,493.62L555.65,490.27L555.02,489.02L555.82,487.22L556.57,486.89L560.34,486.41L561.44,486.7L562.61,487.41L563.73,487.89L565.51,488.36z",
+          },
+        }),
+        _vm._v(" "),
+        _c("path", {
+          staticClass: "land",
+          attrs: {
+            id: "ZW",
+            title: "Zimbabwe",
+            d: "M562.71,527L561.22,526.7L560.27,527.06L558.92,526.55L557.78,526.52L555.99,525.16L553.82,524.7L553,522.8L552.99,521.75L551.79,521.43L548.62,518.18L547.73,516.47L547.17,515.95L546.09,513.6L549.22,513.92L550.13,514.26L551.08,514.19L552.63,512.3L555.07,509.9L556.08,509.68L556.42,508.67L558.01,507.52L560.14,507.12L560.32,508.2L562.66,508.14L563.96,508.75L564.56,509.47L565.9,509.68L567.35,510.62L567.36,514.31L566.81,516.35L566.69,518.55L567.14,519.43L566.83,521.17L566.4,521.44L565.66,523.59z",
+          },
+        }),
+      ]),
+    ]
+  )
+}
+var staticRenderFns = []
+render._withStripped = true
+
+
+
+/***/ }),
+
 /***/ "./node_modules/vue-loader/lib/runtime/componentNormalizer.js":
 /*!********************************************************************!*\
   !*** ./node_modules/vue-loader/lib/runtime/componentNormalizer.js ***!
@@ -72625,6 +93695,227 @@ function normalizeComponent(
     options: options
   }
 }
+
+
+/***/ }),
+
+/***/ "./node_modules/vue-map-chart/src/App.vue":
+/*!************************************************!*\
+  !*** ./node_modules/vue-map-chart/src/App.vue ***!
+  \************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _App_vue_vue_type_template_id_0b4d26f6_scoped_true___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./App.vue?vue&type=template&id=0b4d26f6&scoped=true& */ "./node_modules/vue-map-chart/src/App.vue?vue&type=template&id=0b4d26f6&scoped=true&");
+/* harmony import */ var _App_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./App.vue?vue&type=script&lang=js& */ "./node_modules/vue-map-chart/src/App.vue?vue&type=script&lang=js&");
+/* empty/unused harmony star reexport *//* harmony import */ var _App_vue_vue_type_style_index_0_id_0b4d26f6_scoped_true_lang_css___WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./App.vue?vue&type=style&index=0&id=0b4d26f6&scoped=true&lang=css& */ "./node_modules/vue-map-chart/src/App.vue?vue&type=style&index=0&id=0b4d26f6&scoped=true&lang=css&");
+/* harmony import */ var _vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../vue-loader/lib/runtime/componentNormalizer.js */ "./node_modules/vue-loader/lib/runtime/componentNormalizer.js");
+
+
+
+
+
+
+/* normalize component */
+
+var component = Object(_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_3__["default"])(
+  _App_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__["default"],
+  _App_vue_vue_type_template_id_0b4d26f6_scoped_true___WEBPACK_IMPORTED_MODULE_0__["render"],
+  _App_vue_vue_type_template_id_0b4d26f6_scoped_true___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"],
+  false,
+  null,
+  "0b4d26f6",
+  null
+  
+)
+
+/* hot reload */
+if (false) { var api; }
+component.options.__file = "node_modules/vue-map-chart/src/App.vue"
+/* harmony default export */ __webpack_exports__["default"] = (component.exports);
+
+/***/ }),
+
+/***/ "./node_modules/vue-map-chart/src/App.vue?vue&type=script&lang=js&":
+/*!*************************************************************************!*\
+  !*** ./node_modules/vue-map-chart/src/App.vue?vue&type=script&lang=js& ***!
+  \*************************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _vue_loader_lib_index_js_vue_loader_options_App_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../vue-loader/lib??vue-loader-options!./App.vue?vue&type=script&lang=js& */ "./node_modules/vue-loader/lib/index.js?!./node_modules/vue-map-chart/src/App.vue?vue&type=script&lang=js&");
+/* empty/unused harmony star reexport */ /* harmony default export */ __webpack_exports__["default"] = (_vue_loader_lib_index_js_vue_loader_options_App_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__["default"]); 
+
+/***/ }),
+
+/***/ "./node_modules/vue-map-chart/src/App.vue?vue&type=style&index=0&id=0b4d26f6&scoped=true&lang=css&":
+/*!*********************************************************************************************************!*\
+  !*** ./node_modules/vue-map-chart/src/App.vue?vue&type=style&index=0&id=0b4d26f6&scoped=true&lang=css& ***!
+  \*********************************************************************************************************/
+/*! no static exports found */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _style_loader_index_js_css_loader_index_js_ref_6_1_vue_loader_lib_loaders_stylePostLoader_js_postcss_loader_src_index_js_ref_6_2_vue_loader_lib_index_js_vue_loader_options_App_vue_vue_type_style_index_0_id_0b4d26f6_scoped_true_lang_css___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../style-loader!../../css-loader??ref--6-1!../../vue-loader/lib/loaders/stylePostLoader.js!../../postcss-loader/src??ref--6-2!../../vue-loader/lib??vue-loader-options!./App.vue?vue&type=style&index=0&id=0b4d26f6&scoped=true&lang=css& */ "./node_modules/style-loader/index.js!./node_modules/css-loader/index.js?!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src/index.js?!./node_modules/vue-loader/lib/index.js?!./node_modules/vue-map-chart/src/App.vue?vue&type=style&index=0&id=0b4d26f6&scoped=true&lang=css&");
+/* harmony import */ var _style_loader_index_js_css_loader_index_js_ref_6_1_vue_loader_lib_loaders_stylePostLoader_js_postcss_loader_src_index_js_ref_6_2_vue_loader_lib_index_js_vue_loader_options_App_vue_vue_type_style_index_0_id_0b4d26f6_scoped_true_lang_css___WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_style_loader_index_js_css_loader_index_js_ref_6_1_vue_loader_lib_loaders_stylePostLoader_js_postcss_loader_src_index_js_ref_6_2_vue_loader_lib_index_js_vue_loader_options_App_vue_vue_type_style_index_0_id_0b4d26f6_scoped_true_lang_css___WEBPACK_IMPORTED_MODULE_0__);
+/* harmony reexport (unknown) */ for(var __WEBPACK_IMPORT_KEY__ in _style_loader_index_js_css_loader_index_js_ref_6_1_vue_loader_lib_loaders_stylePostLoader_js_postcss_loader_src_index_js_ref_6_2_vue_loader_lib_index_js_vue_loader_options_App_vue_vue_type_style_index_0_id_0b4d26f6_scoped_true_lang_css___WEBPACK_IMPORTED_MODULE_0__) if(["default"].indexOf(__WEBPACK_IMPORT_KEY__) < 0) (function(key) { __webpack_require__.d(__webpack_exports__, key, function() { return _style_loader_index_js_css_loader_index_js_ref_6_1_vue_loader_lib_loaders_stylePostLoader_js_postcss_loader_src_index_js_ref_6_2_vue_loader_lib_index_js_vue_loader_options_App_vue_vue_type_style_index_0_id_0b4d26f6_scoped_true_lang_css___WEBPACK_IMPORTED_MODULE_0__[key]; }) }(__WEBPACK_IMPORT_KEY__));
+
+
+/***/ }),
+
+/***/ "./node_modules/vue-map-chart/src/App.vue?vue&type=template&id=0b4d26f6&scoped=true&":
+/*!*******************************************************************************************!*\
+  !*** ./node_modules/vue-map-chart/src/App.vue?vue&type=template&id=0b4d26f6&scoped=true& ***!
+  \*******************************************************************************************/
+/*! exports provided: render, staticRenderFns */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _vue_loader_lib_loaders_templateLoader_js_ref_6_vue_loader_lib_index_js_vue_loader_options_App_vue_vue_type_template_id_0b4d26f6_scoped_true___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../vue-loader/lib/loaders/templateLoader.js??ref--6!../../vue-loader/lib??vue-loader-options!./App.vue?vue&type=template&id=0b4d26f6&scoped=true& */ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./node_modules/vue-map-chart/src/App.vue?vue&type=template&id=0b4d26f6&scoped=true&");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "render", function() { return _vue_loader_lib_loaders_templateLoader_js_ref_6_vue_loader_lib_index_js_vue_loader_options_App_vue_vue_type_template_id_0b4d26f6_scoped_true___WEBPACK_IMPORTED_MODULE_0__["render"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return _vue_loader_lib_loaders_templateLoader_js_ref_6_vue_loader_lib_index_js_vue_loader_options_App_vue_vue_type_template_id_0b4d26f6_scoped_true___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"]; });
+
+
+
+/***/ }),
+
+/***/ "./node_modules/vue-map-chart/src/Map.vue":
+/*!************************************************!*\
+  !*** ./node_modules/vue-map-chart/src/Map.vue ***!
+  \************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _Map_vue_vue_type_template_id_6c7f3cb1___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Map.vue?vue&type=template&id=6c7f3cb1& */ "./node_modules/vue-map-chart/src/Map.vue?vue&type=template&id=6c7f3cb1&");
+/* harmony import */ var _Map_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Map.vue?vue&type=script&lang=js& */ "./node_modules/vue-map-chart/src/Map.vue?vue&type=script&lang=js&");
+/* empty/unused harmony star reexport *//* harmony import */ var _vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../vue-loader/lib/runtime/componentNormalizer.js */ "./node_modules/vue-loader/lib/runtime/componentNormalizer.js");
+
+
+
+
+
+/* normalize component */
+
+var component = Object(_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__["default"])(
+  _Map_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__["default"],
+  _Map_vue_vue_type_template_id_6c7f3cb1___WEBPACK_IMPORTED_MODULE_0__["render"],
+  _Map_vue_vue_type_template_id_6c7f3cb1___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"],
+  false,
+  null,
+  null,
+  null
+  
+)
+
+/* hot reload */
+if (false) { var api; }
+component.options.__file = "node_modules/vue-map-chart/src/Map.vue"
+/* harmony default export */ __webpack_exports__["default"] = (component.exports);
+
+/***/ }),
+
+/***/ "./node_modules/vue-map-chart/src/Map.vue?vue&type=script&lang=js&":
+/*!*************************************************************************!*\
+  !*** ./node_modules/vue-map-chart/src/Map.vue?vue&type=script&lang=js& ***!
+  \*************************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _vue_loader_lib_index_js_vue_loader_options_Map_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../vue-loader/lib??vue-loader-options!./Map.vue?vue&type=script&lang=js& */ "./node_modules/vue-loader/lib/index.js?!./node_modules/vue-map-chart/src/Map.vue?vue&type=script&lang=js&");
+/* empty/unused harmony star reexport */ /* harmony default export */ __webpack_exports__["default"] = (_vue_loader_lib_index_js_vue_loader_options_Map_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__["default"]); 
+
+/***/ }),
+
+/***/ "./node_modules/vue-map-chart/src/Map.vue?vue&type=template&id=6c7f3cb1&":
+/*!*******************************************************************************!*\
+  !*** ./node_modules/vue-map-chart/src/Map.vue?vue&type=template&id=6c7f3cb1& ***!
+  \*******************************************************************************/
+/*! exports provided: render, staticRenderFns */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _vue_loader_lib_loaders_templateLoader_js_ref_6_vue_loader_lib_index_js_vue_loader_options_Map_vue_vue_type_template_id_6c7f3cb1___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../vue-loader/lib/loaders/templateLoader.js??ref--6!../../vue-loader/lib??vue-loader-options!./Map.vue?vue&type=template&id=6c7f3cb1& */ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./node_modules/vue-map-chart/src/Map.vue?vue&type=template&id=6c7f3cb1&");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "render", function() { return _vue_loader_lib_loaders_templateLoader_js_ref_6_vue_loader_lib_index_js_vue_loader_options_Map_vue_vue_type_template_id_6c7f3cb1___WEBPACK_IMPORTED_MODULE_0__["render"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return _vue_loader_lib_loaders_templateLoader_js_ref_6_vue_loader_lib_index_js_vue_loader_options_Map_vue_vue_type_template_id_6c7f3cb1___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"]; });
+
+
+
+/***/ }),
+
+/***/ "./node_modules/vue-map-chart/src/dynamic-map-css.js":
+/*!***********************************************************!*\
+  !*** ./node_modules/vue-map-chart/src/dynamic-map-css.js ***!
+  \***********************************************************/
+/*! exports provided: getBaseCss, getDynamicMapCss, getCombinedCssString */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getBaseCss", function() { return getBaseCss; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getDynamicMapCss", function() { return getDynamicMapCss; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getCombinedCssString", function() { return getCombinedCssString; });
+// We multiply this unit by the (value of a country - min) to get the
+// decimal value to provide to the Chroma scale instance.
+const getColorScaleUnit = (min, max) => 1 / (max - min);
+
+const getMaxAndMinCountryDataValues = (countryData) => {
+  let min, max;
+
+  Object.keys(countryData).forEach((key) => {
+    if (key === 'unknown') return;
+
+    const value = countryData[key];
+
+    if (value < min || min === undefined) min = value;
+    if (value > max || max === undefined) max = value;
+  });
+
+  return { min, max };
+};
+
+const getBaseCss = ({ defaultCountryFillColor, countryStrokeColor }) => (
+  `.vue-world-map .land{
+    fill:${defaultCountryFillColor};
+    stroke:${countryStrokeColor};
+  }`
+);
+
+const getDynamicMapCss = (countryData, chromaScale) => {
+  const { min, max } = getMaxAndMinCountryDataValues(countryData);
+  const colorScaleUnit = getColorScaleUnit(min, max);
+  const css = [];
+
+  Object.keys(countryData).forEach((key) => {
+    if (key === 'unknown') return;
+
+    const value = countryData[key];
+    const scaleValue = colorScaleUnit * (value - min);
+    const hex = chromaScale(scaleValue).hex();
+
+    css.push(`.vue-world-map #${key} { fill: ${hex}; }`);
+  });
+
+  return css;
+};
+
+const getCombinedCssString = (baseCss, dynamicCss) => {
+  dynamicCss.push(baseCss);
+
+  return dynamicCss.join(' ');
+};
 
 
 /***/ }),
@@ -87727,6 +109018,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var sweetalert2__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! sweetalert2 */ "./node_modules/sweetalert2/dist/sweetalert2.all.js");
 /* harmony import */ var sweetalert2__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(sweetalert2__WEBPACK_IMPORTED_MODULE_3__);
 /* harmony import */ var vue_router__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! vue-router */ "./node_modules/vue-router/dist/vue-router.esm.js");
+/* harmony import */ var chart_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! chart.js */ "./node_modules/chart.js/dist/chart.js");
+/* harmony import */ var chart_js__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(chart_js__WEBPACK_IMPORTED_MODULE_5__);
+/* harmony import */ var vue_map_chart__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! vue-map-chart */ "./node_modules/vue-map-chart/src/App.vue");
 /**
  * First we will load all of this project's JavaScript dependencies which
  * includes Vue and other libraries. It is a great starting point when
@@ -87740,16 +109034,15 @@ window.Vue = __webpack_require__(/*! vue */ "./node_modules/vue/dist/vue.common.
 
 
 
-// import echarts from 'echarts'
 
-// import Chart from 'chart.js/auto';
+
 Vue.use(vue_router__WEBPACK_IMPORTED_MODULE_4__["default"]);
 var routes = [{
-  path: '/dashboard',
-  component: __webpack_require__(/*! ./components/Dashboard.vue */ "./resources/js/components/Dashboard.vue")["default"]
-}, {
   path: '/profile',
   component: __webpack_require__(/*! ./components/Profile.vue */ "./resources/js/components/Profile.vue")["default"]
+}, {
+  path: '/home',
+  component: __webpack_require__(/*! ./components/Dashboard.vue */ "./resources/js/components/Dashboard.vue")["default"]
 }, {
   path: '/staff',
   component: __webpack_require__(/*! ./components/Staff.vue */ "./resources/js/components/Staff.vue")["default"]
@@ -87763,50 +109056,14 @@ var routes = [{
   path: '/delivery',
   component: __webpack_require__(/*! ./components/NewDelivery.vue */ "./resources/js/components/NewDelivery.vue")["default"]
 }, {
-  path: '/invoiceD',
-  component: __webpack_require__(/*! ./components/Dashboard.vue */ "./resources/js/components/Dashboard.vue")["default"]
-}, {
-  path: '/invoiceP',
-  component: __webpack_require__(/*! ./components/Dashboard.vue */ "./resources/js/components/Dashboard.vue")["default"]
-}, {
   path: '/warehouse',
   component: __webpack_require__(/*! ./components/Warehouse.vue */ "./resources/js/components/Warehouse.vue")["default"]
-}, {
-  path: '/history',
-  component: __webpack_require__(/*! ./components/History.vue */ "./resources/js/components/History.vue")["default"]
 }, {
   path: '/invoicePick',
   component: __webpack_require__(/*! ./components/PickUpInvoice.vue */ "./resources/js/components/PickUpInvoice.vue")["default"]
 }, {
   path: '/invoiceDrop',
   component: __webpack_require__(/*! ./components/DropOffInvoice.vue */ "./resources/js/components/DropOffInvoice.vue")["default"]
-}, {
-  path: '/dashboard',
-  component: __webpack_require__(/*! ./components/Dashboard.vue */ "./resources/js/components/Dashboard.vue")["default"]
-}, {
-  path: '/dashboard',
-  component: __webpack_require__(/*! ./components/Dashboard.vue */ "./resources/js/components/Dashboard.vue")["default"]
-}, {
-  path: '/dashboard',
-  component: __webpack_require__(/*! ./components/Dashboard.vue */ "./resources/js/components/Dashboard.vue")["default"]
-}, {
-  path: '/dashboard',
-  component: __webpack_require__(/*! ./components/Dashboard.vue */ "./resources/js/components/Dashboard.vue")["default"]
-}, {
-  path: '/dashboard',
-  component: __webpack_require__(/*! ./components/Dashboard.vue */ "./resources/js/components/Dashboard.vue")["default"]
-}, {
-  path: '/dashboard',
-  component: __webpack_require__(/*! ./components/Dashboard.vue */ "./resources/js/components/Dashboard.vue")["default"]
-}, {
-  path: '/dashboard',
-  component: __webpack_require__(/*! ./components/Dashboard.vue */ "./resources/js/components/Dashboard.vue")["default"]
-}, {
-  path: '/dashboard',
-  component: __webpack_require__(/*! ./components/Dashboard.vue */ "./resources/js/components/Dashboard.vue")["default"]
-}, {
-  path: '/dashboard',
-  component: __webpack_require__(/*! ./components/Dashboard.vue */ "./resources/js/components/Dashboard.vue")["default"]
 }];
 var router = new vue_router__WEBPACK_IMPORTED_MODULE_4__["default"]({
   mode: 'history',
@@ -88019,14 +109276,15 @@ __webpack_require__.r(__webpack_exports__);
 /*!***********************************************!*\
   !*** ./resources/js/components/Dashboard.vue ***!
   \***********************************************/
-/*! exports provided: default */
+/*! no static exports found */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _Dashboard_vue_vue_type_template_id_040e2ab9___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Dashboard.vue?vue&type=template&id=040e2ab9& */ "./resources/js/components/Dashboard.vue?vue&type=template&id=040e2ab9&");
 /* harmony import */ var _Dashboard_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Dashboard.vue?vue&type=script&lang=js& */ "./resources/js/components/Dashboard.vue?vue&type=script&lang=js&");
-/* empty/unused harmony star reexport *//* harmony import */ var _node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../../node_modules/vue-loader/lib/runtime/componentNormalizer.js */ "./node_modules/vue-loader/lib/runtime/componentNormalizer.js");
+/* harmony reexport (unknown) */ for(var __WEBPACK_IMPORT_KEY__ in _Dashboard_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__) if(["default"].indexOf(__WEBPACK_IMPORT_KEY__) < 0) (function(key) { __webpack_require__.d(__webpack_exports__, key, function() { return _Dashboard_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__[key]; }) }(__WEBPACK_IMPORT_KEY__));
+/* harmony import */ var _node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../../node_modules/vue-loader/lib/runtime/componentNormalizer.js */ "./node_modules/vue-loader/lib/runtime/componentNormalizer.js");
 
 
 
@@ -88056,7 +109314,7 @@ component.options.__file = "resources/js/components/Dashboard.vue"
 /*!************************************************************************!*\
   !*** ./resources/js/components/Dashboard.vue?vue&type=script&lang=js& ***!
   \************************************************************************/
-/*! exports provided: default */
+/*! no static exports found */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -88217,75 +109475,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "render", function() { return _node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_loaders_templateLoader_js_ref_6_node_modules_vue_loader_lib_index_js_vue_loader_options_ExampleComponent_vue_vue_type_template_id_299e239e___WEBPACK_IMPORTED_MODULE_0__["render"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return _node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_loaders_templateLoader_js_ref_6_node_modules_vue_loader_lib_index_js_vue_loader_options_ExampleComponent_vue_vue_type_template_id_299e239e___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"]; });
-
-
-
-/***/ }),
-
-/***/ "./resources/js/components/History.vue":
-/*!*********************************************!*\
-  !*** ./resources/js/components/History.vue ***!
-  \*********************************************/
-/*! exports provided: default */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _History_vue_vue_type_template_id_270eb80e___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./History.vue?vue&type=template&id=270eb80e& */ "./resources/js/components/History.vue?vue&type=template&id=270eb80e&");
-/* harmony import */ var _History_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./History.vue?vue&type=script&lang=js& */ "./resources/js/components/History.vue?vue&type=script&lang=js&");
-/* empty/unused harmony star reexport *//* harmony import */ var _node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../../node_modules/vue-loader/lib/runtime/componentNormalizer.js */ "./node_modules/vue-loader/lib/runtime/componentNormalizer.js");
-
-
-
-
-
-/* normalize component */
-
-var component = Object(_node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__["default"])(
-  _History_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__["default"],
-  _History_vue_vue_type_template_id_270eb80e___WEBPACK_IMPORTED_MODULE_0__["render"],
-  _History_vue_vue_type_template_id_270eb80e___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"],
-  false,
-  null,
-  null,
-  null
-  
-)
-
-/* hot reload */
-if (false) { var api; }
-component.options.__file = "resources/js/components/History.vue"
-/* harmony default export */ __webpack_exports__["default"] = (component.exports);
-
-/***/ }),
-
-/***/ "./resources/js/components/History.vue?vue&type=script&lang=js&":
-/*!**********************************************************************!*\
-  !*** ./resources/js/components/History.vue?vue&type=script&lang=js& ***!
-  \**********************************************************************/
-/*! exports provided: default */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_index_js_vue_loader_options_History_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/babel-loader/lib??ref--4-0!../../../node_modules/vue-loader/lib??vue-loader-options!./History.vue?vue&type=script&lang=js& */ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/History.vue?vue&type=script&lang=js&");
-/* empty/unused harmony star reexport */ /* harmony default export */ __webpack_exports__["default"] = (_node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_index_js_vue_loader_options_History_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__["default"]); 
-
-/***/ }),
-
-/***/ "./resources/js/components/History.vue?vue&type=template&id=270eb80e&":
-/*!****************************************************************************!*\
-  !*** ./resources/js/components/History.vue?vue&type=template&id=270eb80e& ***!
-  \****************************************************************************/
-/*! exports provided: render, staticRenderFns */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_loaders_templateLoader_js_ref_6_node_modules_vue_loader_lib_index_js_vue_loader_options_History_vue_vue_type_template_id_270eb80e___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/babel-loader/lib??ref--4-0!../../../node_modules/vue-loader/lib/loaders/templateLoader.js??ref--6!../../../node_modules/vue-loader/lib??vue-loader-options!./History.vue?vue&type=template&id=270eb80e& */ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/History.vue?vue&type=template&id=270eb80e&");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "render", function() { return _node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_loaders_templateLoader_js_ref_6_node_modules_vue_loader_lib_index_js_vue_loader_options_History_vue_vue_type_template_id_270eb80e___WEBPACK_IMPORTED_MODULE_0__["render"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return _node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_loaders_templateLoader_js_ref_6_node_modules_vue_loader_lib_index_js_vue_loader_options_History_vue_vue_type_template_id_270eb80e___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"]; });
 
 
 

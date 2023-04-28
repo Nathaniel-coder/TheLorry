@@ -9,11 +9,13 @@ use Illuminate\View\View;
 use Illuminate\Http\Request;
 use App\Exports\PickUpExport;
 use App\Exports\ExportDropOff;
+use App\Exports\ExportDelivery;
 use App\Exports\ExportWarehouse;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\Auth;
 use Maatwebsite\Excel\Facades\Excel;
 use Facade\FlareClient\Http\Response;
-
+use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
 class RICController extends Controller
 {
@@ -47,7 +49,7 @@ class RICController extends Controller
     public function invoiceDrop($id)
     {
         $data = Dropoff::findOrFail($id);
-         return View('invoice',[
+        return View('invoice', [
             'data' => $data
         ]);
     }
@@ -76,18 +78,28 @@ class RICController extends Controller
     public function XMLPick($id)
     {
         $XML = Pickup::findorFail($id);
-        return response()->view('pickXML', ['XML'=>$XML])->header('Content-Type', 'text/xml');
+        return response()->view('pickXML', ['XML' => $XML])->header('Content-Type', 'text/xml');
     }
 
     public function XMLDrop($id)
     {
         $XML = Dropoff::findorFail($id);
-        return response()->view('dropXML', ['XML'=>$XML])->header('Content-Type', 'text/xml');
+        return response()->view('dropXML', ['XML' => $XML])->header('Content-Type', 'text/xml');
     }
 
     public function XMLRates()
     {
         return response()->view('Rates')->header('Content-Type', 'text/xml');
+    }
+    public function PickXMLAll()
+    {
+        $data = Pickup::all();
+        return response()->view('XML', ['data' => $data])->header('Content-Type', 'text/xml');
+    }
+    public function DropXMLAll()
+    {
+        $data = Dropoff::all();
+        return response()->view('XML', ['data' => $data])->header('Content-Type', 'text/xml');
     }
 
     /**
@@ -109,6 +121,10 @@ class RICController extends Controller
     {
         return Excel::download(new ExportWarehouse, 'Warehouse.xlsx');
     }
+    public function CSV()
+    {
+        return Excel::download(new ExportDelivery, 'Delivery.xlsx');
+    }
 
     /**
      * Update the specified resource in storage.
@@ -117,9 +133,24 @@ class RICController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function DropQR($id)
     {
-        //
+        $data = Dropoff::where('id', $id)->get();
+
+        $qrcode = QrCode::size(250)->generate($data);
+        $pdf = Pdf::loadView('QrCode', compact('qrcode'));
+
+        return $pdf->download('qr_code'.$id.'.pdf');
+    }
+
+    public function pickQR($id)
+    {
+        $data = Pickup::where('id', $id)->get();
+
+        $qrcode = QrCode::size(250)->generate($data);
+        $pdf = Pdf::loadView('QrCode', compact('qrcode'));
+
+        return $pdf->download('qr_code'.$id.'.pdf');
     }
 
     /**
@@ -128,7 +159,7 @@ class RICController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function Consignment($id)
     {
         //
     }

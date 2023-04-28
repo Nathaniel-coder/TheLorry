@@ -27,7 +27,7 @@
                                 </div>
                                 <div class="col-5">
                                     <h1 class="document-type display-4"><span>TheLorry</span></h1>
-                                    <p class="text-right"><strong>Ref. Code <em>P{{ invoice.created_at | invoiceDate }}-{{profile.id }}</em></strong></p>
+                                    <p class="text-right"><strong>Ref. Code <em>D{{ invoice.created_at | invoiceDate }}-{{profile.id }}</em></strong></p>
                                 </div>
                             </div>
                             <div class="row">
@@ -62,30 +62,22 @@
                             <table class="table table-striped">
                                 <thead>
                                     <tr>
-                                        <th>Description</th>
-                                        <th>Quantité</th>
-                                        <th>Unité</th>
-                                        <th>PU HT</th>
-                                        <th>TVA</th>
-                                        <th>Total HT</th>
+                                        <th>Type</th>
+                                        <th>Weight</th>
+                                        <th>Height</th>
+                                        <th>Width</th>
+                                        <th>length</th>
+                                        <th>Sub Total (RM)</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     <tr>
-                                        <td>Audits et rapports mensuels</td>
-                                        <td>1</td>
-                                        <td>Jour</td>
-                                        <td class="text-right">500,00€</td>
-                                        <td>20%</td>
-                                        <td class="text-right">500,00€</td>
-                                    </tr>
-                                    <tr>
-                                        <td>Génération des rapports d'activité</td>
-                                        <td>4</td>
-                                        <td>Rapport</td>
-                                        <td class="text-right">800,00€</td>
-                                        <td>20%</td>
-                                        <td class="text-right">3 200,00€</td>
+                                        <td>Drop Off</td>
+                                        <td>{{ invoice.weight }}</td>
+                                        <td>{{ invoice.height }}</td>
+                                        <td>{{ invoice.width }}</td>
+                                        <td>{{ invoice.length }}</td>
+                                        <td>{{ invoice.price }}</td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -96,15 +88,23 @@
                                     <table class="table table-sm text-right">
                                         <tr>
                                             <td><strong>Total HT</strong></td>
-                                            <td class="text-right">3 700,00€</td>
+                                            <td class="text-right">
+                                                {{ invoice.price * 2.7 }}</td>
                                         </tr>
                                         <tr>
-                                            <td>TVA 20%</td>
-                                            <td class="text-right">740,00€</td>
+                                            <td>Transportation Fees</td>
+                                            <td class="text-right">
+                                                {{ invoice.price * 0.3 }}</td>
                                         </tr>
                                         <tr>
-                                            <td><strong>Total TTC</strong></td>
-                                            <td class="text-right">4 440,00€</td>
+                                            <td>Service Fees</td>
+                                            <td class="text-right">
+                                                {{ invoice.price * 0.8 }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Service Fees</td>
+                                            <td class="text-right">
+                                                {{ invoice.price * 0.6 }}</td>
                                         </tr>
                                     </table>
                                 </div>
