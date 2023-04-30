@@ -4,15 +4,19 @@
             <div class="container-fluid">
                 <div class="row mb-2">
                     <div class="col-sm-6">
-                        <h1>Dashboard</h1>
+                        <h1 v-show="user.type != 'Customer'">Dashboard</h1>
                     </div>
                 </div>
             </div>
         </section>
-        <div class="container">
+        <div class="container" v-show="user.type == 'Customer'">
+            <div class="d-flex justify-content-center align-items-center">                
+            </div>
+        </div>
+        <div class="container" v-show="user.type != 'Customer'">
             <div class="justify-content-center">
                 <div class="row">
-                    <div class="col-lg-3 col-6">
+                    <div class="col-lg col">
 
                         <div class="small-box" style="background: #f87979;">
                             <div class="inner text-white">
@@ -25,7 +29,7 @@
                         </div>
                     </div>
 
-                    <div class="col-lg-3 col-6">
+                    <div class="col-lg col">
 
                         <div class="small-box" style="background-color: #36a2eb;">
                             <div class="inner text-white">
@@ -38,7 +42,7 @@
                         </div>
                     </div>
 
-                    <div class="col-lg-3 col-6">
+                    <div class="col-lg col">
 
                         <div class="small-box bg-success">
                             <div class="inner">
@@ -51,7 +55,7 @@
                         </div>
                     </div>
 
-                    <div class="col-lg-3 col-6">
+                    <div class="col-lg col">
 
                         <div class="small-box bg-danger">
                             <div class="inner">
@@ -67,12 +71,37 @@
 
                 <div class="row d-flex justify-content-around">
                     <div class="col-md-8">
-                        <div class="card">
-                            <!-- <div class="card-header">
-                                <h3 class="card-title">Delivery chart</h3>
-                            </div> -->
+                        <div class="card" style="position: relative; left: 0px; top: 0px;">
+                            <div class="card-header">
+                                <h3 class="card-title">
+                                    <i class="fas fa-chart-pie mr-1"></i>
+                                    Sales
+                                </h3>
+                                <div class="card-tools">
+                                    <ul class="nav nav-pills ml-auto">
+                                        <li class="nav-item">
+                                            <a class="nav-link active" href="#revenue-chart" data-toggle="tab">Area</a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a class="nav-link" href="#sales-chart" data-toggle="tab">Donut</a>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
                             <div class="card-body">
-                                <canvas ref="chart" height="325"></canvas>
+                                <div class="tab-content p-0">
+
+                                    <div class="chart tab-pane active" id="revenue-chart"
+                                        style="position: relative; height: 300px;">
+                                        <canvas class="d-block" height="125" id="revenue-chart-canvas" ref="ctx"></canvas>
+                                    </div>
+                                    <div class="chart tab-pane" id="sales-chart" style="position: relative; height: 300px;">
+                                        <!-- <canvas id="sales-chart-canvas" height="0"
+                                                style="height: 0px; display: block; width: 0px;" width="0"
+                                                class="chartjs-render-monitor"></canvas> -->
+                                        <canvas ref="chart" id="sales-chart-canvas" height="325"></canvas>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -120,7 +149,10 @@
 <script>
 import Axios from 'axios';
 import Chart from 'chart.js';
+import Swal from "sweetalert2";
+// import ProvinceDataChart from './components/ProvinceDataChart.vue';
 export default {
+    props: ['profile'],
     data() {
         return {
             drop: '',
@@ -128,13 +160,32 @@ export default {
             pickUps: {},
             dropOffs: {},
             modal: '',
-            count:'',
+            count: '',
+            user: {}
         }
     },
     mounted() {
         console.log('Component Mounted');
     },
     methods: {
+        confirm() {
+            if (this.profile.type == "Customer") {
+                Swal.fire({
+                    title: "Welcome back !",
+                    text: this.profile.name,
+                    icon: "info",
+                    showCancelButton: false,
+                    confirmButtonColor: "#6610f2",
+                    cancelButtonColor: "#d33",
+                    confirmButtonText: "Ok",
+                    allowOutsideClick: false,
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                       this.$router.push('/delivery');
+                    }
+                });
+            }
+        },
         downloadCSV() {
             Axios.get("/csv", { responseType: 'arraybuffer' }).then(response => {
                 var fileURL = window.URL.createObjectURL(new Blob([response.data]));
@@ -161,14 +212,60 @@ export default {
                 }
             });
         },
+        renderArea(drop, pick){
+            const dropOfflabels = drop.map(item => item.branch);
+            const pickUplabels = pick.map(item => item.province);            
+            // const labels = pickUplabels;
+            const dropOffCounts = drop.map(item => item.count);
+            const pickUpCounts = pick.map(item => item.count);
+
+           new Chart(this.$refs.ctx, {
+                type: 'line',
+                data: {
+                    // labels: labels,
+                    datasets: [{
+                        label: 'Drop Off',
+                        data: dropOffCounts,
+                        backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                        borderColor: 'rgba(255, 99, 132, 1)',
+                        borderWidth: 1
+                    }, {
+                        label: 'Pick Up',
+                        data: pickUpCounts,
+                        backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                        borderColor: 'rgba(54, 162, 235, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    scales: {
+                        yAxes: [{
+                            ticks: {
+                                beginAtZero: false,
+                                suggestedMin: 1
+                            }
+                        }]
+                    }
+                }
+            });
+        }
     },
     created() {
+        this.confirm();
+        axios.get('api/profile').then(({ data }) => (this.user = data));
         axios.get('api/dropOffCount').then(({ data }) => (this.drop = data));
         axios.get('api/pickUpCount').then(({ data }) => (this.pick = data));
         axios.get('api/dropData').then(({ data }) => (this.pickUps = data));
         axios.get('api/pickData').then(({ data }) => (this.dropOffs = data));
         axios.get('api/dashboard').then(({ data }) => (this.count = data));
         axios.get('api/chart').then(response => { this.renderChart(response.data) });
+        axios.all([
+            axios.get('api/provinceDataDrop'),
+            axios.get('api/provinceDataPick')
+        ])
+        .then(axios.spread((dropOffResponse, pickUpResponse) => {
+            this.renderArea(dropOffResponse.data, pickUpResponse.data);
+        }));
     }
 }
 </script>

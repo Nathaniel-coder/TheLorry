@@ -50,6 +50,8 @@ Route::put('profile', 'API\UserController@updateProfile');
 Route::get('dropOffCount', 'API\DashboardController@DropCount');
 Route::get('pickUpCount', 'API\DashboardController@PickCount');
 Route::get('chart', 'API\DashboardController@chart');
+Route::get('provinceDataDrop', 'API\DashboardController@provinceDataDrop');
+Route::get('provinceDataPick', 'API\DashboardController@provinceDataPick');
 Route::get('generated', 'API\DashboardController@totalGenerated');
 
 
@@ -58,4 +60,10 @@ Route::get('generated', 'API\DashboardController@totalGenerated');
 Route::get('truckD/{dropID}', 'API\XMLController@DropXML');
 Route::get('truckP/{pickID}', 'API\XMLController@PickXML');
 Route::get('items/{ID}', 'API\XMLController@WarehouseItem');
+
+
+//Make payment
+Route::post('paymentDrop', 'API\DropOffController@payment');
+Route::post('paymentPick', 'API\PickUpController@payment');
+
 

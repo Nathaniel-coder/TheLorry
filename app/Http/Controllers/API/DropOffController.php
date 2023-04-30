@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API;
 use App\Branch;
 use App\Dropoff;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 
 class DropOffController extends Controller
@@ -78,7 +79,7 @@ class DropOffController extends Controller
             'length' => $request['length'],
             'width' => $request['width'],
             'weight' => $request['weight'],
-            'price' => $request['weight']*4
+            'price' => $request['weight']*6
         ]);
     }
 
@@ -90,7 +91,8 @@ class DropOffController extends Controller
      */
     public function show($phone)
     {
-        return Dropoff::where('phone', $phone)->first();
+        DB::disableQueryLog();
+        return Dropoff::where('phone', $phone)->latest()->first();
     }
 
     public function branches()
@@ -131,9 +133,15 @@ class DropOffController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function payment()
     {
-        //
+        DB::disableQueryLog();
+        $user = auth('api')->user();
+        $data = Dropoff::where('phone', $user->phone)->latest()->first();
+        $data->update([
+            'status' => 'Paid'
+        ]);
+        return $data;
     }
 
 

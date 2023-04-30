@@ -27,7 +27,7 @@
                                 </div>
                                 <div class="col-5">
                                     <h1 class="document-type display-4"><span>TheLorry</span></h1>
-                                    <p class="text-right"><strong>Ref. Code <em>D{{ invoice.created_at | invoiceDate }}-{{profile.id }}</em></strong></p>
+                                    <p class="text-right"><strong>Ref. Code <em>D{{ invoice.created_at | invoiceDate }}-{{ invoice.id }}</em></strong></p>
                                 </div>
                             </div>
                             <div class="row">
@@ -89,22 +89,22 @@
                                         <tr>
                                             <td><strong>Total HT</strong></td>
                                             <td class="text-right">
-                                                {{ invoice.price * 2.7 }}</td>
+                                                {{ invoice.price * 0.7 }}</td>
                                         </tr>
                                         <tr>
                                             <td>Transportation Fees</td>
                                             <td class="text-right">
-                                                {{ invoice.price * 0.3 }}</td>
+                                                {{ invoice.price * 0.1 }}</td>
                                         </tr>
                                         <tr>
                                             <td>Service Fees</td>
                                             <td class="text-right">
-                                                {{ invoice.price * 0.8 }}</td>
+                                                {{ invoice.price * 0.1 }}</td>
                                         </tr>
                                         <tr>
                                             <td>Service Fees</td>
                                             <td class="text-right">
-                                                {{ invoice.price * 0.6 }}</td>
+                                                {{ invoice.price * 0.1 }}</td>
                                         </tr>
                                     </table>
                                 </div>
@@ -190,7 +190,7 @@
                                                 </div>
                                                 <div class="card-expiration-date">
                                                     <label>Expires</label>
-                                                    <div>{{ cardexpirationyear }}/{{ cardexpirationyear }}</div>
+                                                    <div>{{ cardexpirationmonth }}/{{ cardexpirationyear }}</div>
                                                 </div>
                                             </div>
                                             <div class="back">
@@ -265,24 +265,24 @@
                                     <div class="select">
                                         <select v-model="cardexpirationyear" class="text-dark">
                                             <option></option>
-                                            <option>2016</option>
-                                            <option>2017</option>
-                                            <option>2018</option>
-                                            <option>2019</option>
-                                            <option>2020</option>
-                                            <option>2021</option>
-                                            <option>2022</option>
-                                            <option>2023</option>
-                                            <option>2024</option>
-                                            <option>2025</option>
-                                            <option>2026</option>
-                                            <option>2027</option>
-                                            <option>2028</option>
-                                            <option>2029</option>
-                                            <option>2030</option>
-                                            <option>2031</option>
-                                            <option>2032</option>
-                                            <option>2033</option>
+                                            <option>26</option>
+                                            <option>27</option>
+                                            <option>28</option>
+                                            <option>29</option>
+                                            <option>20</option>
+                                            <option>31</option>
+                                            <option>32</option>
+                                            <option>33</option>
+                                            <option>34</option>
+                                            <option>35</option>
+                                            <option>36</option>
+                                            <option>37</option>
+                                            <option>38</option>
+                                            <option>39</option>
+                                            <option>40</option>
+                                            <option>41</option>
+                                            <option>42</option>
+                                            <option>43</option>
                                         </select>
                                     </div>
                                 </fieldset>
@@ -293,8 +293,8 @@
                             </div>
                         </div>
                         <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" @click="makePayment">Close</button>
-                            <button type="button" class="btn btn-primary">Save changes</button>
+                            <button type="button" class="btn btn-secondary" @click="makePayment()">Close</button>
+                            <button type="button" class="btn btn-primary" @click="Payment()">Save changes</button>
                         </div>
                     </div>
                 </div>
@@ -306,7 +306,7 @@
 <script>
 import Axios from 'axios';
 export default {
-    props: ['profile', 'parentData'],
+    props: ['profile'],
     data() {
         return {
             invoice: {},
@@ -325,12 +325,6 @@ export default {
     mounted() {
         console.log('Component mounted.');
     },
-    created() {
-        this.generateInvoice();
-        this.$root.$on('message-from-pickUp', (msg) => {
-            this.pickUp = msg;
-        })
-    },
     methods: {
         printMe() {
             window.print();
@@ -341,12 +335,18 @@ export default {
         makePayment() {
             if (this.payment == false) {
                 this.payment = true
-                $("#paymentModal").modal("show");
+                $("#paymentModal").modal("show");                
             } else {
                 this.payment = false
                 $("#paymentModal").modal("hide");
             }
+        },
+        Payment(){
+            Axios.post('api/paymentDrop').then($("#paymentModal").modal("hide"));
         }
+    },
+    created(){
+        this.generateInvoice();
     }
 }
 </script>

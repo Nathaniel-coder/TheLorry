@@ -3,6 +3,7 @@
 namespace App\Exports;
 
 use App\Pickup;
+use Illuminate\Support\Facades\Auth;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithStyles;
@@ -15,7 +16,11 @@ class PickUpExport implements FromCollection, WithHeadings, WithStyles
     */
     public function collection()
     {
+        if(Auth::user()->type != 'Customer'){
         return Pickup::all();
+        }else{
+            return Pickup::where('phone', Auth::user()->phone)->get();
+        }
     }
 
     public function headings(): array

@@ -13,6 +13,10 @@ use App\Warehouse;
 
 class DashboardController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('auth:api');
+    }
     /**
      * Display a listing of the resource.
      *
@@ -23,33 +27,31 @@ class DashboardController extends Controller
         // User Count
         $user = User::where('type', 'Customer')->count();
 
-        $dropOff = Dropoff::all()->pluck('price')->toArray();
-        $pickUp = Pickup::all()->pluck('price')->toArray();
+        $dropOff = Dropoff::pluck('price')->toArray();
+        $pickUp = Pickup::pluck('price')->toArray();
         $total = array_sum($dropOff) + array_sum($pickUp);
 
         //Bounce Rates
-        $lastDrop = Dropoff::whereMonth('created_at', '=', Carbon::now()->subMonth()->month)->count();
-        $lastPick = Dropoff::whereMonth('created_at', '=', Carbon::now()->subMonth()->month)->count();
-        $thisDrop = Dropoff::whereMonth('created_at', date('m'))->whereYear('created_at', date('Y'))->count();
-        $thisPick = Pickup::whereMonth('created_at', date('m'))->whereYear('created_at', date('Y'))->count();
+        // $lastDrop = Dropoff::whereMonth('created_at', '=', Carbon::now()->subMonth()->month(1))->count();
+        // $lastPick = Dropoff::whereMonth('created_at', '=', Carbon::now()->subMonth()->month(1))->count();
+        // $thisDrop = Dropoff::whereMonth('created_at','=', date('m'))->whereYear('created_at','=', date('Y'))->count();
+        // $thisPick = Pickup::whereMonth('created_at','=', date('m'))->whereYear('created_at','=', date('Y'))->count();
 
-        $lastMonth = $lastDrop + $lastPick;
-        $thisMonth = $thisDrop + $thisPick;
-        if ($lastMonth != 0 && $thisMonth != 0) {
-            $bounceRate = (($lastMonth / $thisMonth) * 100) - 100;
-        } else {
-            $bounceRate = 0;
-        }
+        // $lastMonth = $lastDrop + $lastPick;
+        // $thisMonth = $thisDrop + $thisPick;
+
 
         //todays sales
-        $dropOff = Dropoff::where('created_at', today())->pluck('price')->toArray();
-        $pickUp = Pickup::where('created_at', today())->pluck('price')->toArray();
-        $todayOrder = array_sum($dropOff) + array_sum($pickUp);
+        $dropOffto = Dropoff::where('created_at', '>=' , Carbon::today())->pluck('price')->toArray();
+        $pickUpto = Pickup::where('created_at', '>=' , Carbon::today())->pluck('price')->toArray();
+        $todayOrder = array_sum($dropOffto) + array_sum($pickUpto);
 
         $warehouse = Warehouse::all()->pluck('quantity')->toArray();
         $warehousetotal = array_sum($warehouse);
 
-        $data = [$user, $todayOrder, $bounceRate, $warehousetotal, $total];
+        $bounceRate = $todayOrder/$total * 100;
+
+        $data = [$user, $todayOrder, number_format($bounceRate,0), $warehousetotal, $total];
         return $data;
     }
 
@@ -79,6 +81,24 @@ class DashboardController extends Controller
             ]
         ];
         return response()->json($chartData);
+    }
+
+    public function provinceDataDrop()
+    {
+        $data = DB::table('dropoffs')
+               ->select(DB::raw('branch, count(*) as count'))
+               ->groupBy('branch')
+               ->get();
+               return response()->json($data);
+    }
+
+    public function provinceDataPick()
+    {
+        $data = DB::table('pickups')
+               ->select(DB::raw('province, count(*) as count'))
+               ->groupBy('province')
+               ->get();
+               return response()->json($data);
     }
 
     /**

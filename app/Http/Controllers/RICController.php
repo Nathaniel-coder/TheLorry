@@ -10,8 +10,9 @@ use Illuminate\Http\Request;
 use App\Exports\PickUpExport;
 use App\Exports\ExportDropOff;
 use App\Exports\ExportDelivery;
-use App\Exports\ExportWarehouse;
 use Barryvdh\DomPDF\Facade\Pdf;
+use App\Exports\ExportWarehouse;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Maatwebsite\Excel\Facades\Excel;
 use Facade\FlareClient\Http\Response;
@@ -24,6 +25,9 @@ class RICController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
+    public function view(){
+        return view('QrCode');
+    }
     public function index()
     {
         $type = Auth::user()->type;
@@ -93,13 +97,23 @@ class RICController extends Controller
     }
     public function PickXMLAll()
     {
+        if(Auth::user()->type != 'Customer'){
         $data = Pickup::all();
         return response()->view('XML', ['data' => $data])->header('Content-Type', 'text/xml');
+        }else{
+            $data = Pickup::where('phone', Auth::user()->phone)->get();
+            return response()->view('XML', ['data' => $data])->header('Content-Type', 'text/xml');
+        }
     }
     public function DropXMLAll()
     {
-        $data = Dropoff::all();
-        return response()->view('XML', ['data' => $data])->header('Content-Type', 'text/xml');
+        if(Auth::user()->type != 'Customer'){
+            $data = Dropoff::all();
+            return response()->view('XML', ['data' => $data])->header('Content-Type', 'text/xml');
+            }else{
+                $data = Dropoff::where('phone', Auth::user()->phone)->get();
+                return response()->view('XML', ['data' => $data])->header('Content-Type', 'text/xml');
+            }
     }
 
     /**

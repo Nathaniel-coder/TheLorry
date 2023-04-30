@@ -286,6 +286,7 @@ export default {
                     confirmButtonColor: "#0d6efd",
                     cancelButtonColor: "#d33",
                     confirmButtonText: "Sign me Up!",
+                    // allowOutsideClick: false,
                 }).then((result) => {
                     if (result.isConfirmed) {
                         $("#Create").modal("show");

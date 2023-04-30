@@ -27,7 +27,8 @@
                                 </div>
                                 <div class="col-5">
                                     <h1 class="document-type display-4"><span>TheLorry</span></h1>
-                                    <p class="text-right"><strong>Ref. Code <em>P{{ invoice.created_at | invoiceDate }}-{{profile.id }}</em></strong></p>
+                                    <p class="text-right"><strong>Ref. Code <em>P{{ invoice.created_at | invoiceDate
+                                    }}-{{ profile.id }}</em></strong></p>
                                 </div>
                             </div>
                             <div class="row">
@@ -57,35 +58,27 @@
                             </div>
                             <br>
                             <br>
-                            <h6>Payment Due : {{ invoice.date|date }}</h6>
+                            <h6>Payment Due : {{ invoice.date | date }}</h6>
                             <br>
                             <table class="table table-striped">
                                 <thead>
                                     <tr>
                                         <th>Type</th>
-                                            <th>Weight</th>
-                                            <th>Height</th>
-                                            <th>Width</th>
-                                            <th>length</th>
-                                            <th>Total (RM)</th>
+                                        <th>Weight</th>
+                                        <th>Height</th>
+                                        <th>Width</th>
+                                        <th>length</th>
+                                        <th>Total (RM)</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     <tr>
-                                        <td>Audits et rapports mensuels</td>
-                                        <td>1</td>
-                                        <td>Jour</td>
-                                        <td class="text-right">500,00€</td>
-                                        <td>20%</td>
-                                        <td class="text-right">500,00€</td>
-                                    </tr>
-                                    <tr>
-                                        <td>Génération des rapports d'activité</td>
-                                        <td>4</td>
-                                        <td>Rapport</td>
-                                        <td class="text-right">800,00€</td>
-                                        <td>20%</td>
-                                        <td class="text-right">3 200,00€</td>
+                                        <td>Pick Up</td>
+                                        <td>{{ invoice.weight }}</td>
+                                        <td>{{ invoice.height }}</td>
+                                        <td>{{ invoice.width }}</td>
+                                        <td>{{ invoice.length }}</td>
+                                        <td>{{ invoice.price }}</td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -95,16 +88,20 @@
                                 <div class="col-4">
                                     <table class="table table-sm text-right">
                                         <tr>
-                                            <td><strong>Total HT</strong></td>
-                                            <td class="text-right">3 700,00€</td>
+                                            <td><strong>Sub-Total</strong></td>
+                                            <td class="text-right">{{ invoice.price * 0.7 }}</td>
                                         </tr>
                                         <tr>
-                                            <td>TVA 20%</td>
-                                            <td class="text-right">740,00€</td>
+                                            <td>Transportation Fees</td>
+                                            <td class="text-right">{{ invoice.price * 0.1 }}</td>
                                         </tr>
                                         <tr>
-                                            <td><strong>Total TTC</strong></td>
-                                            <td class="text-right">4 440,00€</td>
+                                            <td><strong>Service Fees</strong></td>
+                                            <td class="text-right">{{ invoice.price * 0.1 }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>GST</strong></td>
+                                            <td class="text-right">{{ invoice.price * 0.1 }}</td>
                                         </tr>
                                     </table>
                                 </div>
@@ -151,7 +148,8 @@
 
         <!-- Modal -->
         <form class="form" autocomplete="off" novalidate>
-            <div class="modal fade" id="paymentModal" data-backdrop="static" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" style="padding-top: 9em;">
+            <div class="modal fade" id="paymentModal" data-backdrop="static" tabindex="-1"
+                aria-labelledby="exampleModalLabel" aria-hidden="true" style="padding-top: 9em;">
                 <div class="modal-dialog">
                     <div class="modal-content">
                         <div class="modal-body">
@@ -160,7 +158,8 @@
                                     <div class="credit-card-box">
                                         <div class="flip">
                                             <div class="front">
-                                                <i class="fa-solid fa-wifi fa-rotate-270 mt-4 mx-2" style="font-size:25px"></i>
+                                                <i class="fa-solid fa-wifi fa-rotate-270 mt-4 mx-2"
+                                                    style="font-size:25px"></i>
                                                 <div class="logo">
                                                     <svg version="1.1" id="visa" xmlns="http://www.w3.org/2000/svg"
                                                         xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
@@ -183,14 +182,15 @@
                                                         </g>
                                                     </svg>
                                                 </div>
-                                                <div class="number">{{ cardnumber }} {{ cardnumber1 }} {{ cardnumber2 }} {{ cardnumber3 }}</div>
+                                                <div class="number">{{ cardnumber }} {{ cardnumber1 }} {{ cardnumber2 }} {{
+                                                    cardnumber3 }}</div>
                                                 <div class="card-holder">
                                                     <label>Card holder</label>
-                                                    <div>{{cardholder }}</div>
+                                                    <div>{{ cardholder }}</div>
                                                 </div>
                                                 <div class="card-expiration-date">
                                                     <label>Expires</label>
-                                                    <div>{{ cardexpirationyear }}/{{ cardexpirationyear }}</div>
+                                                    <div>{{ cardexpirationmonth }}/{{ cardexpirationyear }}</div>
                                                 </div>
                                             </div>
                                             <div class="back">
@@ -265,24 +265,24 @@
                                     <div class="select">
                                         <select v-model="cardexpirationyear" class="text-dark">
                                             <option></option>
-                                            <option>2016</option>
-                                            <option>2017</option>
-                                            <option>2018</option>
-                                            <option>2019</option>
-                                            <option>2020</option>
-                                            <option>2021</option>
-                                            <option>2022</option>
-                                            <option>2023</option>
-                                            <option>2024</option>
-                                            <option>2025</option>
-                                            <option>2026</option>
-                                            <option>2027</option>
-                                            <option>2028</option>
-                                            <option>2029</option>
-                                            <option>2030</option>
-                                            <option>2031</option>
-                                            <option>2032</option>
-                                            <option>2033</option>
+                                            <option>26</option>
+                                            <option>27</option>
+                                            <option>28</option>
+                                            <option>29</option>
+                                            <option>20</option>
+                                            <option>31</option>
+                                            <option>32</option>
+                                            <option>33</option>
+                                            <option>34</option>
+                                            <option>35</option>
+                                            <option>36</option>
+                                            <option>37</option>
+                                            <option>38</option>
+                                            <option>39</option>
+                                            <option>40</option>
+                                            <option>41</option>
+                                            <option>42</option>
+                                            <option>43</option>
                                         </select>
                                     </div>
                                 </fieldset>
@@ -294,7 +294,7 @@
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" @click="makePayment">Close</button>
-                            <button type="button" class="btn btn-primary">Save changes</button>
+                            <button type="button" class="btn btn-primary" @click="Payment">Save changes</button>
                         </div>
                     </div>
                 </div>
@@ -346,7 +346,13 @@ export default {
                 this.payment = false
                 $("#paymentModal").modal("hide");
             }
+        },
+        Payment(){
+            Axios.post('api/paymentPick').then($("#paymentModal").modal("hide"));
         }
+    },
+    created(){
+        this.generateInvoice();
     }
 }
 </script>

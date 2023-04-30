@@ -20,12 +20,17 @@
                     <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i
                             class="fas fa-bars"></i></a>
                 </li>
-                <li class="nav-item d-none d-sm-inline-block">
-                    <router-link to="/home" class="nav-link">Home</router-link>
-                </li>
-                <li class="nav-item d-none d-sm-inline-block">
-                    <a href="#" class="nav-link">Contact</a>
-                </li>
+                @cannot('isCustomer')
+                    <li class="nav-item d-none d-sm-inline-block">
+                        <router-link to="/home" class="nav-link">Home</router-link>
+                    </li>
+                @endcannot
+                @can('isCustomer')
+                    <li class="nav-item d-none d-sm-inline-block">
+                        <router-link to="/delivery" class="nav-link">Home</router-link>
+                    </li>
+                @endcannot
+
             </ul>
 
             <ul class="navbar-nav ml-auto">
@@ -35,7 +40,8 @@
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" data-widget="fullscreen" href="#" role="button" toggle="tooltip" title="Full Screen">
+                    <a class="nav-link" data-widget="fullscreen" href="#" role="button" toggle="tooltip"
+                        title="Full Screen">
                         <i class="fas fa-expand-arrows-alt"></i>
                     </a>
                 </li>
@@ -44,13 +50,21 @@
         </nav>
 
 
-        <aside class="main-sidebar sidebar-dark-primary elevation-4">
-
-            <router-link to="/home" class="brand-link">
-                <img src="dist/img/AdminLTELogo.png" alt="AdminLTE Logo" class="brand-image img-circle elevation-3"
-                    style="opacity: .8">
-                <span class="brand-text font-weight-light">AdminLTE 3</span>
-            </router-link>
+        <aside class="main-sidebar sidebar-dark-primary elevation-4 sticky">
+            @cannot('isCustomer')
+                <router-link to="/home" class="brand-link">
+                    <img src="/img/download.png" alt="TheLorry Logo" class="brand-image img-circle elevation-3"
+                        style="opacity: .8">
+                    <span class="brand-text font-weight-light">TheLorry</span>
+                </router-link>
+            @endcannot
+            @can('isCustomer')
+                <router-link to="/delivery" class="brand-link">
+                    <img src="/img/download.png" alt="TheLorry Logo" class="brand-image img-circle elevation-3"
+                        style="opacity: .8">
+                    <span class="brand-text font-weight-light">TheLorry</span>
+                </router-link>
+            @endcan
 
             <div class="sidebar">
 
@@ -79,12 +93,14 @@
                 <nav class="mt-2">
                     <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu"
                         data-accordion="false">
+                        @cannot('isCustomer')
                             <li class="nav-item">
                                 <router-link to="/home" class="nav-link">
                                     <i class="fa-solid fa-gauge-high nav-icon"></i>
                                     <p>Dashboard</p>
                                 </router-link>
                             </li>
+                        @endcannot
                         <li class="nav-item">
                             <router-link to="/delivery" class="nav-link">
                                 <i class="fa-solid fa-truck-fast nav-icon"></i>
@@ -145,6 +161,16 @@
                                 </p>
                             </a>
                         </li>
+                        @can('Administrator')
+                            <li class="nav-item">
+                                <a href={{ url('consignment') }} class="nav-link">
+                                    <i class="nav-icon fa-solid fa-clock-rotate-left"></i>
+                                    <p>
+                                        Consignment
+                                    </p>
+                                </a>
+                            </li>
+                        @endcan
                         <li class="nav-item">
                             <a class="nav-link" href="{{ route('logout') }}"
                                 onclick="event.preventDefault();

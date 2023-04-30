@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API;
 use App\Pickup;
 use App\Vehicle;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 
 class PickUpController extends Controller
@@ -95,7 +96,8 @@ class PickUpController extends Controller
      */
     public function show($phone)
     {
-        return Pickup::where('phone', $phone)->first();
+        DB::disableQueryLog();
+        return Pickup::where('phone', $phone)->latest()->first();
     }
 
     /**
@@ -130,9 +132,14 @@ class PickUpController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function payment()
     {
-        //
+        DB::disableQueryLog();
+        $user = auth('api')->user();
+        $data = Pickup::where('phone', $user->phone)->latest()->first();
+        $data->update([
+            'status' => 'Paid'
+        ]);
     }
 
     public function count()
