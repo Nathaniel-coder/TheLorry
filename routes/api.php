@@ -53,6 +53,7 @@ Route::get('chart', 'API\DashboardController@chart');
 Route::get('provinceDataDrop', 'API\DashboardController@provinceDataDrop');
 Route::get('provinceDataPick', 'API\DashboardController@provinceDataPick');
 Route::get('generated', 'API\DashboardController@totalGenerated');
+Route::get('donutdrop', 'API\DashboardController@donutdrop');
 
 
 

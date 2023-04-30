@@ -118,9 +118,32 @@ class DashboardController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function donutdrop()
     {
-        //
+        $DropCount = Dropoff::where('status', '!=', 'Unpaid')->whereDate('created_at', today())->get();
+        $UnpaidDropCount = Dropoff::all();
+        $PickCount = Pickup::where('status', '!=', 'Unpaid')->whereDate('created_at', today())->get();
+        $UnpaidPickCount = Pickup::all();
+
+        $chartData = [
+            [
+                'label' => 'Conversion Rate',
+                'value' => $DropCount->count() + $PickCount->count(),
+            ],
+            [
+                'label' => 'Drop Off Order',
+                'value' => $DropCount->count(),
+            ],
+            [
+                'label' => 'Pick Up Order',
+                'value' => $PickCount->count(),
+            ],
+            [
+                'label' => 'Unpaid',
+                'value' => $UnpaidDropCount->count() + $UnpaidPickCount->count(),
+            ]
+        ];
+        return response()->json($chartData);
     }
 
     /**

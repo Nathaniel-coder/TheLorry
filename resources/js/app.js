@@ -14,7 +14,6 @@ import Swal from 'sweetalert2';
 import VueRouter from 'vue-router';
 import Chart from 'chart.js';
 import MapChart from 'vue-map-chart';
-import ProvinceDataChart from './components/ProvinceDataChart.vue';
 
 
 Vue.use(VueRouter)
@@ -123,9 +122,6 @@ Vue.component(
 
 const app = new Vue({
     el: '#app',
-    components: {
-        ProvinceDataChart
-    },
     router,
     data:{
         search: ''

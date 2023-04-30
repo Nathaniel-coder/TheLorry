@@ -2094,6 +2094,7 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
+
 // import ProvinceDataChart from './components/ProvinceDataChart.vue';
 /* harmony default export */ __webpack_exports__["default"] = ({
   props: ['profile'],
@@ -2196,6 +2197,11 @@ __webpack_require__.r(__webpack_exports__);
           }]
         },
         options: {
+          responsive: true,
+          hover: {
+            mode: 'index',
+            intersect: false
+          },
           scales: {
             yAxes: [{
               ticks: {
@@ -2203,6 +2209,31 @@ __webpack_require__.r(__webpack_exports__);
                 suggestedMin: 1
               }
             }]
+          }
+        }
+      });
+    },
+    renderdonut: function renderdonut(data) {
+      new chart_js__WEBPACK_IMPORTED_MODULE_1___default.a(this.$refs.donut, {
+        type: 'doughnut',
+        data: {
+          labels: data.map(function (data) {
+            return data.label;
+          }),
+          datasets: [{
+            backgroundColor: ['#36a2eb', '#f87979', '#4bc0c0', '#ffcd56', '#9966ff'],
+            data: data.map(function (data) {
+              return data.value;
+            })
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            colors: {
+              enabled: false
+            }
           }
         }
       });
@@ -2237,6 +2268,9 @@ __webpack_require__.r(__webpack_exports__);
     });
     axios.get('api/chart').then(function (response) {
       _this2.renderChart(response.data);
+    });
+    axios.get('api/donutdrop').then(function (response) {
+      _this2.renderdonut(response.data);
     });
     axios.all([axios.get('api/provinceDataDrop'), axios.get('api/provinceDataPick')]).then(axios.spread(function (dropOffResponse, pickUpResponse) {
       _this2.renderArea(dropOffResponse.data, pickUpResponse.data);
@@ -2653,70 +2687,6 @@ __webpack_require__.r(__webpack_exports__);
       var data = _ref2.data;
       return _this3.user = data;
     });
-  }
-});
-
-/***/ }),
-
-/***/ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/ProvinceDataChart.vue?vue&type=script&lang=js&":
-/*!****************************************************************************************************************************************************************************!*\
-  !*** ./node_modules/babel-loader/lib??ref--4-0!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/ProvinceDataChart.vue?vue&type=script&lang=js& ***!
-  \****************************************************************************************************************************************************************************/
-/*! exports provided: default */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! axios */ "./node_modules/axios/index.js");
-/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(axios__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var chart_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! chart.js */ "./node_modules/chart.js/dist/Chart.js");
-/* harmony import */ var chart_js__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(chart_js__WEBPACK_IMPORTED_MODULE_1__);
-
-
-/* harmony default export */ __webpack_exports__["default"] = ({
-  mounted: function mounted() {
-    axios__WEBPACK_IMPORTED_MODULE_0___default.a.all([axios__WEBPACK_IMPORTED_MODULE_0___default.a.get('api/provinceDataDrop'), axios__WEBPACK_IMPORTED_MODULE_0___default.a.get('api/provinceDataPick')]).then(axios__WEBPACK_IMPORTED_MODULE_0___default.a.spread(function (dropOffResponse, pickUpResponse) {
-      var dropOffData = dropOffResponse.data;
-      var pickUpData = pickUpResponse.data;
-      var labels = dropOffData.map(function (item) {
-        return item.province;
-      });
-      var dropOffCounts = dropOffData.map(function (item) {
-        return item.count;
-      });
-      var pickUpCounts = pickUpData.map(function (item) {
-        return item.count;
-      });
-      var ctx = document.getElementById('provinceChart').getContext('2d');
-      var chart = new chart_js__WEBPACK_IMPORTED_MODULE_1___default.a(ctx, {
-        type: 'line',
-        data: {
-          labels: labels,
-          datasets: [{
-            label: 'Drop Off',
-            data: dropOffCounts,
-            backgroundColor: 'rgba(255, 99, 132, 0.2)',
-            borderColor: 'rgba(255, 99, 132, 1)',
-            borderWidth: 1
-          }, {
-            label: 'Pick Up',
-            data: pickUpCounts,
-            backgroundColor: 'rgba(54, 162, 235, 0.2)',
-            borderColor: 'rgba(54, 162, 235, 1)',
-            borderWidth: 1
-          }]
-        },
-        options: {
-          scales: {
-            yAxes: [{
-              ticks: {
-                beginAtZero: true
-              }
-            }]
-          }
-        }
-      });
-    }));
   }
 });
 
@@ -4286,7 +4256,7 @@ var render = function render() {
     ref: "ctx",
     staticClass: "d-block",
     attrs: {
-      height: "125",
+      height: "120",
       id: "revenue-chart-canvas"
     }
   })]), _vm._v(" "), _c("div", {
@@ -4302,6 +4272,21 @@ var render = function render() {
     ref: "chart",
     attrs: {
       id: "sales-chart-canvas",
+      height: "325"
+    }
+  })]), _vm._v(" "), _c("div", {
+    staticClass: "chart tab-pane",
+    staticStyle: {
+      position: "relative",
+      height: "300px"
+    },
+    attrs: {
+      id: "conversion-chart"
+    }
+  }, [_c("canvas", {
+    ref: "donut",
+    attrs: {
+      id: "conversion-chart-canvas",
       height: "325"
     }
   })])])])])]), _vm._v(" "), _c("div", {
@@ -4393,6 +4378,14 @@ var staticRenderFns = [function () {
     staticClass: "nav-link",
     attrs: {
       href: "#sales-chart",
+      "data-toggle": "tab"
+    }
+  }, [_vm._v("Pie")])]), _vm._v(" "), _c("li", {
+    staticClass: "nav-item"
+  }, [_c("a", {
+    staticClass: "nav-link",
+    attrs: {
+      href: "#conversion-chart",
       "data-toggle": "tab"
     }
   }, [_vm._v("Donut")])])])])]);
@@ -8009,41 +8002,6 @@ var staticRenderFns = [function () {
     staticClass: "fas fa-map-marker-alt mr-1"
   }), _vm._v(" Location")]);
 }];
-render._withStripped = true;
-
-
-/***/ }),
-
-/***/ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/ProvinceDataChart.vue?vue&type=template&id=55996829&":
-/*!**************************************************************************************************************************************************************************************************************************************************!*\
-  !*** ./node_modules/babel-loader/lib??ref--4-0!./node_modules/vue-loader/lib/loaders/templateLoader.js??ref--6!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/ProvinceDataChart.vue?vue&type=template&id=55996829& ***!
-  \**************************************************************************************************************************************************************************************************************************************************/
-/*! exports provided: render, staticRenderFns */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "render", function() { return render; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return staticRenderFns; });
-var render = function render() {
-  var _vm = this,
-    _c = _vm._self._c;
-  return _c("div", [_c("canvas", {
-    ref: "ctx",
-    staticClass: "chartjs-render-monitor",
-    staticStyle: {
-      height: "300px",
-      display: "block",
-      width: "654px"
-    },
-    attrs: {
-      id: "revenue-chart-canvas",
-      height: "375",
-      width: "817"
-    }
-  })]);
-};
-var staticRenderFns = [];
 render._withStripped = true;
 
 
@@ -109300,7 +109258,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var chart_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! chart.js */ "./node_modules/chart.js/dist/Chart.js");
 /* harmony import */ var chart_js__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(chart_js__WEBPACK_IMPORTED_MODULE_5__);
 /* harmony import */ var vue_map_chart__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! vue-map-chart */ "./node_modules/vue-map-chart/src/App.vue");
-/* harmony import */ var _components_ProvinceDataChart_vue__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./components/ProvinceDataChart.vue */ "./resources/js/components/ProvinceDataChart.vue");
 /**
  * First we will load all of this project's JavaScript dependencies which
  * includes Vue and other libraries. It is a great starting point when
@@ -109309,7 +109266,6 @@ __webpack_require__.r(__webpack_exports__);
 
 __webpack_require__(/*! ./bootstrap */ "./resources/js/bootstrap.js");
 window.Vue = __webpack_require__(/*! vue */ "./node_modules/vue/dist/vue.common.js");
-
 
 
 
@@ -109415,9 +109371,6 @@ Vue.component('passport-personal-access-tokens', __webpack_require__(/*! ./compo
 
 var app = new Vue({
   el: '#app',
-  components: {
-    ProvinceDataChart: _components_ProvinceDataChart_vue__WEBPACK_IMPORTED_MODULE_7__["default"]
-  },
   router: router,
   data: {
     search: ''
@@ -109965,75 +109918,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "render", function() { return _node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_loaders_templateLoader_js_ref_6_node_modules_vue_loader_lib_index_js_vue_loader_options_Profile_vue_vue_type_template_id_3bd692e4___WEBPACK_IMPORTED_MODULE_0__["render"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return _node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_loaders_templateLoader_js_ref_6_node_modules_vue_loader_lib_index_js_vue_loader_options_Profile_vue_vue_type_template_id_3bd692e4___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"]; });
-
-
-
-/***/ }),
-
-/***/ "./resources/js/components/ProvinceDataChart.vue":
-/*!*******************************************************!*\
-  !*** ./resources/js/components/ProvinceDataChart.vue ***!
-  \*******************************************************/
-/*! exports provided: default */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _ProvinceDataChart_vue_vue_type_template_id_55996829___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./ProvinceDataChart.vue?vue&type=template&id=55996829& */ "./resources/js/components/ProvinceDataChart.vue?vue&type=template&id=55996829&");
-/* harmony import */ var _ProvinceDataChart_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./ProvinceDataChart.vue?vue&type=script&lang=js& */ "./resources/js/components/ProvinceDataChart.vue?vue&type=script&lang=js&");
-/* empty/unused harmony star reexport *//* harmony import */ var _node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../../node_modules/vue-loader/lib/runtime/componentNormalizer.js */ "./node_modules/vue-loader/lib/runtime/componentNormalizer.js");
-
-
-
-
-
-/* normalize component */
-
-var component = Object(_node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__["default"])(
-  _ProvinceDataChart_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__["default"],
-  _ProvinceDataChart_vue_vue_type_template_id_55996829___WEBPACK_IMPORTED_MODULE_0__["render"],
-  _ProvinceDataChart_vue_vue_type_template_id_55996829___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"],
-  false,
-  null,
-  null,
-  null
-  
-)
-
-/* hot reload */
-if (false) { var api; }
-component.options.__file = "resources/js/components/ProvinceDataChart.vue"
-/* harmony default export */ __webpack_exports__["default"] = (component.exports);
-
-/***/ }),
-
-/***/ "./resources/js/components/ProvinceDataChart.vue?vue&type=script&lang=js&":
-/*!********************************************************************************!*\
-  !*** ./resources/js/components/ProvinceDataChart.vue?vue&type=script&lang=js& ***!
-  \********************************************************************************/
-/*! exports provided: default */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_index_js_vue_loader_options_ProvinceDataChart_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/babel-loader/lib??ref--4-0!../../../node_modules/vue-loader/lib??vue-loader-options!./ProvinceDataChart.vue?vue&type=script&lang=js& */ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/ProvinceDataChart.vue?vue&type=script&lang=js&");
-/* empty/unused harmony star reexport */ /* harmony default export */ __webpack_exports__["default"] = (_node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_index_js_vue_loader_options_ProvinceDataChart_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__["default"]); 
-
-/***/ }),
-
-/***/ "./resources/js/components/ProvinceDataChart.vue?vue&type=template&id=55996829&":
-/*!**************************************************************************************!*\
-  !*** ./resources/js/components/ProvinceDataChart.vue?vue&type=template&id=55996829& ***!
-  \**************************************************************************************/
-/*! exports provided: render, staticRenderFns */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_loaders_templateLoader_js_ref_6_node_modules_vue_loader_lib_index_js_vue_loader_options_ProvinceDataChart_vue_vue_type_template_id_55996829___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/babel-loader/lib??ref--4-0!../../../node_modules/vue-loader/lib/loaders/templateLoader.js??ref--6!../../../node_modules/vue-loader/lib??vue-loader-options!./ProvinceDataChart.vue?vue&type=template&id=55996829& */ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/ProvinceDataChart.vue?vue&type=template&id=55996829&");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "render", function() { return _node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_loaders_templateLoader_js_ref_6_node_modules_vue_loader_lib_index_js_vue_loader_options_ProvinceDataChart_vue_vue_type_template_id_55996829___WEBPACK_IMPORTED_MODULE_0__["render"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return _node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_loaders_templateLoader_js_ref_6_node_modules_vue_loader_lib_index_js_vue_loader_options_ProvinceDataChart_vue_vue_type_template_id_55996829___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"]; });
 
 
 
