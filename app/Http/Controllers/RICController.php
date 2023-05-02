@@ -12,6 +12,7 @@ use App\Exports\ExportDropOff;
 use App\Exports\ExportDelivery;
 use Barryvdh\DomPDF\Facade\Pdf;
 use App\Exports\ExportWarehouse;
+use Dompdf\Dompdf;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Maatwebsite\Excel\Facades\Excel;
@@ -25,16 +26,13 @@ class RICController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function view(){
-        return view('QrCode');
-    }
     public function index()
     {
         $type = Auth::user()->type;
         $phone = Auth::user()->phone;
         $dropOff = '';
         $pickUP = '';
-        if ($type == 'Customer') {
+        if ($type != 'Administrator' && $type != 'Staff') {
             $dropOff = Dropoff::where('phone', $phone)->orderBy('created_at', 'DESC')->get();
             $pickUP = Pickup::where('phone', $phone)->orderBy('created_at', 'DESC')->get();
         } else {
@@ -173,8 +171,11 @@ class RICController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function Consignment($id)
+    public function ConsignmentDrop()
     {
-        //
+        $user = Auth::user();
+        $data = Dropoff::where('phone', $user->phone)->latest()->first();
+        return view('Consignment', compact('data'));
     }
+
 }

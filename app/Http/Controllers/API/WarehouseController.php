@@ -24,7 +24,8 @@ class WarehouseController extends Controller
     {
         $user = auth('api')->user();
         if ($user->type == "Merchant") {
-            return Warehouse::where('user', $user->name)->orderByRaw('created_at', 'Desc')->paginate(5);
+            $data = Shop::where('userId', $user->id)->first();
+            return Warehouse::where('user', $data->shopname)->orderByRaw('created_at', 'Desc')->paginate(5);
         }
 
         if ($user->type != "Merchant" && $user->type != "Customer") {
@@ -41,7 +42,9 @@ class WarehouseController extends Controller
     public function store(Request $request)
     {
         $user = auth('api')->user();
-        $data = Shop::where('userId', $user->id)->get();
+        // $data =
+        $data = Shop::where('userId', $user->id)->first();
+        // return $data->shopname;
         // return $shop->id;
         if ($user->type == "Merchant") {
             $this->validate($request, [
@@ -53,7 +56,6 @@ class WarehouseController extends Controller
                 'height' => 'required|numeric|between:0,99.99',
                 'width' => 'required|numeric|between:0,99.99',
             ]);
-
             return Warehouse::create([
                 'user' => $data->shopname,
                 'name' => $request['name'],
@@ -65,6 +67,7 @@ class WarehouseController extends Controller
                 'width' => $request['width'],
             ]);
         }
+
     }
 
     /**

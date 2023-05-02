@@ -2,11 +2,12 @@
 
 namespace App\Exports;
 
+use App\Shop;
 use App\Warehouse;
 use Illuminate\Support\Facades\Auth;
-use Maatwebsite\Excel\Concerns\FromCollection;
-use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithStyles;
+use Maatwebsite\Excel\Concerns\WithHeadings;
+use Maatwebsite\Excel\Concerns\FromCollection;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
 
@@ -20,7 +21,8 @@ class ExportWarehouse implements FromCollection, WithHeadings, WithStyles
         if(Auth::user()->type != 'Merchant'){
             return Warehouse::all();
         }else{
-            return Warehouse::where('name', Auth::user()->name)->get();
+            $data = Shop::where('userId', Auth::user()->id)->first();
+            return Warehouse::where('user', $data->shopname)->get();
         }
     }
 

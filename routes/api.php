@@ -25,8 +25,8 @@ Route::apiResources(['dropOff' => 'API\DropOffController']);
 Route::apiResources(['pickUp' => 'API\PickUpController']);
 Route::apiResources(['shop' => 'API\ShopController']);
 Route::apiResources(['dashboard' => 'API\DashboardController']);
-
 Route::apiResources(['warehouse' => 'API\WarehouseController']);
+
 Route::get('shopIndex', 'API\ShopController@index');
 
 Route::get('invoice/{date}', 'API\DropOffController@invoice');
@@ -54,6 +54,9 @@ Route::get('provinceDataDrop', 'API\DashboardController@provinceDataDrop');
 Route::get('provinceDataPick', 'API\DashboardController@provinceDataPick');
 Route::get('generated', 'API\DashboardController@totalGenerated');
 Route::get('donutdrop', 'API\DashboardController@donutdrop');
+Route::get('warehouseChart', 'API\DashboardController@warehouseChart');
+Route::get('brandChart', 'API\DashboardController@brandChart');
+Route::get('chartData', 'API\DashboardController@chartData');
 
 
 

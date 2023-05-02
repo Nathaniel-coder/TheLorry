@@ -1,4 +1,4 @@
-<?php
+    <?php
 
 use Illuminate\Support\Facades\Route;
 
@@ -37,7 +37,7 @@ Route::get('csv', 'RICController@CSV');
 //QRCODE
 Route::get('dropQR/{id}', 'RICController@DropQR');
 Route::get('pickQR/{id}', 'RICController@pickQR');
-Route::get('consignment', 'RICController@view');
+Route::get('ConsignmentDrop', 'RICController@ConsignmentDrop');
 
 //404 counter
 Route::get('{path}', "HomeController@index")->where('path', '([A-z\/_.\d]+)?');

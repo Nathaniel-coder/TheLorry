@@ -2164,55 +2164,47 @@ __webpack_require__.r(__webpack_exports__);
         }
       });
     },
-    renderArea: function renderArea(drop, pick) {
-      var dropOfflabels = drop.map(function (item) {
-        return item.branch;
-      });
-      var pickUplabels = pick.map(function (item) {
-        return item.province;
-      });
-      // const labels = pickUplabels;
-      var dropOffCounts = drop.map(function (item) {
-        return item.count;
-      });
-      var pickUpCounts = pick.map(function (item) {
-        return item.count;
-      });
-      new chart_js__WEBPACK_IMPORTED_MODULE_1___default.a(this.$refs.ctx, {
-        type: 'line',
-        data: {
-          // labels: labels,
-          datasets: [{
-            label: 'Drop Off',
-            data: dropOffCounts,
-            backgroundColor: 'rgba(255, 99, 132, 0.2)',
-            borderColor: 'rgba(255, 99, 132, 1)',
-            borderWidth: 1
-          }, {
-            label: 'Pick Up',
-            data: pickUpCounts,
-            backgroundColor: 'rgba(54, 162, 235, 0.2)',
-            borderColor: 'rgba(54, 162, 235, 1)',
-            borderWidth: 1
-          }]
-        },
-        options: {
-          responsive: true,
-          hover: {
-            mode: 'index',
-            intersect: false
-          },
-          scales: {
-            yAxes: [{
-              ticks: {
-                beginAtZero: false,
-                suggestedMin: 1
-              }
-            }]
-          }
-        }
-      });
-    },
+    // renderArea(drop, pick) {
+    //     const dropOfflabels = drop.map(item => item.branch);
+    //     const pickUplabels = pick.map(item => item.province);
+    //     // const labels = pickUplabels;
+    //     const dropOffCounts = drop.map(item => item.count);
+    //     const pickUpCounts = pick.map(item => item.count);
+    //     new Chart(this.$refs.ctx, {
+    //         type: 'line',
+    //         data: {
+    //             // labels: labels,
+    //             datasets: [{
+    //                 label: 'Drop Off',
+    //                 data: dropOffCounts,
+    //                 backgroundColor: 'rgba(255, 99, 132, 0.2)',
+    //                 borderColor: 'rgba(255, 99, 132, 1)',
+    //                 borderWidth: 1
+    //             }, {
+    //                 label: 'Pick Up',
+    //                 data: pickUpCounts,
+    //                 backgroundColor: 'rgba(54, 162, 235, 0.2)',
+    //                 borderColor: 'rgba(54, 162, 235, 1)',
+    //                 borderWidth: 1
+    //             }]
+    //         },
+    //         options: {
+    //             responsive: true,
+    //             hover: {
+    //                 mode: 'index',
+    //                 intersect: false
+    //             },
+    //             scales: {
+    //                 yAxes: [{
+    //                     ticks: {
+    //                         beginAtZero: false,
+    //                         suggestedMin: 1
+    //                     }
+    //                 }]
+    //             }
+    //         }
+    //     });
+    // },
     renderdonut: function renderdonut(data) {
       new chart_js__WEBPACK_IMPORTED_MODULE_1___default.a(this.$refs.donut, {
         type: 'doughnut',
@@ -2230,6 +2222,91 @@ __webpack_require__.r(__webpack_exports__);
         options: {
           responsive: true,
           maintainAspectRatio: false,
+          plugins: {
+            colors: {
+              enabled: false
+            }
+          }
+        }
+      });
+    },
+    renderWarehouse: function renderWarehouse(data) {
+      new chart_js__WEBPACK_IMPORTED_MODULE_1___default.a(this.$refs.warehouse, {
+        type: 'doughnut',
+        data: {
+          labels: data.map(function (data) {
+            return data.category;
+          }),
+          datasets: [{
+            backgroundColor: ['#4bc0c0', '#ffcd56', '#36a2eb', '#f87979', '#9966ff'],
+            data: data.map(function (data) {
+              return data.quantity;
+            })
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            colors: {
+              enabled: false
+            }
+          }
+        }
+      });
+    },
+    renderBrand: function renderBrand(data) {
+      new chart_js__WEBPACK_IMPORTED_MODULE_1___default.a(this.$refs.brand, {
+        type: 'doughnut',
+        data: {
+          labels: data.map(function (data) {
+            return data.name;
+          }),
+          datasets: [{
+            backgroundColor: ['#4bc0c0', '#ffcd56', '#36a2eb', '#f87979', '#9966ff'],
+            data: data.map(function (data) {
+              return data.quantity;
+            })
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            colors: {
+              enabled: false
+            }
+          }
+        }
+      });
+    },
+    proviceLineChart: function proviceLineChart(data) {
+      new chart_js__WEBPACK_IMPORTED_MODULE_1___default.a(this.$refs.line, {
+        type: 'line',
+        data: {
+          labels: data.map(function (data) {
+            return data.date;
+          }),
+          datasets: [{
+            label: 'Drop Off',
+            backgroundColor: 'rgba(255, 99, 132, 0.2)',
+            borderColor: 'rgba(255, 99, 132, 1)',
+            data: data.map(function (data) {
+              return data.dropOffCount;
+            })
+          }, {
+            label: 'Pickup',
+            backgroundColor: 'rgba(54, 162, 235, 0.2)',
+            borderColor: 'rgba(54, 162, 235, 1)',
+            data: data.map(function (data) {
+              return data.pickupCount;
+            })
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: true,
+          beginAtZero: false,
           plugins: {
             colors: {
               enabled: false
@@ -2272,9 +2349,22 @@ __webpack_require__.r(__webpack_exports__);
     axios.get('api/donutdrop').then(function (response) {
       _this2.renderdonut(response.data);
     });
-    axios.all([axios.get('api/provinceDataDrop'), axios.get('api/provinceDataPick')]).then(axios.spread(function (dropOffResponse, pickUpResponse) {
-      _this2.renderArea(dropOffResponse.data, pickUpResponse.data);
-    }));
+    axios.get('api/warehouseChart').then(function (response) {
+      _this2.renderWarehouse(response.data);
+    });
+    axios.get('api/chartData').then(function (response) {
+      _this2.proviceLineChart(response.data);
+    });
+    axios.get('api/brandChart').then(function (response) {
+      _this2.renderBrand(response.data);
+    });
+    // axios.all([
+    //     axios.get('api/provinceDataDrop'),
+    //     axios.get('api/provinceDataPick')
+    // ])
+    //     .then(axios.spread((dropOffResponse, pickUpResponse) => {
+    //         this.renderArea(dropOffResponse.data, pickUpResponse.data);
+    //     }));
   }
 });
 
@@ -3228,7 +3318,6 @@ __webpack_require__.r(__webpack_exports__);
           timer: 1500
         });
         _this3.$Progress.finish();
-        Fire.$emit("AfterCreated");
         $("#CreateEdit").modal("hide");
       })["catch"](function () {
         sweetalert2__WEBPACK_IMPORTED_MODULE_1___default.a.fire({
@@ -3238,6 +3327,7 @@ __webpack_require__.r(__webpack_exports__);
         });
         _this3.$Progress.fail();
       });
+      Fire.$emit("AfterCreated");
     },
     editModal: function editModal(item) {
       this.editmode = true;
@@ -4217,12 +4307,24 @@ var render = function render() {
   }, [_c("div", {
     staticClass: "inner text-white"
   }, [_c("h3", [_vm._v(_vm._s(_vm.pick))]), _vm._v(" "), _c("p", [_vm._v("Pick Up")])]), _vm._v(" "), _vm._m(1)])]), _vm._v(" "), _c("div", {
+    directives: [{
+      name: "show",
+      rawName: "v-show",
+      value: _vm.user.type == "Administrator",
+      expression: "user.type == 'Administrator'"
+    }],
     staticClass: "col-lg col"
   }, [_c("div", {
     staticClass: "small-box bg-success"
   }, [_c("div", {
     staticClass: "inner"
   }, [_c("h3", [_vm._v(_vm._s(_vm.count[2]) + " %")]), _vm._v(" "), _c("p", [_vm._v("Bounce Rate")])]), _vm._v(" "), _vm._m(2)])]), _vm._v(" "), _c("div", {
+    directives: [{
+      name: "show",
+      rawName: "v-show",
+      value: _vm.user.type == "Administrator",
+      expression: "user.type == 'Administrator'"
+    }],
     staticClass: "col-lg col"
   }, [_c("div", {
     staticClass: "small-box bg-danger"
@@ -4239,11 +4341,90 @@ var render = function render() {
       left: "0px",
       top: "0px"
     }
+  }, [_c("div", {
+    staticClass: "card-header"
   }, [_vm._m(4), _vm._v(" "), _c("div", {
+    staticClass: "card-tools"
+  }, [_c("ul", {
+    staticClass: "nav nav-pills ml-auto"
+  }, [_c("li", {
+    directives: [{
+      name: "show",
+      rawName: "v-show",
+      value: _vm.user.type == "Administrator",
+      expression: "user.type == 'Administrator'"
+    }],
+    staticClass: "nav-item"
+  }, [_vm._m(5)]), _vm._v(" "), _c("li", {
+    directives: [{
+      name: "show",
+      rawName: "v-show",
+      value: _vm.user.type == "Administrator",
+      expression: "user.type == 'Administrator'"
+    }],
+    staticClass: "nav-item"
+  }, [_c("a", {
+    directives: [{
+      name: "show",
+      rawName: "v-show",
+      value: _vm.user.type == "Administrator",
+      expression: "user.type == 'Administrator'"
+    }],
+    staticClass: "nav-link",
+    attrs: {
+      href: "#sales-chart",
+      "data-toggle": "tab"
+    }
+  }, [_c("i", {
+    staticClass: "fa-solid fa-chart-pie"
+  }), _vm._v("\n                                            Purchases\n                                        ")])]), _vm._v(" "), _c("li", {
+    directives: [{
+      name: "show",
+      rawName: "v-show",
+      value: _vm.user.type == "Administrator",
+      expression: "user.type == 'Administrator'"
+    }],
+    staticClass: "nav-item"
+  }, [_vm._m(6)]), _vm._v(" "), _c("li", {
+    directives: [{
+      name: "show",
+      rawName: "v-show",
+      value: _vm.user.type == "Administrator",
+      expression: "user.type=='Administrator'"
+    }],
+    staticClass: "nav-item pointer"
+  }, [_c("a", {
+    staticClass: "dropdown-toggle nav-link",
+    attrs: {
+      "data-toggle": "dropdown"
+    }
+  }, [_vm._v("\n                                                Management\n                                        ")]), _vm._v(" "), _vm._m(7)]), _vm._v(" "), _c("li", {
+    directives: [{
+      name: "show",
+      rawName: "v-show",
+      value: _vm.user.type == "Merchant",
+      expression: "user.type=='Merchant'"
+    }],
+    staticClass: "nav-item"
+  }, [_vm._m(8)]), _vm._v(" "), _c("li", {
+    directives: [{
+      name: "show",
+      rawName: "v-show",
+      value: _vm.profile.type == "Merchant",
+      expression: "profile.type=='Merchant'"
+    }],
+    staticClass: "nav-item"
+  }, [_vm._m(9)])])])]), _vm._v(" "), _c("div", {
     staticClass: "card-body"
   }, [_c("div", {
     staticClass: "tab-content p-0"
   }, [_c("div", {
+    directives: [{
+      name: "show",
+      rawName: "v-show",
+      value: _vm.user.type == "Administrator",
+      expression: "user.type=='Administrator'"
+    }],
     staticClass: "chart tab-pane active",
     staticStyle: {
       position: "relative",
@@ -4253,7 +4434,7 @@ var render = function render() {
       id: "revenue-chart"
     }
   }, [_c("canvas", {
-    ref: "ctx",
+    ref: "line",
     staticClass: "d-block",
     attrs: {
       height: "120",
@@ -4289,17 +4470,59 @@ var render = function render() {
       id: "conversion-chart-canvas",
       height: "325"
     }
+  })]), _vm._v(" "), _c("div", {
+    staticClass: "chart tab-pane",
+    staticStyle: {
+      position: "relative",
+      height: "300px"
+    },
+    attrs: {
+      id: "brand-chart"
+    }
+  }, [_c("canvas", {
+    ref: "brand",
+    attrs: {
+      id: "brand-chart-canvas",
+      height: "325"
+    }
+  })]), _vm._v(" "), _c("div", {
+    staticClass: "chart tab-pane",
+    staticStyle: {
+      position: "relative",
+      height: "300px"
+    },
+    attrs: {
+      id: "warehouse-chart"
+    }
+  }, [_c("canvas", {
+    ref: "warehouse",
+    attrs: {
+      id: "warehouse-chart-canvas",
+      height: "325"
+    }
   })])])])])]), _vm._v(" "), _c("div", {
-    staticClass: "col-md-4"
+    directives: [{
+      name: "show",
+      rawName: "v-show",
+      value: _vm.user.type == "Administrator",
+      expression: "user.type == 'Administrator'"
+    }],
+    staticClass: "col"
   }, [_c("div", {
     staticClass: "info-box mb-3 bg-orange"
-  }, [_vm._m(5), _vm._v(" "), _c("div", {
+  }, [_vm._m(10), _vm._v(" "), _c("div", {
     staticClass: "info-box-content"
   }, [_c("span", {
     staticClass: "info-box-text text-white"
   }, [_vm._v("Inventory")]), _vm._v(" "), _c("span", {
     staticClass: "info-box-number text-white"
-  }, [_vm._v(_vm._s(_vm.count[3]))])])]), _vm._v(" "), _vm._m(6), _vm._v(" "), _c("div", {
+  }, [_vm._v(_vm._s(_vm.count[3]))])])]), _vm._v(" "), _c("div", {
+    directives: [{
+      name: "show",
+      rawName: "v-show",
+      value: _vm.user.type == "Administrator",
+      expression: "user.type == 'Administrator'"
+    }],
     staticClass: "info-box mb-3 bg-green pointer",
     attrs: {
       type: "button",
@@ -4311,13 +4534,29 @@ var render = function render() {
         return _vm.downloadCSV();
       }
     }
-  }, [_vm._m(7), _vm._v(" "), _c("div", {
+  }, [_vm._m(11), _vm._v(" "), _c("div", {
     staticClass: "info-box-content"
   }, [_c("span", {
     staticClass: "info-box-text"
   }, [_vm._v("Total Generated")]), _vm._v(" "), _c("span", {
     staticClass: "info-box-number"
-  }, [_vm._v("RM " + _vm._s(_vm.count[4]))])])]), _vm._v(" "), _vm._m(8)])])])])]);
+  }, [_vm._v("RM " + _vm._s(_vm.count[4]))])])]), _vm._v(" "), _c("div", {
+    staticClass: "info-box mb-3 bg-pink"
+  }, [_vm._m(12), _vm._v(" "), _c("div", {
+    staticClass: "info-box-content"
+  }, [_c("span", {
+    staticClass: "info-box-text"
+  }, [_vm._v("Vehicles")]), _vm._v(" "), _c("span", {
+    staticClass: "info-box-number"
+  }, [_vm._v(_vm._s(_vm.count[5]))])])]), _vm._v(" "), _c("div", {
+    staticClass: "info-box mb-3 bg-indigo"
+  }, [_vm._m(13), _vm._v(" "), _c("div", {
+    staticClass: "info-box-content"
+  }, [_c("span", {
+    staticClass: "info-box-text"
+  }, [_vm._v("Branches")]), _vm._v(" "), _c("span", {
+    staticClass: "info-box-number"
+  }, [_vm._v(_vm._s(_vm.count[6]))])])])])])])])]);
 };
 var staticRenderFns = [function () {
   var _vm = this,
@@ -4354,41 +4593,85 @@ var staticRenderFns = [function () {
 }, function () {
   var _vm = this,
     _c = _vm._self._c;
-  return _c("div", {
-    staticClass: "card-header"
-  }, [_c("h3", {
+  return _c("h3", {
     staticClass: "card-title"
   }, [_c("i", {
     staticClass: "fas fa-chart-pie mr-1"
-  }), _vm._v("\n                                Sales\n                            ")]), _vm._v(" "), _c("div", {
-    staticClass: "card-tools"
-  }, [_c("ul", {
-    staticClass: "nav nav-pills ml-auto"
-  }, [_c("li", {
-    staticClass: "nav-item"
-  }, [_c("a", {
+  }), _vm._v("\n                                Report Charts\n                            ")]);
+}, function () {
+  var _vm = this,
+    _c = _vm._self._c;
+  return _c("a", {
     staticClass: "nav-link active",
     attrs: {
       href: "#revenue-chart",
       "data-toggle": "tab"
     }
-  }, [_vm._v("Area")])]), _vm._v(" "), _c("li", {
-    staticClass: "nav-item"
-  }, [_c("a", {
-    staticClass: "nav-link",
-    attrs: {
-      href: "#sales-chart",
-      "data-toggle": "tab"
-    }
-  }, [_vm._v("Pie")])]), _vm._v(" "), _c("li", {
-    staticClass: "nav-item"
-  }, [_c("a", {
+  }, [_c("i", {
+    staticClass: "fa-solid fa-chart-area"
+  }), _vm._v("\n                                            Purchases")]);
+}, function () {
+  var _vm = this,
+    _c = _vm._self._c;
+  return _c("a", {
     staticClass: "nav-link",
     attrs: {
       href: "#conversion-chart",
       "data-toggle": "tab"
     }
-  }, [_vm._v("Donut")])])])])]);
+  }, [_c("i", {
+    staticClass: "fa-solid fa-circle-half-stroke"
+  }), _vm._v("\n                                            Conversion\n                                        ")]);
+}, function () {
+  var _vm = this,
+    _c = _vm._self._c;
+  return _c("ul", {
+    staticClass: "dropdown-menu dropdown-menu-right"
+  }, [_c("li", {
+    staticClass: "nav-item"
+  }, [_c("a", {
+    staticClass: "dropdown-item",
+    attrs: {
+      href: "#warehouse-chart",
+      "data-toggle": "tab"
+    }
+  }, [_c("i", {
+    staticClass: "fa-solid fa-circle-half-stroke fa-rotate-180"
+  }), _vm._v("\n                                                    Category")])]), _vm._v(" "), _c("li", {
+    staticClass: "nav-item"
+  }, [_c("a", {
+    staticClass: "dropdown-item",
+    attrs: {
+      href: "#brand-chart",
+      "data-toggle": "tab"
+    }
+  }, [_c("i", {
+    staticClass: "fa-solid fa-circle-half-stroke"
+  }), _vm._v(" Brand")])])]);
+}, function () {
+  var _vm = this,
+    _c = _vm._self._c;
+  return _c("a", {
+    staticClass: "nav-link",
+    attrs: {
+      href: "#warehouse-chart",
+      "data-toggle": "tab"
+    }
+  }, [_c("i", {
+    staticClass: "fa-solid fa-circle-half-stroke fa-rotate-180"
+  }), _vm._v("\n                                            Category")]);
+}, function () {
+  var _vm = this,
+    _c = _vm._self._c;
+  return _c("a", {
+    staticClass: "nav-link",
+    attrs: {
+      href: "#brand-chart",
+      "data-toggle": "tab"
+    }
+  }, [_c("i", {
+    staticClass: "fa-solid fa-circle-half-stroke"
+  }), _vm._v(" Brand")]);
 }, function () {
   var _vm = this,
     _c = _vm._self._c;
@@ -4400,22 +4683,6 @@ var staticRenderFns = [function () {
 }, function () {
   var _vm = this,
     _c = _vm._self._c;
-  return _c("div", {
-    staticClass: "info-box mb-3 bg-danger"
-  }, [_c("span", {
-    staticClass: "info-box-icon"
-  }, [_c("i", {
-    staticClass: "far fa-heart"
-  })]), _vm._v(" "), _c("div", {
-    staticClass: "info-box-content"
-  }, [_c("span", {
-    staticClass: "info-box-text"
-  }, [_vm._v("Mentions")]), _vm._v(" "), _c("span", {
-    staticClass: "info-box-number"
-  }, [_vm._v("92,050")])])]);
-}, function () {
-  var _vm = this,
-    _c = _vm._self._c;
   return _c("span", {
     staticClass: "info-box-icon"
   }, [_c("i", {
@@ -4424,19 +4691,19 @@ var staticRenderFns = [function () {
 }, function () {
   var _vm = this,
     _c = _vm._self._c;
-  return _c("div", {
-    staticClass: "info-box mb-3 bg-info"
-  }, [_c("span", {
+  return _c("span", {
     staticClass: "info-box-icon"
   }, [_c("i", {
-    staticClass: "far fa-comment"
-  })]), _vm._v(" "), _c("div", {
-    staticClass: "info-box-content"
-  }, [_c("span", {
-    staticClass: "info-box-text"
-  }, [_vm._v("Direct Messages")]), _vm._v(" "), _c("span", {
-    staticClass: "info-box-number"
-  }, [_vm._v("163,921")])])]);
+    staticClass: "fas fa-van-shuttle"
+  })]);
+}, function () {
+  var _vm = this,
+    _c = _vm._self._c;
+  return _c("span", {
+    staticClass: "info-box-icon"
+  }, [_c("i", {
+    staticClass: "fas fa-city"
+  })]);
 }];
 render._withStripped = true;
 
@@ -9328,20 +9595,6 @@ var render = function render() {
   }, [_c("div", {
     staticClass: "card-tools"
   }, [_c("button", {
-    staticClass: "btn btn-tool bg-green",
-    attrs: {
-      type: "button",
-      toggle: "tooltip",
-      title: "Generate CSV"
-    },
-    on: {
-      click: function click($event) {
-        return _vm.generateCSV();
-      }
-    }
-  }, [_c("i", {
-    staticClass: "fa-solid fa-file-excel text-white"
-  })])]), _vm._v(" "), _c("button", {
     directives: [{
       name: "show",
       rawName: "v-show",
@@ -9363,7 +9616,21 @@ var render = function render() {
     }
   }, [_c("i", {
     staticClass: "fa-solid fa-plus icon-btn-sm"
-  })])])]), _vm._v(" "), _c("div", {
+  })]), _vm._v(" "), _c("button", {
+    staticClass: "btn btn-tool bg-green",
+    attrs: {
+      type: "button",
+      toggle: "tooltip",
+      title: "Generate CSV"
+    },
+    on: {
+      click: function click($event) {
+        return _vm.generateCSV();
+      }
+    }
+  }, [_c("i", {
+    staticClass: "fa-solid fa-file-excel text-white"
+  })])])])]), _vm._v(" "), _c("div", {
     staticClass: "card-body table-responsive p-0"
   }, [_c("table", {
     staticClass: "table table-hover text-nowrap"

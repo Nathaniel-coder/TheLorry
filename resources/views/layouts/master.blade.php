@@ -74,7 +74,7 @@
                             alt="User Image">
                     </div>
                     <div class="info">
-                        <router-link to="/profile" class="d-block">{{ Auth::user()->name }}</router-link>
+                        <router-link to="/profile" class="d-block"><h5>{{ Auth::user()->name }}</h5></router-link>
                     </div>
                 </div>
 

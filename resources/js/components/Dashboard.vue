@@ -42,7 +42,7 @@
                         </div>
                     </div>
 
-                    <div class="col-lg col">
+                    <div class="col-lg col" v-show="user.type == 'Administrator'">
 
                         <div class="small-box bg-success">
                             <div class="inner">
@@ -55,7 +55,7 @@
                         </div>
                     </div>
 
-                    <div class="col-lg col">
+                    <div class="col-lg col" v-show="user.type == 'Administrator'">
 
                         <div class="small-box bg-danger">
                             <div class="inner">
@@ -75,18 +75,62 @@
                             <div class="card-header">
                                 <h3 class="card-title">
                                     <i class="fas fa-chart-pie mr-1"></i>
-                                    Sales
+                                    Report Charts
                                 </h3>
                                 <div class="card-tools">
                                     <ul class="nav nav-pills ml-auto">
-                                        <li class="nav-item">
-                                            <a class="nav-link active" href="#revenue-chart" data-toggle="tab">Area</a>
+                                        <li class="nav-item" v-show="user.type == 'Administrator'">
+                                            <a class="nav-link active" href="#revenue-chart" data-toggle="tab">
+                                                <i class="fa-solid fa-chart-area"></i>
+                                                Purchases</a>
                                         </li>
-                                        <li class="nav-item">
-                                            <a class="nav-link" href="#sales-chart" data-toggle="tab">Pie</a>
+                                        <li class="nav-item" v-show="user.type == 'Administrator'">
+                                            <a class="nav-link" href="#sales-chart" data-toggle="tab"
+                                                v-show="user.type == 'Administrator'">
+                                                <i class="fa-solid fa-chart-pie"></i>
+                                                Purchases
+                                            </a>
                                         </li>
-                                        <li class="nav-item">
-                                            <a class="nav-link" href="#conversion-chart" data-toggle="tab">Donut</a>
+                                        <li class="nav-item" v-show="user.type == 'Administrator'">
+                                            <a class="nav-link" href="#conversion-chart" data-toggle="tab">
+                                                <i class="fa-solid fa-circle-half-stroke"></i>
+                                                Conversion
+                                            </a>
+                                        </li>
+                                        <!-- <button type="button" class="btn btn-tool dropdown-toggle" data-toggle="dropdown">
+                                            <i class="fas fa-wrench"></i>
+                                            </button>
+                                            <div class="dropdown-menu dropdown-menu-right" role="menu">
+                                                <a href="#" class="dropdown-item">Action</a>
+                                                <a href="#" class="dropdown-item">Another action</a>
+                                                <a href="#" class="dropdown-item">Something else here</a>
+                                                <a class="dropdown-divider"></a>
+                                                <a href="#" class="dropdown-item">Separated link</a>
+                                                </div> -->
+                                        <li class="nav-item pointer" v-show="user.type=='Administrator'">
+                                            <a class="dropdown-toggle nav-link" data-toggle="dropdown">
+                                                    Management
+                                            </a>
+                                            <ul class="dropdown-menu dropdown-menu-right">
+                                                <li class="nav-item">
+                                                    <a class="dropdown-item" href="#warehouse-chart" data-toggle="tab"><i
+                                                            class="fa-solid fa-circle-half-stroke fa-rotate-180"></i>
+                                                        Category</a>
+                                                </li>
+                                                <li class="nav-item">
+                                                    <a class="dropdown-item" href="#brand-chart" data-toggle="tab"><i
+                                                            class="fa-solid fa-circle-half-stroke"></i> Brand</a>
+                                                </li>
+                                            </ul>
+                                        </li>
+                                        <li class="nav-item" v-show="user.type=='Merchant'">
+                                            <a class="nav-link" href="#warehouse-chart" data-toggle="tab"><i
+                                                    class="fa-solid fa-circle-half-stroke fa-rotate-180"></i>
+                                                Category</a>
+                                        </li>
+                                        <li class="nav-item" v-show="profile.type=='Merchant'">
+                                            <a class="nav-link" href="#brand-chart" data-toggle="tab"><i
+                                                    class="fa-solid fa-circle-half-stroke"></i> Brand</a>
                                         </li>
                                     </ul>
                                 </div>
@@ -95,8 +139,8 @@
                                 <div class="tab-content p-0">
 
                                     <div class="chart tab-pane active" id="revenue-chart"
-                                        style="position: relative; height: 300px;">
-                                        <canvas class="d-block" height="120" id="revenue-chart-canvas" ref="ctx"></canvas>
+                                        style="position: relative; height: 300px;" v-show="user.type=='Administrator'">
+                                        <canvas class="d-block" height="120" id="revenue-chart-canvas" ref="line"></canvas>
                                     </div>
                                     <div class="chart tab-pane" id="sales-chart" style="position: relative; height: 300px;">
                                         <canvas ref="chart" id="sales-chart-canvas" height="325"></canvas>
@@ -105,12 +149,19 @@
                                         style="position: relative; height: 300px;">
                                         <canvas ref="donut" id="conversion-chart-canvas" height="325"></canvas>
                                     </div>
+                                    <div class="chart tab-pane" id="brand-chart"
+                                        style="position: relative; height: 300px;">
+                                        <canvas ref="brand" id="brand-chart-canvas" height="325"></canvas>
+                                    </div>
+                                    <div class="chart tab-pane" id="warehouse-chart"
+                                        style="position: relative; height: 300px;">
+                                        <canvas ref="warehouse" id="warehouse-chart-canvas" height="325"></canvas>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-4">
-
+                    <div class="col" v-show="user.type == 'Administrator'">
                         <div class="info-box mb-3 bg-orange">
                             <span class="info-box-icon"><i class="fas fa-tag text-white"></i></span>
                             <div class="info-box-content">
@@ -119,16 +170,8 @@
                             </div>
                         </div>
 
-                        <div class="info-box mb-3 bg-danger">
-                            <span class="info-box-icon"><i class="far fa-heart"></i></span>
-                            <div class="info-box-content">
-                                <span class="info-box-text">Mentions</span>
-                                <span class="info-box-number">92,050</span>
-                            </div>
-                        </div>
-
                         <div class="info-box mb-3 bg-green pointer" type="button" @click="downloadCSV()" toggle="tooltip"
-                            title="Financial Report">
+                            title="Financial Report" v-show="user.type == 'Administrator'">
                             <span class="info-box-icon"><i class="fas fa-file-excel"></i></span>
                             <div class="info-box-content">
                                 <span class="info-box-text">Total Generated</span>
@@ -136,11 +179,19 @@
                             </div>
                         </div>
 
-                        <div class="info-box mb-3 bg-info">
-                            <span class="info-box-icon"><i class="far fa-comment"></i></span>
+                        <div class="info-box mb-3 bg-pink">
+                            <span class="info-box-icon"><i class="fas fa-van-shuttle"></i></span>
                             <div class="info-box-content">
-                                <span class="info-box-text">Direct Messages</span>
-                                <span class="info-box-number">163,921</span>
+                                <span class="info-box-text">Vehicles</span>
+                                <span class="info-box-number">{{ count[5] }}</span>
+                            </div>
+                        </div>
+
+                        <div class="info-box mb-3 bg-indigo">
+                            <span class="info-box-icon"><i class="fas fa-city"></i></span>
+                            <div class="info-box-content">
+                                <span class="info-box-text">Branches</span>
+                                <span class="info-box-number">{{ count[6] }}</span>
                             </div>
                         </div>
                     </div>
@@ -217,48 +268,48 @@ export default {
                 }
             });
         },
-        renderArea(drop, pick) {
-            const dropOfflabels = drop.map(item => item.branch);
-            const pickUplabels = pick.map(item => item.province);
-            // const labels = pickUplabels;
-            const dropOffCounts = drop.map(item => item.count);
-            const pickUpCounts = pick.map(item => item.count);
+        // renderArea(drop, pick) {
+        //     const dropOfflabels = drop.map(item => item.branch);
+        //     const pickUplabels = pick.map(item => item.province);
+        //     // const labels = pickUplabels;
+        //     const dropOffCounts = drop.map(item => item.count);
+        //     const pickUpCounts = pick.map(item => item.count);
 
-            new Chart(this.$refs.ctx, {
-                type: 'line',
-                data: {
-                    // labels: labels,
-                    datasets: [{
-                        label: 'Drop Off',
-                        data: dropOffCounts,
-                        backgroundColor: 'rgba(255, 99, 132, 0.2)',
-                        borderColor: 'rgba(255, 99, 132, 1)',
-                        borderWidth: 1
-                    }, {
-                        label: 'Pick Up',
-                        data: pickUpCounts,
-                        backgroundColor: 'rgba(54, 162, 235, 0.2)',
-                        borderColor: 'rgba(54, 162, 235, 1)',
-                        borderWidth: 1
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    hover: {
-                        mode: 'index',
-                        intersect: false
-                    },
-                    scales: {
-                        yAxes: [{
-                            ticks: {
-                                beginAtZero: false,
-                                suggestedMin: 1
-                            }
-                        }]
-                    }
-                }
-            });
-        },
+        //     new Chart(this.$refs.ctx, {
+        //         type: 'line',
+        //         data: {
+        //             // labels: labels,
+        //             datasets: [{
+        //                 label: 'Drop Off',
+        //                 data: dropOffCounts,
+        //                 backgroundColor: 'rgba(255, 99, 132, 0.2)',
+        //                 borderColor: 'rgba(255, 99, 132, 1)',
+        //                 borderWidth: 1
+        //             }, {
+        //                 label: 'Pick Up',
+        //                 data: pickUpCounts,
+        //                 backgroundColor: 'rgba(54, 162, 235, 0.2)',
+        //                 borderColor: 'rgba(54, 162, 235, 1)',
+        //                 borderWidth: 1
+        //             }]
+        //         },
+        //         options: {
+        //             responsive: true,
+        //             hover: {
+        //                 mode: 'index',
+        //                 intersect: false
+        //             },
+        //             scales: {
+        //                 yAxes: [{
+        //                     ticks: {
+        //                         beginAtZero: false,
+        //                         suggestedMin: 1
+        //                     }
+        //                 }]
+        //             }
+        //         }
+        //     });
+        // },
         renderdonut(data) {
             new Chart(this.$refs.donut, {
                 type: 'doughnut',
@@ -279,7 +330,81 @@ export default {
                     }
                 }
             });
+        },
+        renderWarehouse(data) {
+            new Chart(this.$refs.warehouse, {
+                type: 'doughnut',
+                data: {
+                    labels: data.map(data => data.category),
+                    datasets: [{
+                        backgroundColor: ['#4bc0c0', '#ffcd56', '#36a2eb', '#f87979', '#9966ff'],
+                        data: data.map(data => data.quantity)
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        colors: {
+                            enabled: false
+                        }
+                    }
+                }
+            })
+        },
+        renderBrand(data) {
+            new Chart(this.$refs.brand, {
+                type: 'doughnut',
+                data: {
+                    labels: data.map(data => data.name),
+                    datasets: [{
+                        backgroundColor: ['#4bc0c0', '#ffcd56', '#36a2eb', '#f87979', '#9966ff'],
+                        data: data.map(data => data.quantity)
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        colors: {
+                            enabled: false
+                        }
+                    }
+                }
+            })
+        },
+        proviceLineChart(data) {
+            new Chart(this.$refs.line, {
+                type: 'line',
+                data: {
+                    labels: data.map(data => data.date),
+                    datasets: [{
+                        label: 'Drop Off',
+                        backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                        borderColor: 'rgba(255, 99, 132, 1)',
+                        data: data.map(data => data.dropOffCount)
+                    }, {
+                        label: 'Pickup',
+                        backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                        borderColor: 'rgba(54, 162, 235, 1)',
+                        data: data.map(data => data.pickupCount)
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    beginAtZero: false,
+                    plugins: {
+                        colors: {
+                            enabled: false
+                        }
+                    }
+                }
+            });
         }
+
+
+
     },
     created() {
         this.confirm();
@@ -291,13 +416,16 @@ export default {
         axios.get('api/dashboard').then(({ data }) => (this.count = data));
         axios.get('api/chart').then(response => { this.renderChart(response.data) });
         axios.get('api/donutdrop').then(response => { this.renderdonut(response.data) });
-        axios.all([
-            axios.get('api/provinceDataDrop'),
-            axios.get('api/provinceDataPick')
-        ])
-            .then(axios.spread((dropOffResponse, pickUpResponse) => {
-                this.renderArea(dropOffResponse.data, pickUpResponse.data);
-            }));
+        axios.get('api/warehouseChart').then(response => { this.renderWarehouse(response.data) });
+        axios.get('api/chartData').then(response => { this.proviceLineChart(response.data) });
+        axios.get('api/brandChart').then(response => { this.renderBrand(response.data) });
+        // axios.all([
+        //     axios.get('api/provinceDataDrop'),
+        //     axios.get('api/provinceDataPick')
+        // ])
+        //     .then(axios.spread((dropOffResponse, pickUpResponse) => {
+        //         this.renderArea(dropOffResponse.data, pickUpResponse.data);
+        //     }));
     }
 }
 </script>

@@ -24,16 +24,16 @@
                                 <h3 class="card-title">Warehouse</h3>
                                 <div class="card-tools">
                                     <div class="card-tools">
+                                        <button class="btn bg-blue" type="button" data-toggle="modal" data-target="#CreateEdit"
+                                            @click="newModal()" toggle="tooltip" title="Create Staff"
+                                            v-show="user.type == 'Merchant'">
+                                            <i class="fa-solid fa-plus icon-btn-sm"></i>
+                                        </button>
                                         <button type="button" class="btn btn-tool bg-green" toggle="tooltip"
                                             title="Generate CSV" @click="generateCSV()">
                                             <i class="fa-solid fa-file-excel text-white"></i>
                                         </button>
                                     </div>
-                                    <button class="btn bg-blue" type="button" data-toggle="modal" data-target="#CreateEdit"
-                                        @click="newModal()" toggle="tooltip" title="Create Staff"
-                                        v-show="user.type == 'Merchant'">
-                                        <i class="fa-solid fa-plus icon-btn-sm"></i>
-                                    </button>
                                 </div>
                             </div>
 
@@ -317,7 +317,6 @@ export default {
                         timer: 1500,
                     });
                     this.$Progress.finish();
-                    Fire.$emit("AfterCreated");
                     $("#CreateEdit").modal("hide");
                 }).catch(() => {
                     Swal.fire({
@@ -327,6 +326,7 @@ export default {
                     });
                     this.$Progress.fail();
                 });
+                Fire.$emit("AfterCreated");
         },
         editModal(item) {
             this.editmode = true;

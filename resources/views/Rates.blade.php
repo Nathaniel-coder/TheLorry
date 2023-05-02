@@ -2,8 +2,8 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <Rates>
         <DropOff>
-            <EastMalaysia>RM 4</EastMalaysia>
-            <WestMalaysia>RM 4</WestMalaysia>
+            <EastMalaysia>RM 6</EastMalaysia>
+            <WestMalaysia>RM 6</WestMalaysia>
         </DropOff>
         <PickUp>
             <EastMalaysia>RM 6</EastMalaysia>
