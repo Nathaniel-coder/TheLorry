@@ -349,10 +349,14 @@ export default {
         },
         Payment(){
             Axios.post('api/paymentPick').then($("#paymentModal").modal("hide"));
+            Fire.$emit("AfterCreated")
         }
     },
     created(){
         this.generateInvoice();
+        Fire.$on("AfterCreated", () => {
+                window.location.href='/ConsignmentPick'
+        });
     }
 }
 </script>

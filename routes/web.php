@@ -38,6 +38,9 @@ Route::get('csv', 'RICController@CSV');
 Route::get('dropQR/{id}', 'RICController@DropQR');
 Route::get('pickQR/{id}', 'RICController@pickQR');
 Route::get('ConsignmentDrop', 'RICController@ConsignmentDrop');
+Route::get('ConsignmentPick', 'RICController@ConsignmentPick');
+Route::get('PickConsignment/{id}', 'RICController@PickConsignment');
+Route::get('DropConsignment/{id}', 'RICController@DropConsignment');
 
 //404 counter
 Route::get('{path}', "HomeController@index")->where('path', '([A-z\/_.\d]+)?');

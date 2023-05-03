@@ -335,18 +335,24 @@ export default {
         makePayment() {
             if (this.payment == false) {
                 this.payment = true
-                $("#paymentModal").modal("show");                
+                $("#paymentModal").modal("show");
             } else {
                 this.payment = false
                 $("#paymentModal").modal("hide");
             }
         },
         Payment(){
-            Axios.post('api/paymentDrop').then($("#paymentModal").modal("hide"));
-        }
-    },
-    created(){
-        this.generateInvoice();
+            Axios.post('api/paymentDrop').then(
+                $("#paymentModal").modal("hide")
+                );
+                Fire.$emit("AfterCreated")
+            }
+        },
+        created(){
+            this.generateInvoice();
+            Fire.$on("AfterCreated", () => {
+                window.location.href='/ConsignmentDrop'
+        });
     }
 }
 </script>

@@ -95,23 +95,23 @@ class RICController extends Controller
     }
     public function PickXMLAll()
     {
-        if(Auth::user()->type != 'Customer'){
-        $data = Pickup::all();
-        return response()->view('XML', ['data' => $data])->header('Content-Type', 'text/xml');
-        }else{
+        if (Auth::user()->type != 'Customer') {
+            $data = Pickup::all();
+            return response()->view('XML', ['data' => $data])->header('Content-Type', 'text/xml');
+        } else {
             $data = Pickup::where('phone', Auth::user()->phone)->get();
             return response()->view('XML', ['data' => $data])->header('Content-Type', 'text/xml');
         }
     }
     public function DropXMLAll()
     {
-        if(Auth::user()->type != 'Customer'){
+        if (Auth::user()->type != 'Customer') {
             $data = Dropoff::all();
             return response()->view('XML', ['data' => $data])->header('Content-Type', 'text/xml');
-            }else{
-                $data = Dropoff::where('phone', Auth::user()->phone)->get();
-                return response()->view('XML', ['data' => $data])->header('Content-Type', 'text/xml');
-            }
+        } else {
+            $data = Dropoff::where('phone', Auth::user()->phone)->get();
+            return response()->view('XML', ['data' => $data])->header('Content-Type', 'text/xml');
+        }
     }
 
     /**
@@ -149,20 +149,20 @@ class RICController extends Controller
     {
         $data = Dropoff::where('id', $id)->get();
 
-        $qrcode = QrCode::size(250)->generate($data);
+        $qrcode = QrCode::size(250)->generate(json_encode($data, JSON_PRETTY_PRINT));
         $pdf = Pdf::loadView('QrCode', compact('qrcode'));
 
-        return $pdf->download('qr_code'.$id.'.pdf');
+        return $pdf->download('qr_code' . $id . '.pdf');
     }
 
     public function pickQR($id)
     {
         $data = Pickup::where('id', $id)->get();
 
-        $qrcode = QrCode::size(250)->generate($data);
+        $qrcode = QrCode::size(250)->generate(json_encode($data, JSON_PRETTY_PRINT));
         $pdf = Pdf::loadView('QrCode', compact('qrcode'));
 
-        return $pdf->download('qr_code'.$id.'.pdf');
+        return $pdf->download('qr_code' . $id . '.pdf');
     }
 
     /**
@@ -177,5 +177,21 @@ class RICController extends Controller
         $data = Dropoff::where('phone', $user->phone)->latest()->first();
         return view('Consignment', compact('data'));
     }
-
+    public function ConsignmentPick()
+    {
+        $user = Auth::user();
+        $data = Pickup::where('phone', $user->phone)->latest()->first();
+        return view('Consignment', compact('data'));
+    }
+    public function DropConsignment($id)
+    {
+        $data = Dropoff::where('id', $id)->get();
+        return view('Consignment', compact('data'));
+    }
+    public function PickConsignment($id)
+    {
+        $user = Auth::user();
+        $data = Pickup::where('id', $id)->latest()->first();
+        return view('Consignment', compact('data'));
+    }
 }

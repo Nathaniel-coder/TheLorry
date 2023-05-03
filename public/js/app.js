@@ -2424,10 +2424,14 @@ __webpack_require__.r(__webpack_exports__);
     },
     Payment: function Payment() {
       axios__WEBPACK_IMPORTED_MODULE_0___default.a.post('api/paymentDrop').then($("#paymentModal").modal("hide"));
+      Fire.$emit("AfterCreated");
     }
   },
   created: function created() {
     this.generateInvoice();
+    Fire.$on("AfterCreated", function () {
+      window.location.href = '/ConsignmentDrop';
+    });
   }
 });
 
@@ -2655,10 +2659,14 @@ function _toPrimitive(input, hint) { if (_typeof(input) !== "object" || input ==
     },
     Payment: function Payment() {
       axios__WEBPACK_IMPORTED_MODULE_0___default.a.post('api/paymentPick').then($("#paymentModal").modal("hide"));
+      Fire.$emit("AfterCreated");
     }
   }
 }, "created", function created() {
   this.generateInvoice();
+  Fire.$on("AfterCreated", function () {
+    window.location.href = '/ConsignmentPick';
+  });
 }));
 
 /***/ }),
