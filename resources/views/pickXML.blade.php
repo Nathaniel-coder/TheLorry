@@ -1,4 +1,4 @@
-<?php echo '<?xml version="1.0" encoding="UTF-8"?>'; ?>
+<?php echo '<?data version="1.0" encoding="UTF-8"?>'; ?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <Pickup>
         <Tracking>{{ $XML->address1 ? 'PCu' : 'Drp' }}{{ date('mdy', strtotime($XML->created_at)) }}{{ $XML->id }}</Tracking>

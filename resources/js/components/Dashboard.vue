@@ -107,9 +107,9 @@
                                                 <a class="dropdown-divider"></a>
                                                 <a href="#" class="dropdown-item">Separated link</a>
                                                 </div> -->
-                                        <li class="nav-item pointer" v-show="user.type=='Administrator'">
+                                        <li class="nav-item pointer" v-show="user.type == 'Administrator'">
                                             <a class="dropdown-toggle nav-link" data-toggle="dropdown">
-                                                    Management
+                                                Management
                                             </a>
                                             <ul class="dropdown-menu dropdown-menu-right">
                                                 <li class="nav-item">
@@ -123,12 +123,12 @@
                                                 </li>
                                             </ul>
                                         </li>
-                                        <li class="nav-item" v-show="user.type=='Merchant'">
+                                        <li class="nav-item" v-show="user.type == 'Merchant'">
                                             <a class="nav-link" href="#warehouse-chart" data-toggle="tab"><i
                                                     class="fa-solid fa-circle-half-stroke fa-rotate-180"></i>
                                                 Category</a>
                                         </li>
-                                        <li class="nav-item" v-show="profile.type=='Merchant'">
+                                        <li class="nav-item" v-show="profile.type == 'Merchant'">
                                             <a class="nav-link" href="#brand-chart" data-toggle="tab"><i
                                                     class="fa-solid fa-circle-half-stroke"></i> Brand</a>
                                         </li>
@@ -139,7 +139,7 @@
                                 <div class="tab-content p-0">
 
                                     <div class="chart tab-pane active" id="revenue-chart"
-                                        style="position: relative; height: 300px;" v-show="user.type=='Administrator'">
+                                        style="position: relative; height: 300px;" v-show="user.type == 'Administrator'">
                                         <canvas class="d-block" height="120" id="revenue-chart-canvas" ref="line"></canvas>
                                     </div>
                                     <div class="chart tab-pane" id="sales-chart" style="position: relative; height: 300px;">
@@ -149,8 +149,7 @@
                                         style="position: relative; height: 300px;">
                                         <canvas ref="donut" id="conversion-chart-canvas" height="325"></canvas>
                                     </div>
-                                    <div class="chart tab-pane" id="brand-chart"
-                                        style="position: relative; height: 300px;">
+                                    <div class="chart tab-pane" id="brand-chart" style="position: relative; height: 300px;">
                                         <canvas ref="brand" id="brand-chart-canvas" height="325"></canvas>
                                     </div>
                                     <div class="chart tab-pane" id="warehouse-chart"
@@ -247,7 +246,7 @@ export default {
                 var fileURL = window.URL.createObjectURL(new Blob([response.data]));
                 var fileLink = document.createElement('a');
                 fileLink.href = fileURL;
-                fileLink.setAttribute('download', 'Financial Report.xlsx');
+                fileLink.setAttribute('download', 'Financial Report.csv');
                 document.body.appendChild(fileLink);
                 fileLink.click();
             })

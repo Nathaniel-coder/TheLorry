@@ -2139,7 +2139,7 @@ __webpack_require__.r(__webpack_exports__);
         var fileURL = window.URL.createObjectURL(new Blob([response.data]));
         var fileLink = document.createElement('a');
         fileLink.href = fileURL;
-        fileLink.setAttribute('download', 'Financial Report.xlsx');
+        fileLink.setAttribute('download', 'Financial Report.csv');
         document.body.appendChild(fileLink);
         fileLink.click();
       });
@@ -3407,7 +3407,7 @@ __webpack_require__.r(__webpack_exports__);
         var fileURL = window.URL.createObjectURL(new Blob([response.data]));
         var fileLink = document.createElement('a');
         fileLink.href = fileURL;
-        fileLink.setAttribute('download', 'Warehouse.xlsx');
+        fileLink.setAttribute('download', 'Warehouse.csv');
         document.body.appendChild(fileLink);
         fileLink.click();
       });
@@ -4398,7 +4398,7 @@ var render = function render() {
       name: "show",
       rawName: "v-show",
       value: _vm.user.type == "Administrator",
-      expression: "user.type=='Administrator'"
+      expression: "user.type == 'Administrator'"
     }],
     staticClass: "nav-item pointer"
   }, [_c("a", {
@@ -4406,12 +4406,12 @@ var render = function render() {
     attrs: {
       "data-toggle": "dropdown"
     }
-  }, [_vm._v("\n                                                Management\n                                        ")]), _vm._v(" "), _vm._m(7)]), _vm._v(" "), _c("li", {
+  }, [_vm._v("\n                                            Management\n                                        ")]), _vm._v(" "), _vm._m(7)]), _vm._v(" "), _c("li", {
     directives: [{
       name: "show",
       rawName: "v-show",
       value: _vm.user.type == "Merchant",
-      expression: "user.type=='Merchant'"
+      expression: "user.type == 'Merchant'"
     }],
     staticClass: "nav-item"
   }, [_vm._m(8)]), _vm._v(" "), _c("li", {
@@ -4419,7 +4419,7 @@ var render = function render() {
       name: "show",
       rawName: "v-show",
       value: _vm.profile.type == "Merchant",
-      expression: "profile.type=='Merchant'"
+      expression: "profile.type == 'Merchant'"
     }],
     staticClass: "nav-item"
   }, [_vm._m(9)])])])]), _vm._v(" "), _c("div", {
@@ -4431,7 +4431,7 @@ var render = function render() {
       name: "show",
       rawName: "v-show",
       value: _vm.user.type == "Administrator",
-      expression: "user.type=='Administrator'"
+      expression: "user.type == 'Administrator'"
     }],
     staticClass: "chart tab-pane active",
     staticStyle: {

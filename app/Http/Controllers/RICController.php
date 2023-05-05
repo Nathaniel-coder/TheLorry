@@ -12,7 +12,6 @@ use App\Exports\ExportDropOff;
 use App\Exports\ExportDelivery;
 use Barryvdh\DomPDF\Facade\Pdf;
 use App\Exports\ExportWarehouse;
-use Dompdf\Dompdf;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Maatwebsite\Excel\Facades\Excel;
@@ -122,20 +121,20 @@ class RICController extends Controller
      */
     public function DropCSV()
     {
-        return Excel::download(new ExportDropOff, 'DropOff.xlsx');
+        return Excel::download(new ExportDropOff, 'DropOff.csv');
     }
     public function PickCSV()
     {
-        return Excel::download(new PickUpExport, 'PickUp.xlsx');
+        return Excel::download(new PickUpExport, 'PickUp.csv');
     }
 
     public function WarehouseCSV()
     {
-        return Excel::download(new ExportWarehouse, 'Warehouse.xlsx');
+        return Excel::download(new ExportWarehouse, 'Warehouse.csv');
     }
     public function CSV()
     {
-        return Excel::download(new ExportDelivery, 'Delivery.xlsx');
+        return Excel::download(new ExportDelivery, 'Delivery.csv');
     }
 
     /**
@@ -150,7 +149,7 @@ class RICController extends Controller
         $data = Dropoff::where('id', $id)->get();
 
         $qrcode = QrCode::size(250)->generate(json_encode($data, JSON_PRETTY_PRINT));
-        $pdf = Pdf::loadView('QrCode', compact('qrcode'));
+        $pdf = Pdf::loadView('QrCode', 'qrcode');
 
         return $pdf->download('qr_code' . $id . '.pdf');
     }
@@ -160,10 +159,11 @@ class RICController extends Controller
         $data = Pickup::where('id', $id)->get();
 
         $qrcode = QrCode::size(250)->generate(json_encode($data, JSON_PRETTY_PRINT));
-        $pdf = Pdf::loadView('QrCode', compact('qrcode'));
+        $pdf = Pdf::loadView('QrCode', ['qrcode' => $qrcode]);
 
         return $pdf->download('qr_code' . $id . '.pdf');
     }
+
 
     /**
      * Remove the specified resource from storage.
