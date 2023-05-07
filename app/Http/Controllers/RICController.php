@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\User;
 use App\Pickup;
+use ZipArchive;
 use App\Dropoff;
 use Illuminate\View\View;
 use Illuminate\Http\Request;
@@ -35,8 +36,8 @@ class RICController extends Controller
             $dropOff = Dropoff::where('phone', $phone)->orderBy('created_at', 'DESC')->get();
             $pickUP = Pickup::where('phone', $phone)->orderBy('created_at', 'DESC')->get();
         } else {
-            $dropOff = Dropoff::all();
-            $pickUP = Pickup::all();
+            $dropOff = Dropoff::orderByRaw('created_at', 'Desc')->paginate(5);
+            $pickUP = Pickup::orderByRaw('created_at', 'Desc')->paginate(5);
         }
 
         return view('receipt&Invoice', ['dropOff' => $dropOff, 'pickUp' => $pickUP]);
@@ -174,24 +175,40 @@ class RICController extends Controller
     public function ConsignmentDrop()
     {
         $user = Auth::user();
-        $data = Dropoff::where('phone', $user->phone)->latest()->first();
-        return view('Consignment', compact('data'));
+        $data = Dropoff::where('phone', $user->phone)->orderByRaw('created_at', 'Desc')->first();
+        return view('Consignment', ['data' => $data]);
     }
     public function ConsignmentPick()
     {
         $user = Auth::user();
-        $data = Pickup::where('phone', $user->phone)->latest()->first();
-        return view('Consignment', compact('data'));
+        $data = Pickup::where('phone', $user->phone)->orderByRaw('created_at', 'Desc')->first();
+        return view('Consignment', ['data' => $data]);
     }
     public function DropConsignment($id)
     {
-        $data = Dropoff::where('id', $id)->get();
-        return view('Consignment', compact('data'));
+        $data = Dropoff::findOrFail($id);
+        return view('Consignment', ['data' => $data]);
     }
     public function PickConsignment($id)
     {
-        $user = Auth::user();
-        $data = Pickup::where('id', $id)->latest()->first();
-        return view('Consignment', compact('data'));
+        $data = Pickup::findOrFail($id);
+        return view('Consignment', ['data' => $data]);
+    }
+
+    public function download(Request $request)
+    {
+        $ids = $request->input('ids');
+        $rows = DB::table('my_table')->whereIn('id', $ids)->get();
+
+        // Step 5: Create a zip file and add the data to it
+        $zip = new ZipArchive;
+        $zip->open(storage_path('app/temp.zip'), ZipArchive::CREATE);
+        foreach ($rows as $row) {
+            $zip->addFromString($row->filename, $row->data);
+        }
+        $zip->close();
+
+        // Step 6: Return a download response to the user
+        return response()->download(storage_path('app/temp.zip'))->deleteFileAfterSend(true);
     }
 }

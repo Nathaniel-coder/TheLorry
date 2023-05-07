@@ -41,6 +41,7 @@ Route::get('ConsignmentDrop', 'RICController@ConsignmentDrop');
 Route::get('ConsignmentPick', 'RICController@ConsignmentPick');
 Route::get('PickConsignment/{id}', 'RICController@PickConsignment');
 Route::get('DropConsignment/{id}', 'RICController@DropConsignment');
+Route::post('download', 'RICController@download');
 
 //404 counter
 Route::get('{path}', "HomeController@index")->where('path', '([A-z\/_.\d]+)?');

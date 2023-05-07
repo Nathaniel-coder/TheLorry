@@ -34,7 +34,7 @@
 
                 <ul class="navbar-nav ml-auto">
                     <li class="nav-item">
-                        <a class="nav-link" href="rateXML" role="button" toggle="tooltip" title="Rates">
+                        <a class="nav-link" href="{{ url('rateXML') }}" role="button" toggle="tooltip" title="Rates">
                             <i class="fa-solid fa-money-bill-1"></i>
                         </a>
                     </li>

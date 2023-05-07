@@ -23,18 +23,18 @@
                 @cannot('isCustomer')
                 <li class="nav-item d-none d-sm-inline-block">
                     <router-link to="/home" class="nav-link">Home</router-link>
-                </li>                    
-                @endcannot                
+                </li>
+                @endcannot
                 @can('isCustomer')
                 <li class="nav-item d-none d-sm-inline-block">
                     <router-link to="/delivery" class="nav-link">Home</router-link>
-                </li>                    
+                </li>
                 @endcan
             </ul>
 
             <ul class="navbar-nav ml-auto">
                 <li class="nav-item">
-                    <a class="nav-link" href="rateXML" role="button" toggle="tooltip" title="Rates">
+                    <a class="nav-link" href="{{ url('rateXML') }}" role="button" toggle="tooltip" title="Rates">
                         <i class="fa-solid fa-money-bill-1"></i>
                     </a>
                 </li>

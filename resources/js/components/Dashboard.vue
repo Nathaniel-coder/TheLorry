@@ -4,16 +4,16 @@
             <div class="container-fluid">
                 <div class="row mb-2">
                     <div class="col-sm-6">
-                        <h1 v-show="user.type != 'Customer'">Dashboard</h1>
+                        <h1 v-show="profile.type != 'Customer'">Dashboard</h1>
                     </div>
                 </div>
             </div>
         </section>
-        <div class="container" v-show="user.type == 'Customer'">
+        <div class="container" v-show="profile.type == 'Customer'">
             <div class="d-flex justify-content-center align-items-center">
             </div>
         </div>
-        <div class="container" v-show="user.type != 'Customer'">
+        <div class="container" v-show="profile.type != 'Customer'">
             <div class="justify-content-center">
                 <div class="row">
                     <div class="col-lg col">
@@ -42,7 +42,7 @@
                         </div>
                     </div>
 
-                    <div class="col-lg col" v-show="user.type == 'Administrator'">
+                    <div class="col-lg col" v-show="profile.type == 'Administrator'">
 
                         <div class="small-box bg-success">
                             <div class="inner">
@@ -55,7 +55,7 @@
                         </div>
                     </div>
 
-                    <div class="col-lg col" v-show="user.type == 'Administrator'">
+                    <div class="col-lg col" v-show="profile.type == 'Administrator'">
 
                         <div class="small-box bg-danger">
                             <div class="inner">
@@ -97,6 +97,11 @@
                                                 Conversion
                                             </a>
                                         </li>
+                                        <li class="nav-item">
+                                            <a class="nav-link" href="#warehouse-all-chart" data-toggle="tab"><i
+                                                    class="fa-solid fa-circle-half-stroke fa-rotate-180"></i>
+                                                Category</a>
+                                        </li>
                                         <!-- <button type="button" class="btn btn-tool dropdown-toggle" data-toggle="dropdown">
                                             <i class="fas fa-wrench"></i>
                                             </button>
@@ -107,22 +112,6 @@
                                                 <a class="dropdown-divider"></a>
                                                 <a href="#" class="dropdown-item">Separated link</a>
                                                 </div> -->
-                                        <li class="nav-item pointer" v-show="user.type == 'Administrator'">
-                                            <a class="dropdown-toggle nav-link" data-toggle="dropdown">
-                                                Management
-                                            </a>
-                                            <ul class="dropdown-menu dropdown-menu-right">
-                                                <li class="nav-item">
-                                                    <a class="dropdown-item" href="#warehouse-chart" data-toggle="tab"><i
-                                                            class="fa-solid fa-circle-half-stroke fa-rotate-180"></i>
-                                                        Category</a>
-                                                </li>
-                                                <li class="nav-item">
-                                                    <a class="dropdown-item" href="#brand-chart" data-toggle="tab"><i
-                                                            class="fa-solid fa-circle-half-stroke"></i> Brand</a>
-                                                </li>
-                                            </ul>
-                                        </li>
                                         <li class="nav-item" v-show="user.type == 'Merchant'">
                                             <a class="nav-link" href="#warehouse-chart" data-toggle="tab"><i
                                                     class="fa-solid fa-circle-half-stroke fa-rotate-180"></i>
@@ -155,6 +144,13 @@
                                     <div class="chart tab-pane" id="warehouse-chart"
                                         style="position: relative; height: 300px;">
                                         <canvas ref="warehouse" id="warehouse-chart-canvas" height="325"></canvas>
+                                    </div>
+                                    <div class="chart tab-pane" id="warehouse-all-chart" style="position: relative; height: 300px;">
+                                        <canvas ref="brand" id="warehouse-all-chart-canvas" height="325"></canvas>
+                                    </div>
+                                    <div class="chart tab-pane" id="warehouse-all-chart"
+                                        style="position: relative; height: 300px;">
+                                        <canvas ref="warehouse" id="warehouse-all-chart-canvas" height="325"></canvas>
                                     </div>
                                 </div>
                             </div>
@@ -322,11 +318,6 @@ export default {
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
-                    plugins: {
-                        colors: {
-                            enabled: false
-                        }
-                    }
                 }
             });
         },

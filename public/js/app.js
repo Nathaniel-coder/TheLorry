@@ -2221,12 +2221,7 @@ __webpack_require__.r(__webpack_exports__);
         },
         options: {
           responsive: true,
-          maintainAspectRatio: false,
-          plugins: {
-            colors: {
-              enabled: false
-            }
-          }
+          maintainAspectRatio: false
         }
       });
     },
@@ -4271,15 +4266,15 @@ var render = function render() {
     directives: [{
       name: "show",
       rawName: "v-show",
-      value: _vm.user.type != "Customer",
-      expression: "user.type != 'Customer'"
+      value: _vm.profile.type != "Customer",
+      expression: "profile.type != 'Customer'"
     }]
   }, [_vm._v("Dashboard")])])])])]), _vm._v(" "), _c("div", {
     directives: [{
       name: "show",
       rawName: "v-show",
-      value: _vm.user.type == "Customer",
-      expression: "user.type == 'Customer'"
+      value: _vm.profile.type == "Customer",
+      expression: "profile.type == 'Customer'"
     }],
     staticClass: "container"
   }, [_c("div", {
@@ -4288,8 +4283,8 @@ var render = function render() {
     directives: [{
       name: "show",
       rawName: "v-show",
-      value: _vm.user.type != "Customer",
-      expression: "user.type != 'Customer'"
+      value: _vm.profile.type != "Customer",
+      expression: "profile.type != 'Customer'"
     }],
     staticClass: "container"
   }, [_c("div", {
@@ -4318,8 +4313,8 @@ var render = function render() {
     directives: [{
       name: "show",
       rawName: "v-show",
-      value: _vm.user.type == "Administrator",
-      expression: "user.type == 'Administrator'"
+      value: _vm.profile.type == "Administrator",
+      expression: "profile.type == 'Administrator'"
     }],
     staticClass: "col-lg col"
   }, [_c("div", {
@@ -4330,8 +4325,8 @@ var render = function render() {
     directives: [{
       name: "show",
       rawName: "v-show",
-      value: _vm.user.type == "Administrator",
-      expression: "user.type == 'Administrator'"
+      value: _vm.profile.type == "Administrator",
+      expression: "profile.type == 'Administrator'"
     }],
     staticClass: "col-lg col"
   }, [_c("div", {
@@ -4393,20 +4388,7 @@ var render = function render() {
       expression: "user.type == 'Administrator'"
     }],
     staticClass: "nav-item"
-  }, [_vm._m(6)]), _vm._v(" "), _c("li", {
-    directives: [{
-      name: "show",
-      rawName: "v-show",
-      value: _vm.user.type == "Administrator",
-      expression: "user.type == 'Administrator'"
-    }],
-    staticClass: "nav-item pointer"
-  }, [_c("a", {
-    staticClass: "dropdown-toggle nav-link",
-    attrs: {
-      "data-toggle": "dropdown"
-    }
-  }, [_vm._v("\n                                            Management\n                                        ")]), _vm._v(" "), _vm._m(7)]), _vm._v(" "), _c("li", {
+  }, [_vm._m(6)]), _vm._v(" "), _vm._m(7), _vm._v(" "), _c("li", {
     directives: [{
       name: "show",
       rawName: "v-show",
@@ -4506,6 +4488,36 @@ var render = function render() {
     ref: "warehouse",
     attrs: {
       id: "warehouse-chart-canvas",
+      height: "325"
+    }
+  })]), _vm._v(" "), _c("div", {
+    staticClass: "chart tab-pane",
+    staticStyle: {
+      position: "relative",
+      height: "300px"
+    },
+    attrs: {
+      id: "warehouse-all-chart"
+    }
+  }, [_c("canvas", {
+    ref: "brand",
+    attrs: {
+      id: "warehouse-all-chart-canvas",
+      height: "325"
+    }
+  })]), _vm._v(" "), _c("div", {
+    staticClass: "chart tab-pane",
+    staticStyle: {
+      position: "relative",
+      height: "300px"
+    },
+    attrs: {
+      id: "warehouse-all-chart"
+    }
+  }, [_c("canvas", {
+    ref: "warehouse",
+    attrs: {
+      id: "warehouse-all-chart-canvas",
       height: "325"
     }
   })])])])])]), _vm._v(" "), _c("div", {
@@ -4633,29 +4645,17 @@ var staticRenderFns = [function () {
 }, function () {
   var _vm = this,
     _c = _vm._self._c;
-  return _c("ul", {
-    staticClass: "dropdown-menu dropdown-menu-right"
-  }, [_c("li", {
+  return _c("li", {
     staticClass: "nav-item"
   }, [_c("a", {
-    staticClass: "dropdown-item",
+    staticClass: "nav-link",
     attrs: {
-      href: "#warehouse-chart",
+      href: "#warehouse-all-chart",
       "data-toggle": "tab"
     }
   }, [_c("i", {
     staticClass: "fa-solid fa-circle-half-stroke fa-rotate-180"
-  }), _vm._v("\n                                                    Category")])]), _vm._v(" "), _c("li", {
-    staticClass: "nav-item"
-  }, [_c("a", {
-    staticClass: "dropdown-item",
-    attrs: {
-      href: "#brand-chart",
-      "data-toggle": "tab"
-    }
-  }, [_c("i", {
-    staticClass: "fa-solid fa-circle-half-stroke"
-  }), _vm._v(" Brand")])])]);
+  }), _vm._v("\n                                            Category")])]);
 }, function () {
   var _vm = this,
     _c = _vm._self._c;
