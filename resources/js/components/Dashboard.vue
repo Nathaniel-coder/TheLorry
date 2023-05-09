@@ -97,11 +97,6 @@
                                                 Conversion
                                             </a>
                                         </li>
-                                        <li class="nav-item">
-                                            <a class="nav-link" href="#warehouse-all-chart" data-toggle="tab"><i
-                                                    class="fa-solid fa-circle-half-stroke fa-rotate-180"></i>
-                                                Category</a>
-                                        </li>
                                         <!-- <button type="button" class="btn btn-tool dropdown-toggle" data-toggle="dropdown">
                                             <i class="fas fa-wrench"></i>
                                             </button>
@@ -112,12 +107,28 @@
                                                 <a class="dropdown-divider"></a>
                                                 <a href="#" class="dropdown-item">Separated link</a>
                                                 </div> -->
-                                        <li class="nav-item" v-show="user.type == 'Merchant'">
+                                        <li class="nav-item pointer" v-show="user.type=='Administrator'">
+                                            <a class="dropdown-toggle nav-link" data-toggle="dropdown">
+                                                    Management
+                                            </a>
+                                            <ul class="dropdown-menu dropdown-menu-right">
+                                                <li class="nav-item">
+                                                    <a class="dropdown-item" href="#warehouse-chart" data-toggle="tab"><i
+                                                            class="fa-solid fa-circle-half-stroke fa-rotate-180"></i>
+                                                        Category</a>
+                                                </li>
+                                                <li class="nav-item">
+                                                    <a class="dropdown-item" href="#brand-chart" data-toggle="tab"><i
+                                                            class="fa-solid fa-circle-half-stroke"></i> Brand</a>
+                                                </li>
+                                            </ul>
+                                        </li>
+                                        <li class="nav-item" v-show="user.type=='Merchant'">
                                             <a class="nav-link" href="#warehouse-chart" data-toggle="tab"><i
                                                     class="fa-solid fa-circle-half-stroke fa-rotate-180"></i>
                                                 Category</a>
                                         </li>
-                                        <li class="nav-item" v-show="profile.type == 'Merchant'">
+                                        <li class="nav-item" v-show="profile.type=='Merchant'">
                                             <a class="nav-link" href="#brand-chart" data-toggle="tab"><i
                                                     class="fa-solid fa-circle-half-stroke"></i> Brand</a>
                                         </li>
@@ -128,7 +139,7 @@
                                 <div class="tab-content p-0">
 
                                     <div class="chart tab-pane active" id="revenue-chart"
-                                        style="position: relative; height: 300px;" v-show="user.type == 'Administrator'">
+                                        style="position: relative; height: 300px;" v-show="user.type=='Administrator'">
                                         <canvas class="d-block" height="120" id="revenue-chart-canvas" ref="line"></canvas>
                                     </div>
                                     <div class="chart tab-pane" id="sales-chart" style="position: relative; height: 300px;">
@@ -138,25 +149,19 @@
                                         style="position: relative; height: 300px;">
                                         <canvas ref="donut" id="conversion-chart-canvas" height="325"></canvas>
                                     </div>
-                                    <div class="chart tab-pane" id="brand-chart" style="position: relative; height: 300px;">
+                                    <div class="chart tab-pane" id="brand-chart"
+                                        style="position: relative; height: 300px;">
                                         <canvas ref="brand" id="brand-chart-canvas" height="325"></canvas>
                                     </div>
                                     <div class="chart tab-pane" id="warehouse-chart"
                                         style="position: relative; height: 300px;">
                                         <canvas ref="warehouse" id="warehouse-chart-canvas" height="325"></canvas>
                                     </div>
-                                    <div class="chart tab-pane" id="warehouse-all-chart" style="position: relative; height: 300px;">
-                                        <canvas ref="brand" id="warehouse-all-chart-canvas" height="325"></canvas>
-                                    </div>
-                                    <div class="chart tab-pane" id="warehouse-all-chart"
-                                        style="position: relative; height: 300px;">
-                                        <canvas ref="warehouse" id="warehouse-all-chart-canvas" height="325"></canvas>
-                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <div class="col" v-show="user.type == 'Administrator'" @click="email()">
+                    <div class="col" v-show="user.type == 'Administrator'">
                         <div class="info-box mb-3 bg-orange">
                             <span class="info-box-icon"><i class="fas fa-tag text-white"></i></span>
                             <div class="info-box-content">
@@ -263,9 +268,6 @@ export default {
                 }
             });
         },
-        email(){
-            axios.post('/subscribe');
-        },
         // renderArea(drop, pick) {
         //     const dropOfflabels = drop.map(item => item.branch);
         //     const pickUplabels = pick.map(item => item.province);
@@ -321,6 +323,11 @@ export default {
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
+                    plugins: {
+                        colors: {
+                            enabled: false
+                        }
+                    }
                 }
             });
         },

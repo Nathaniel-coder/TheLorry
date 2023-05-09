@@ -2164,9 +2164,6 @@ __webpack_require__.r(__webpack_exports__);
         }
       });
     },
-    email: function email() {
-      axios.post('/subscribe');
-    },
     // renderArea(drop, pick) {
     //     const dropOfflabels = drop.map(item => item.branch);
     //     const pickUplabels = pick.map(item => item.province);
@@ -2224,7 +2221,12 @@ __webpack_require__.r(__webpack_exports__);
         },
         options: {
           responsive: true,
-          maintainAspectRatio: false
+          maintainAspectRatio: false,
+          plugins: {
+            colors: {
+              enabled: false
+            }
+          }
         }
       });
     },
@@ -2428,7 +2430,7 @@ __webpack_require__.r(__webpack_exports__);
   created: function created() {
     this.generateInvoice();
     Fire.$on("AfterCreated", function () {
-      window.location.href = "/ConsignmentDrop";
+      window.location.href = '/ConsignmentDrop';
     });
   }
 });
@@ -3405,7 +3407,7 @@ __webpack_require__.r(__webpack_exports__);
         var fileURL = window.URL.createObjectURL(new Blob([response.data]));
         var fileLink = document.createElement('a');
         fileLink.href = fileURL;
-        fileLink.setAttribute('download', 'Warehouse.csv');
+        fileLink.setAttribute('download', 'Warehouse.xlsx');
         document.body.appendChild(fileLink);
         fileLink.click();
       });
@@ -4391,12 +4393,25 @@ var render = function render() {
       expression: "user.type == 'Administrator'"
     }],
     staticClass: "nav-item"
-  }, [_vm._m(6)]), _vm._v(" "), _vm._m(7), _vm._v(" "), _c("li", {
+  }, [_vm._m(6)]), _vm._v(" "), _c("li", {
+    directives: [{
+      name: "show",
+      rawName: "v-show",
+      value: _vm.user.type == "Administrator",
+      expression: "user.type=='Administrator'"
+    }],
+    staticClass: "nav-item pointer"
+  }, [_c("a", {
+    staticClass: "dropdown-toggle nav-link",
+    attrs: {
+      "data-toggle": "dropdown"
+    }
+  }, [_vm._v("\n                                                Management\n                                        ")]), _vm._v(" "), _vm._m(7)]), _vm._v(" "), _c("li", {
     directives: [{
       name: "show",
       rawName: "v-show",
       value: _vm.user.type == "Merchant",
-      expression: "user.type == 'Merchant'"
+      expression: "user.type=='Merchant'"
     }],
     staticClass: "nav-item"
   }, [_vm._m(8)]), _vm._v(" "), _c("li", {
@@ -4404,7 +4419,7 @@ var render = function render() {
       name: "show",
       rawName: "v-show",
       value: _vm.profile.type == "Merchant",
-      expression: "profile.type == 'Merchant'"
+      expression: "profile.type=='Merchant'"
     }],
     staticClass: "nav-item"
   }, [_vm._m(9)])])])]), _vm._v(" "), _c("div", {
@@ -4416,7 +4431,7 @@ var render = function render() {
       name: "show",
       rawName: "v-show",
       value: _vm.user.type == "Administrator",
-      expression: "user.type == 'Administrator'"
+      expression: "user.type=='Administrator'"
     }],
     staticClass: "chart tab-pane active",
     staticStyle: {
@@ -4493,36 +4508,6 @@ var render = function render() {
       id: "warehouse-chart-canvas",
       height: "325"
     }
-  })]), _vm._v(" "), _c("div", {
-    staticClass: "chart tab-pane",
-    staticStyle: {
-      position: "relative",
-      height: "300px"
-    },
-    attrs: {
-      id: "warehouse-all-chart"
-    }
-  }, [_c("canvas", {
-    ref: "brand",
-    attrs: {
-      id: "warehouse-all-chart-canvas",
-      height: "325"
-    }
-  })]), _vm._v(" "), _c("div", {
-    staticClass: "chart tab-pane",
-    staticStyle: {
-      position: "relative",
-      height: "300px"
-    },
-    attrs: {
-      id: "warehouse-all-chart"
-    }
-  }, [_c("canvas", {
-    ref: "warehouse",
-    attrs: {
-      id: "warehouse-all-chart-canvas",
-      height: "325"
-    }
   })])])])])]), _vm._v(" "), _c("div", {
     directives: [{
       name: "show",
@@ -4530,12 +4515,7 @@ var render = function render() {
       value: _vm.user.type == "Administrator",
       expression: "user.type == 'Administrator'"
     }],
-    staticClass: "col",
-    on: {
-      click: function click($event) {
-        return _vm.email();
-      }
-    }
+    staticClass: "col"
   }, [_c("div", {
     staticClass: "info-box mb-3 bg-orange"
   }, [_vm._m(10), _vm._v(" "), _c("div", {
@@ -4653,17 +4633,29 @@ var staticRenderFns = [function () {
 }, function () {
   var _vm = this,
     _c = _vm._self._c;
-  return _c("li", {
+  return _c("ul", {
+    staticClass: "dropdown-menu dropdown-menu-right"
+  }, [_c("li", {
     staticClass: "nav-item"
   }, [_c("a", {
-    staticClass: "nav-link",
+    staticClass: "dropdown-item",
     attrs: {
-      href: "#warehouse-all-chart",
+      href: "#warehouse-chart",
       "data-toggle": "tab"
     }
   }, [_c("i", {
     staticClass: "fa-solid fa-circle-half-stroke fa-rotate-180"
-  }), _vm._v("\n                                            Category")])]);
+  }), _vm._v("\n                                                    Category")])]), _vm._v(" "), _c("li", {
+    staticClass: "nav-item"
+  }, [_c("a", {
+    staticClass: "dropdown-item",
+    attrs: {
+      href: "#brand-chart",
+      "data-toggle": "tab"
+    }
+  }, [_c("i", {
+    staticClass: "fa-solid fa-circle-half-stroke"
+  }), _vm._v(" Brand")])])]);
 }, function () {
   var _vm = this,
     _c = _vm._self._c;

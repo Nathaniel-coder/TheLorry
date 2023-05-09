@@ -27,8 +27,7 @@
                                 </div>
                                 <div class="col-5">
                                     <h1 class="document-type display-4"><span>TheLorry</span></h1>
-                                    <p class="text-right"><strong>Ref. Code <em>D{{ invoice.created_at | invoiceDate }}-{{
-                                        invoice.id }}</em></strong></p>
+                                    <p class="text-right"><strong>Ref. Code <em>D{{ invoice.created_at | invoiceDate }}-{{ invoice.id }}</em></strong></p>
                                 </div>
                             </div>
                             <div class="row">
@@ -58,7 +57,7 @@
                             </div>
                             <br>
                             <br>
-                            <h6>Payment Due : {{ invoice.date | date }}</h6>
+                            <h6>Payment Due : {{ invoice.date|date }}</h6>
                             <br>
                             <table class="table table-striped">
                                 <thead>
@@ -152,8 +151,7 @@
 
         <!-- Modal -->
         <form class="form" autocomplete="off" novalidate>
-            <div class="modal fade" id="paymentModal" data-backdrop="static" tabindex="-1"
-                aria-labelledby="exampleModalLabel" aria-hidden="true" style="padding-top: 9em;">
+            <div class="modal fade" id="paymentModal" data-backdrop="static" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" style="padding-top: 9em;">
                 <div class="modal-dialog">
                     <div class="modal-content">
                         <div class="modal-body">
@@ -162,8 +160,7 @@
                                     <div class="credit-card-box">
                                         <div class="flip">
                                             <div class="front">
-                                                <i class="fa-solid fa-wifi fa-rotate-270 mt-4 mx-2"
-                                                    style="font-size:25px"></i>
+                                                <i class="fa-solid fa-wifi fa-rotate-270 mt-4 mx-2" style="font-size:25px"></i>
                                                 <div class="logo">
                                                     <svg version="1.1" id="visa" xmlns="http://www.w3.org/2000/svg"
                                                         xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
@@ -186,11 +183,10 @@
                                                         </g>
                                                     </svg>
                                                 </div>
-                                                <div class="number">{{ cardnumber }} {{ cardnumber1 }} {{ cardnumber2 }} {{
-                                                    cardnumber3 }}</div>
+                                                <div class="number">{{ cardnumber }} {{ cardnumber1 }} {{ cardnumber2 }} {{ cardnumber3 }}</div>
                                                 <div class="card-holder">
                                                     <label>Card holder</label>
-                                                    <div>{{ cardholder }}</div>
+                                                    <div>{{cardholder }}</div>
                                                 </div>
                                                 <div class="card-expiration-date">
                                                     <label>Expires</label>
@@ -345,17 +341,17 @@ export default {
                 $("#paymentModal").modal("hide");
             }
         },
-        Payment() {
+        Payment(){
             Axios.post('api/paymentDrop').then(
                 $("#paymentModal").modal("hide")
-            );
-            Fire.$emit("AfterCreated")
+                );
+                Fire.$emit("AfterCreated")
+            }
         },
-    },
-    created() {
-        this.generateInvoice();
-        Fire.$on("AfterCreated", () => {
-           window.location.href = "/ConsignmentDrop";
+        created(){
+            this.generateInvoice();
+            Fire.$on("AfterCreated", () => {
+                window.location.href='/ConsignmentDrop'
         });
     }
 }

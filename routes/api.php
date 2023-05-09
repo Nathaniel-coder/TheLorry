@@ -69,3 +69,5 @@ Route::get('items/{ID}', 'API\XMLController@WarehouseItem');
 //Make payment
 Route::post('paymentDrop', 'API\DropOffController@payment');
 Route::post('paymentPick', 'API\PickUpController@payment');
+
+

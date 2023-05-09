@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+    <!DOCTYPE html>
 
     <html lang="en">
 
@@ -34,7 +34,7 @@
 
                 <ul class="navbar-nav ml-auto">
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ url('rateXML') }}" role="button" toggle="tooltip" title="Rates">
+                        <a class="nav-link" href="rateXML" role="button" toggle="tooltip" title="Rates">
                             <i class="fa-solid fa-money-bill-1"></i>
                         </a>
                     </li>
@@ -190,7 +190,9 @@
                                                 <span>TheLorry</span>
                                             </h1>
                                             <p class="mx-2"><strong>Ref. Code
-                                                    <em>{{ $data->address1 ? 'P' : 'D' }}{{ date('Ymmd', strtotime($data->created_at)) }}-{{ Auth::user()->id }}</strong></em>
+                                                {{-- @if(!$data->isEmpty()) --}}
+                                                <em>{{ $data->address1 ? 'P' : 'D' }}{{ date('Ymmd', strtotime($data->created_at)) }}-{{ Auth::user()->id }}</strong></em>
+                                                {{-- @endif --}}
                                             </p>
                                         </div>
                                         <div class="col text-right">
@@ -201,7 +203,9 @@
                                     </div>
                                     <div class="row">
                                         <div class="col">Tracking:
+                                            {{-- @if(!$data->isEmpty()) --}}
                                             {{ $data->address1 ? 'PCu' : 'Drp' }}{{ date('mdy', strtotime($data->created_at)) }}{{ $data->id }}
+                                            {{-- @endif --}}
                                         </div>
                                         <div class="col">Type: Parcel Delivery</div>
                                         <div class="col">Weight: {{ $data->weight }} KG</div>

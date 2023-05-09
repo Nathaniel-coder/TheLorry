@@ -54,7 +54,7 @@ class DashboardController extends Controller
     {
         $user = auth('api')->user();
         if ($user->type == 'Administrator') {
-            return Dropoff::where('status', '!=', '')->count();
+            return Dropoff::count();
         } else {
             return Dropoff::where('phone', $user->phone)->count();
         }
@@ -64,7 +64,7 @@ class DashboardController extends Controller
     {
         $user = auth('api')->user();
         if ($user->type == 'Administrator') {
-            return Pickup::where('status', '!=', '')->count();
+            return Pickup::count();
         } else {
             return Pickup::where('phone', $user->phone)->count();
         }
@@ -108,12 +108,12 @@ class DashboardController extends Controller
 
     public function chartData()
     {
-        $dropOffData = DropOff::where('status', '!=', '')
+        $dropOffData = DropOff::where('status', '!=', 'Unpaid')
             ->select(DB::raw('DATE(created_at) as date'), DB::raw('COUNT(*) as count'))
             ->groupBy('created_at')
             ->get();
 
-        $pickupData = Pickup::where('status', '!=', '')
+        $pickupData = Pickup::where('status', '!=', 'Unpaid')
             ->select(DB::raw('DATE(created_at) as date'), DB::raw('COUNT(*) as count'))
             ->groupBy('created_at')
             ->get();

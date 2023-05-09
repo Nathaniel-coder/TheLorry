@@ -8,7 +8,8 @@
     <title>TheLorry</title>
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <link rel="stylesheet" href="/css/app.css">
-    <link rel="stylesheet" href="public/css/pagination.css">
+</head>
+
 <body class="hold-transition sidebar-mini">
     <div class="wrapper" id="app">
 
@@ -33,7 +34,7 @@
 
             <ul class="navbar-nav ml-auto">
                 <li class="nav-item">
-                    <a class="nav-link" href="{{ url('rateXML') }}" role="button" toggle="tooltip" title="Rates">
+                    <a class="nav-link" href="rateXML" role="button" toggle="tooltip" title="Rates">
                         <i class="fa-solid fa-money-bill-1"></i>
                     </a>
                 </li>
@@ -236,72 +237,73 @@
                                                         </tr>
                                                     </thead>
                                                     <tbody>
-                                                        @foreach ($dropOff as $dropOffs)
+                                                        @foreach ($dropOff as $dropOff)
                                                             <tr data-widget="expandable-table" aria-expanded="false">
                                                                 <td>
-                                                                    {{ $dropOffs->address1 ? 'PCu' : 'Drp' }}{{ date('mdy', strtotime($dropOffs->created_at)) }}{{ $dropOffs->id }}
+                                                                    {{ $dropOff->address1 ? 'PCu' : 'Drp' }}{{ date('mdy', strtotime($dropOff->created_at)) }}{{ $dropOff->id }}
                                                                 </td>
                                                                 <td>
-                                                                    {{ $dropOffs->date }}
+                                                                    {{ $dropOff->date }}
                                                                 </td>
                                                                 @can(!'isCustomer')
                                                                     <td>
-                                                                        {{ $dropOffs->name }}
+                                                                        {{ $dropOff->name }}
                                                                     </td>
                                                                 @endcan
                                                                 <td>
-                                                                    {{ $dropOffs->phone }}
+                                                                    {{ $dropOff->phone }}
                                                                 </td>
                                                                 <td>
-                                                                    {{ $dropOffs->toname }}
+                                                                    {{ $dropOff->toname }}
                                                                 </td>
                                                                 <td toggle="tootip"
-                                                                    title="{{ $dropOffs->toaddress1 .
+                                                                    title="{{ $dropOff->toaddress1 .
                                                                         ', ' .
-                                                                        $dropOffs->toaddress2 .
+                                                                        $dropOff->toaddress2 .
                                                                         ', ' .
-                                                                        $dropOffs->topostcode .
+                                                                        $dropOff->topostcode .
                                                                         ' ' .
-                                                                        $dropOffs->tocity .
+                                                                        $dropOff->tocity .
                                                                         ', ' .
-                                                                        $dropOffs->toprovince .
+                                                                        $dropOff->toprovince .
                                                                         ', ' .
-                                                                        $dropOffs->tocountry }}">
+                                                                        $dropOff->tocountry }}">
                                                                     {{ Str::limit(
-                                                                        $dropOffs->toaddress1 .
+                                                                        $dropOff->toaddress1 .
                                                                             ', ' .
-                                                                            $dropOffs->toaddress2 .
+                                                                            $dropOff->toaddress2 .
                                                                             ', ' .
-                                                                            $dropOffs->topostcode .
+                                                                            $dropOff->topostcode .
                                                                             ' ' .
-                                                                            $dropOffs->tocity .
+                                                                            $dropOff->tocity .
                                                                             ', ' .
-                                                                            $dropOffs->toprovince .
+                                                                            $dropOff->toprovince .
                                                                             ', ' .
-                                                                            $dropOffs->tocountry,
+                                                                            $dropOff->tocountry,
                                                                         30,
                                                                     ) }}
                                                                 </td>
                                                                 <td>
-                                                                    {{ $dropOffs->status ? $dropOffs->status : 'Unpaid' }}
+                                                                    {{ $dropOff->status ? $dropOff->status : 'Unpaid' }}
                                                                 </td>
                                                                 <td>
                                                                     <a class="btn bg-purple" toggle="tooltip"
                                                                         title="Generate XML"
-                                                                        href="dropXML/{{ $dropOffs->id }}">
+                                                                        href="dropXML/{{ $dropOff->id }}">
                                                                         <i class="fa-solid fa-code text-white"></i>
                                                                     </a>
-                                                                    @if ($dropOffs->status && $dropOffs->status != 'Unpaid')
+                                                                    @if ($dropOff->status && $dropOff->status != 'Unpaid')
                                                                         <a class="btn bg-orange" toggle="tooltip"
                                                                             title="Generate Invoice"
-                                                                            href="invoiceDropOff/{{ $dropOffs->id }}">
+                                                                            href="invoiceDropOff/{{ $dropOff->id }}">
                                                                             <i
                                                                                 class="fa-solid fa-file-lines text-white"></i>
                                                                         </a>
                                                                         <a class="btn bg-dark" toggle="tooltip"
-                                                                            title="Generate Consignment"
-                                                                            href="DropConsignment/{{ $dropOffs->id }}">
-                                                                            <i class="fa-solid fa-file-invoice"></i>
+                                                                        title="Generate Consignment Note"
+                                                                            href="DropConsignment/{{ $dropOff->id }}">
+                                                                            <i
+                                                                                class="fa-solid fa-file-invoice text-white"></i>
                                                                         </a>
                                                                     @endif
                                                                 </td>
@@ -310,12 +312,6 @@
                                                     </tbody>
                                                 </table>
                                             </div>
-                                            @if ($dropOff instanceof \Illuminate\Pagination\LengthAwarePaginator)
-                                                <div class="card-footer">
-                                                    {{ $dropOff->links() }}
-                                                </div>
-                                            @endif
-
                                         </div>
                                     </div>
                                 </div>
@@ -352,66 +348,67 @@
                                                         </tr>
                                                     </thead>
                                                     <tbody>
-                                                        @foreach ($pickUp as $pickUps)
+                                                        @foreach ($pickUp as $pickUp)
                                                             <tr class="pointer">
-                                                                <td>{{ $pickUps->address1 ? 'PCu' : 'Drp' }}{{ date('mdy', strtotime($pickUps->created_at)) }}{{ $pickUps->id }}
+                                                                <td>{{ $pickUp->address1 ? 'PCu' : 'Drp' }}{{ date('mdy', strtotime($pickUp->created_at)) }}{{ $pickUp->id }}
                                                                 </td>
-                                                                <td>{{ $pickUps->date }}</td>
+                                                                <td>{{ $pickUp->date }}</td>
                                                                 <td>
-                                                                    {{ $pickUps->name }}
+                                                                    {{ $pickUp->name }}
                                                                 </td>
                                                                 <td>
-                                                                    {{ $pickUps->toname }}
+                                                                    {{ $pickUp->toname }}
                                                                 </td>
                                                                 <td toggle="tootip"
-                                                                    title="{{ $pickUps->address1 .
+                                                                    title="{{ $pickUp->address1 .
                                                                         ', ' .
-                                                                        $pickUps->address2 .
+                                                                        $pickUp->address2 .
                                                                         ', ' .
-                                                                        $pickUps->postcode .
+                                                                        $pickUp->postcode .
                                                                         ' ' .
-                                                                        $pickUps->city .
+                                                                        $pickUp->city .
                                                                         ', ' .
-                                                                        $pickUps->province .
+                                                                        $pickUp->province .
                                                                         ', ' .
-                                                                        $pickUps->country }}">
-                                                                    {{ Str::limit($pickUps->address1 . ', ' . $pickUps->address2 . ', ' . $pickUps->postcode . ', ' . $pickUps->city . ', ' . $pickUps->province . ', ' . $pickUps->country, 30) }}
+                                                                        $pickUp->country }}">
+                                                                    {{ Str::limit($pickUp->address1 . ', ' . $pickUp->address2 . ', ' . $pickUp->postcode . ', ' . $pickUp->city . ', ' . $pickUp->province . ', ' . $pickUp->country, 30) }}
                                                                 </td>
                                                                 <td toggle="tootip"
-                                                                    title="{{ $pickUps->toaddress1 .
+                                                                    title="{{ $pickUp->toaddress1 .
                                                                         ', ' .
-                                                                        $pickUps->toaddress2 .
+                                                                        $pickUp->toaddress2 .
                                                                         ', ' .
-                                                                        $pickUps->topostcode .
+                                                                        $pickUp->topostcode .
                                                                         ' ' .
-                                                                        $pickUps->tocity .
+                                                                        $pickUp->tocity .
                                                                         ', ' .
-                                                                        $pickUps->toprovince .
+                                                                        $pickUp->toprovince .
                                                                         ', ' .
-                                                                        $pickUps->tocountry }}">
+                                                                        $pickUp->tocountry }}">
 
-                                                                    {{ Str::limit($pickUps->toaddress1 . ', ' . $pickUps->toaddress2 . ', ' . $pickUps->topostcode . ', ' . $pickUps->tocity . ', ' . $pickUps->toprovince . ', ' . $pickUps->tocountry, 30) }}
+                                                                    {{ Str::limit($pickUp->toaddress1 . ', ' . $pickUp->toaddress2 . ', ' . $pickUp->topostcode . ', ' . $pickUp->tocity . ', ' . $pickUp->toprovince . ', ' . $pickUp->tocountry, 30) }}
                                                                 </td>
                                                                 <td>
-                                                                    {{ $pickUps->status ? $pickUps->status : 'Unpaid' }}
+                                                                    {{ $pickUp->status ? $pickUp->status : 'Unpaid' }}
                                                                 </td>
                                                                 <td>
                                                                     <a class="btn bg-purple" toggle="tooltip"
                                                                         title="Generate XML"
-                                                                        href="pickXML/{{ $pickUps->id }}">
+                                                                        href="pickXML/{{ $pickUp->id }}">
                                                                         <i class="fa-solid fa-code white"></i>
                                                                     </a>
-                                                                    @if ($pickUps->status && $pickUps->status != 'Unpaid')
+                                                                    @if ($pickUp->status && $pickUp->status != 'Unpaid')
                                                                         <a class="btn bg-orange" toggle="tooltip"
                                                                             title="Generate Receipt"
-                                                                            href="invoicePickUP/{{ $pickUps->id }}">
+                                                                            href="invoicePickUP/{{ $pickUp->id }}">
                                                                             <i
                                                                                 class="fa-solid fa-file-lines text-white"></i>
                                                                         </a>
                                                                         <a class="btn bg-dark" toggle="tooltip"
-                                                                            title="Generate Consignment"
-                                                                            href="PickConsignment/{{ $pickUps->id }}">
-                                                                            <i class="fa-solid fa-file-invoice"></i>
+                                                                        title="Generate Consignment Note"
+                                                                            href="PickConsignment/{{ $pickUp->id }}">
+                                                                            <i
+                                                                                class="fa-solid fa-file-invoice text-white"></i>
                                                                         </a>
                                                                     @endif
                                                                 </td>
@@ -420,11 +417,6 @@
                                                     </tbody>
                                                 </table>
                                             </div>
-                                            @if ($pickUp instanceof \Illuminate\Pagination\LengthAwarePaginator)
-                                                <div class="card-footer">
-                                                    {{ $pickUp->links() }}
-                                                </div>
-                                            @endif
                                         </div>
                                     </div>
                                 </div>
