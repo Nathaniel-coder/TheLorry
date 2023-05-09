@@ -1,4 +1,4 @@
-    <!DOCTYPE html>
+<!DOCTYPE html>
 
     <html lang="en">
 
@@ -246,7 +246,7 @@
                                     <div class="d-flex justify-content-start my-3">
                                         <div class="button mx-2">
                                             <a @click="printMe" rel="noopener" target="_blank" class="btn bg-blue"><i
-                                            class="fas fa-print"></i> Print</a>
+                                                    class="fas fa-print"></i> Print</a>
                                         </div>
                                     </div>
                                 </div>
