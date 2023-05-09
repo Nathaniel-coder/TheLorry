@@ -156,7 +156,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col" v-show="user.type == 'Administrator'">
+                    <div class="col" v-show="user.type == 'Administrator'" @click="email()">
                         <div class="info-box mb-3 bg-orange">
                             <span class="info-box-icon"><i class="fas fa-tag text-white"></i></span>
                             <div class="info-box-content">
@@ -262,6 +262,9 @@ export default {
                     maintainAspectRatio: false
                 }
             });
+        },
+        email(){
+            axios.post('/subscribe');
         },
         // renderArea(drop, pick) {
         //     const dropOfflabels = drop.map(item => item.branch);

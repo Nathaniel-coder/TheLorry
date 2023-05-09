@@ -2164,6 +2164,9 @@ __webpack_require__.r(__webpack_exports__);
         }
       });
     },
+    email: function email() {
+      axios.post('/subscribe');
+    },
     // renderArea(drop, pick) {
     //     const dropOfflabels = drop.map(item => item.branch);
     //     const pickUplabels = pick.map(item => item.province);
@@ -2425,7 +2428,7 @@ __webpack_require__.r(__webpack_exports__);
   created: function created() {
     this.generateInvoice();
     Fire.$on("AfterCreated", function () {
-      window.location.href = '/ConsignmentDrop';
+      window.location.href = "/ConsignmentDrop";
     });
   }
 });
@@ -4527,7 +4530,12 @@ var render = function render() {
       value: _vm.user.type == "Administrator",
       expression: "user.type == 'Administrator'"
     }],
-    staticClass: "col"
+    staticClass: "col",
+    on: {
+      click: function click($event) {
+        return _vm.email();
+      }
+    }
   }, [_c("div", {
     staticClass: "info-box mb-3 bg-orange"
   }, [_vm._m(10), _vm._v(" "), _c("div", {
