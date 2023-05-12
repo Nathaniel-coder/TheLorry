@@ -393,7 +393,7 @@ export default {
                 var fileURL = window.URL.createObjectURL(new Blob([response.data]));
                 var fileLink = document.createElement('a');
                 fileLink.href = fileURL;
-                fileLink.setAttribute('download', 'Warehouse.xlsx');
+                fileLink.setAttribute('download', 'Warehouse.csv');
                 document.body.appendChild(fileLink);
                 fileLink.click();
             })
